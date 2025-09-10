@@ -4,7 +4,9 @@ export const DEFAULT_MAP_CENTER = {
   lng: 126.9780
 }
 
-export const DEFAULT_MAP_ZOOM = 13
+// 카카오맵 기본 설정
+export const DEFAULT_KAKAO_MAP_LEVEL = 3 // 1-14 (1이 가장 확대)
+export const DEFAULT_MAP_ZOOM = 13 // 호환성을 위해 유지
 
 export const PLACE_CATEGORIES = {
   restaurant: '맛집',
