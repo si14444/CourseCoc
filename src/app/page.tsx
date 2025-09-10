@@ -1,12 +1,12 @@
 'use client'
 
 import NoSSR from '@/components/ui/NoSSR'
-import HomePage from '@/components/HomePage'
+import MainPage from '@/components/MainPage'
 
 export default function Home() {
   return (
     <NoSSR>
-      <HomePage />
+      <MainPage />
     </NoSSR>
   )
 }
