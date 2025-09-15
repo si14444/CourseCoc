@@ -6,7 +6,7 @@ import CourseEditor from '@/components/course/CourseEditor'
 import MapTab from '@/components/tabs/MapTab'
 import CoursesTab from '@/components/tabs/CoursesTab'
 import CommunityTab from '@/components/tabs/CommunityTab'
-import { Heart, Plus, Home, MapPin, BookOpen, Users, Sparkles } from 'lucide-react'
+import { Heart, Plus, Home, MapPin, BookOpen, Users } from 'lucide-react'
 
 type ViewMode = 'home' | 'map' | 'courses' | 'community' | 'editor'
 
@@ -72,53 +72,42 @@ export default function MainPage() {
             <button
               onClick={() => setViewMode('home')}
               className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 text-sm ${
-                viewMode === 'home' 
-                  ? 'bg-primary text-white' 
+                viewMode === 'home'
+                  ? 'bg-primary text-white'
                   : 'text-muted hover:text-primary hover:bg-accent'
               }`}
             >
               <Home className="w-4 h-4" />
-              <span className="hidden sm:inline">홈</span>
-            </button>
-            <button
-              onClick={() => setViewMode('map')}
-              className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 text-sm ${
-                viewMode === 'map' 
-                  ? 'bg-primary text-white' 
-                  : 'text-muted hover:text-primary hover:bg-accent'
-              }`}
-            >
-              <MapPin className="w-4 h-4" />
-              <span className="hidden sm:inline">지도</span>
+              <span className="hidden sm:inline">Map</span>
             </button>
             <button
               onClick={() => setViewMode('courses')}
               className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 text-sm ${
-                viewMode === 'courses' 
-                  ? 'bg-primary text-white' 
+                viewMode === 'courses'
+                  ? 'bg-primary text-white'
                   : 'text-muted hover:text-primary hover:bg-accent'
               }`}
             >
               <BookOpen className="w-4 h-4" />
-              <span className="hidden sm:inline">내 코스</span>
+              <span className="hidden sm:inline">My Courses</span>
             </button>
             <button
               onClick={() => setViewMode('community')}
               className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 text-sm ${
-                viewMode === 'community' 
-                  ? 'bg-primary text-white' 
+                viewMode === 'community'
+                  ? 'bg-primary text-white'
                   : 'text-muted hover:text-primary hover:bg-accent'
               }`}
             >
               <Users className="w-4 h-4" />
-              <span className="hidden sm:inline">커뮤니티</span>
+              <span className="hidden sm:inline">Community</span>
             </button>
             <button
               onClick={handleCreateCourse}
               className="btn-primary text-sm px-4 py-2"
             >
               <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">코스 만들기</span>
+              <span className="hidden sm:inline">Start</span>
             </button>
           </nav>
 
@@ -179,116 +168,191 @@ export default function MainPage() {
         {/* 홈 페이지 */}
         {viewMode === 'home' && (
           <div className="bg-white min-h-screen">
-            <div className="max-w-4xl mx-auto px-6 py-16">
-              
-              {/* 히어로 섹션 */}
-              <div className="text-center mb-24">
-                <div className="inline-flex items-center gap-2 bg-pink-50 text-pink-600 px-4 py-2 rounded-full text-sm font-medium mb-8">
-                  <Heart className="w-4 h-4" />
-                  특별한 데이트 코스 만들기
-                </div>
-                
-                <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-8 leading-tight">
-                  완벽한 <span className="text-pink-500">데이트 코스</span>를<br />
-                  만들어보세요
+            {/* 히어로 섹션 */}
+            <div className="max-w-6xl mx-auto px-6 py-16">
+              <div className="text-center mb-16">
+                <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+                  Create Your Perfect <span className="text-primary">Date Course</span>
                 </h1>
-                
-                <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed">
-                  지도에서 장소를 선택하고, 나만의 로맨틱한 데이트 코스를 계획해보세요.
+
+                <p className="text-lg text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
+                  Design romantic experiences and share them with others. Plan memorable dates<br />
+                  with our intuitive course creator.
                 </p>
-                
+
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                   <button
                     onClick={handleCreateCourse}
-                    className="bg-pink-500 hover:bg-pink-600 text-white font-semibold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200"
+                    className="btn-primary px-8 py-4 text-lg"
                   >
-                    <div className="flex items-center gap-2">
-                      <Plus className="w-5 h-5" />
-                      코스 만들기
-                    </div>
+                    <Plus className="w-5 h-5" />
+                    Start Course
                   </button>
-                  
+
                   <button
                     onClick={() => setViewMode('map')}
-                    className="bg-white border-2 border-gray-200 hover:border-pink-300 text-gray-700 hover:text-pink-600 font-semibold px-8 py-4 rounded-xl transition-all duration-200"
+                    className="btn-outline px-8 py-4 text-lg"
                   >
-                    <div className="flex items-center gap-2">
-                      <MapPin className="w-5 h-5" />
-                      지도 보기
-                    </div>
+                    <MapPin className="w-5 h-5" />
+                    Explore Map
                   </button>
                 </div>
               </div>
 
-              {/* 기능 소개 */}
-              <div className="mb-24">
-                <div className="text-center mb-16">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                    간단한 3단계로 완성
-                  </h2>
-                  <p className="text-lg text-gray-600">
-                    누구나 쉽게 완벽한 데이트 코스를 만들 수 있어요
-                  </p>
+              {/* 검색 및 필터 섹션 */}
+              <div className="max-w-6xl mx-auto mb-12">
+                <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                  <div className="relative w-full sm:w-96">
+                    <input
+                      type="text"
+                      placeholder="Search courses…"
+                      className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-primary text-gray-700"
+                    />
+                    <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  <button className="btn-secondary px-6 py-3 text-gray-600">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z" />
+                    </svg>
+                    Filter
+                  </button>
                 </div>
-                
-                <div className="space-y-16">
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                      <MapPin className="w-8 h-8 text-pink-600" />
+              </div>
+
+              {/* 코스 그리드 */}
+              <div className="max-w-6xl mx-auto mb-20">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {/* 코스 카드 1 */}
+                  <div className="card group cursor-pointer">
+                    <div className="h-48 bg-gradient-to-br from-pink-100 to-pink-200 rounded-xl mb-4 flex items-center justify-center">
+                      <div className="flex space-x-1">
+                        {[1,2,3,4,5].map((i) => (
+                          <div key={i} className="w-3 h-3 bg-primary rounded-full"></div>
+                        ))}
+                      </div>
                     </div>
-                    <h3 className="text-xl font-semibold mb-3 text-gray-900">
-                      1. 장소 선택
-                    </h3>
-                    <p className="text-gray-600 max-w-sm mx-auto">
-                      지도에서 가고 싶은 장소들을 클릭해서 선택하세요
-                    </p>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">Romantic Seoul Night Tour</h3>
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">A perfect evening date course through Seoul&apos;s most romantic spots including Banpo Rainbow Bridge...</p>
+                    <div className="flex items-center justify-between text-sm text-gray-500">
+                      <span>247</span>
+                      <span>13m</span>
+                      <span>892</span>
+                    </div>
                   </div>
-                  
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                      <BookOpen className="w-8 h-8 text-blue-600" />
+
+                  {/* 코스 카드 2 */}
+                  <div className="card group cursor-pointer">
+                    <div className="h-48 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl mb-4 flex items-center justify-center">
+                      <div className="flex space-x-1">
+                        {[1,2,3,4].map((i) => (
+                          <div key={i} className="w-3 h-3 bg-orange-400 rounded-full"></div>
+                        ))}
+                      </div>
                     </div>
-                    <h3 className="text-xl font-semibold mb-3 text-gray-900">
-                      2. 코스 구성
-                    </h3>
-                    <p className="text-gray-600 max-w-sm mx-auto">
-                      선택한 장소들을 순서대로 배치해서 코스를 만들어요
-                    </p>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">Cherry Blossom Picnic Date</h3>
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">Spring romance under blooming cherry blossoms at Yeouido Park with cozy picnic setup and flower...</p>
+                    <div className="flex items-center justify-between text-sm text-gray-500">
+                      <span>5</span>
+                      <span>18h</span>
+                      <span>692</span>
+                    </div>
                   </div>
-                  
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                      <Users className="w-8 h-8 text-purple-600" />
+
+                  {/* 코스 카드 3 */}
+                  <div className="card group cursor-pointer">
+                    <div className="h-48 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl mb-4 flex items-center justify-center">
+                      <div className="flex space-x-1">
+                        {[1,2,3,4,5,6].map((i) => (
+                          <div key={i} className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                        ))}
+                      </div>
                     </div>
-                    <h3 className="text-xl font-semibold mb-3 text-gray-900">
-                      3. 저장 & 공유
-                    </h3>
-                    <p className="text-gray-600 max-w-sm mx-auto">
-                      완성된 코스를 저장하고 친구들과 공유하세요
-                    </p>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">Hongdae Art & Culture Walk</h3>
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">Explore vibrant street art, cozy cafes, and indie galleries in Hongdae&apos;s creative district perfect for...</p>
+                    <div className="flex items-center justify-between text-sm text-gray-500">
+                      <span>7</span>
+                      <span>15m</span>
+                      <span>743</span>
+                    </div>
+                  </div>
+
+                  {/* 코스 카드 4 */}
+                  <div className="card group cursor-pointer">
+                    <div className="h-48 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-xl mb-4 flex items-center justify-center">
+                      <div className="flex space-x-1">
+                        {[1,2,3,4,5].map((i) => (
+                          <div key={i} className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                        ))}
+                      </div>
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">Busan Beach Sunset Romance</h3>
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">Seaside romance at Haeundae Beach with golden sunset views, beachside dining and ocean walks...</p>
+                    <div className="flex items-center justify-between text-sm text-gray-500">
+                      <span>4</span>
+                      <span>21d</span>
+                      <span>2194</span>
+                    </div>
+                  </div>
+
+                  {/* 코스 카드 5 */}
+                  <div className="card group cursor-pointer">
+                    <div className="h-48 bg-gradient-to-br from-green-100 to-green-200 rounded-xl mb-4 flex items-center justify-center">
+                      <div className="flex space-x-1">
+                        {[1,2,3,4,5,6].map((i) => (
+                          <div key={i} className="w-3 h-3 bg-green-400 rounded-full"></div>
+                        ))}
+                      </div>
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">Jeju Island Nature Escape</h3>
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">Island adventure through Jeju&apos;s natural wonders including waterfalls, volcanic landscapes and tra...</p>
+                    <div className="flex items-center justify-between text-sm text-gray-500">
+                      <span>8</span>
+                      <span>21h</span>
+                      <span>1957</span>
+                    </div>
+                  </div>
+
+                  {/* 코스 카드 6 */}
+                  <div className="card group cursor-pointer">
+                    <div className="h-48 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl mb-4 flex items-center justify-center">
+                      <div className="flex space-x-1">
+                        {[1,2,3,4,5].map((i) => (
+                          <div key={i} className="w-3 h-3 bg-purple-400 rounded-full"></div>
+                        ))}
+                      </div>
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">Traditional Hanok Village Date</h3>
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">Step back in time at Bukchon Hanok Village, experiencing traditional Korean architecture and...</p>
+                    <div className="flex items-center justify-between text-sm text-gray-500">
+                      <span>6</span>
+                      <span>20d</span>
+                      <span>1134</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* CTA 섹션 */}
-              <div className="text-center bg-gray-50 rounded-2xl p-12">
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                  지금 바로 시작해보세요!
+              <div className="text-center bg-accent rounded-2xl p-16 max-w-4xl mx-auto">
+                <h2 className="text-4xl font-bold text-gray-900 mb-6">
+                  Ready to Create Your Own Course?
                 </h2>
-                <p className="text-lg text-gray-600 mb-8">
-                  무료로 나만의 특별한 데이트 코스를 만들어보세요
+                <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+                  Join thousands of couples creating unforgettable memories. Start designing your perfect date experience today.
                 </p>
                 <button
                   onClick={handleCreateCourse}
-                  className="bg-pink-500 hover:bg-pink-600 text-white font-bold text-lg px-10 py-4 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200"
+                  className="btn-primary px-10 py-4 text-lg"
                 >
-                  <div className="flex items-center gap-2">
-                    <Plus className="w-5 h-5" />
-                    첫 코스 만들기
-                  </div>
+                  <Plus className="w-5 h-5" />
+                  Start Creating
                 </button>
               </div>
-              
             </div>
           </div>
         )}
