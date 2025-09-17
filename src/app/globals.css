@@ -21,15 +21,15 @@
   --accent-light: #fff8f8;
 
   /* Background Colors */
-  --background: #fefefe;
-  --background-alt: #fdfdfd;
+  --background: #ffffff;
+  --background-alt: #ffffff;
   --surface: #ffffff;
   --surface-alt: var(--accent-color);
 
   /* Text Colors */
   --foreground: #2d2d2d;
-  --foreground-light: #666666;
-  --foreground-muted: #999999;
+  --foreground-light: #555555;
+  --foreground-muted: #888888;
   --text-on-primary: #ffffff;
   --text-on-secondary: #333333;
 
