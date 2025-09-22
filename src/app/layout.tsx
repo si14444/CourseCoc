@@ -18,6 +18,11 @@ export const metadata: Metadata = {
   keywords: ["데이트", "코스", "연인", "로맨틱", "데이트코스", "커플"],
   authors: [{ name: "CourseCoc Team" }],
   viewport: "width=device-width, initial-scale=1",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/logo.png",
+    shortcut: "/favicon.ico"
+  },
 };
 
 export default function RootLayout({
