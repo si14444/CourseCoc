@@ -18,7 +18,11 @@ export function Header() {
           {/* Logo */}
           <div className="flex items-center space-x-2">
             <div className="relative">
-              <Heart className="w-8 h-8 text-pink-500 fill-current" />
+              <img
+                src="/logo.png"
+                alt="CourseCoc Logo"
+                className="w-8 h-8 object-contain"
+              />
             </div>
             <div className="flex items-center space-x-2">
               <span className="text-xl font-bold text-gray-900">CourseCoc</span>
@@ -35,15 +39,15 @@ export function Header() {
           <nav className="hidden md:flex items-center space-x-8">
             <button className="flex items-center space-x-2 text-pink-500 font-medium transition-colors duration-200">
               <Map className="w-5 h-5" />
-              <span>Map</span>
+              <span>지도</span>
             </button>
             <button className="flex items-center space-x-2 text-gray-600 hover:text-pink-500 font-medium transition-colors duration-200">
               <BookOpen className="w-5 h-5" />
-              <span>My Courses</span>
+              <span>내 코스</span>
             </button>
             <button className="flex items-center space-x-2 text-gray-600 hover:text-pink-500 font-medium transition-colors duration-200">
               <Users className="w-5 h-5" />
-              <span>Community</span>
+              <span>커뮤니티</span>
             </button>
           </nav>
 
@@ -51,7 +55,7 @@ export function Header() {
           <div className="hidden md:block">
             <Button className="bg-gradient-to-r from-pink-100 via-pink-200 to-pink-500 text-white hover:shadow-lg hover:shadow-pink-300/30 transition-all duration-300 transform hover:-translate-y-0.5">
               <Plus className="w-4 h-4 mr-2" />
-              Create Course
+              코스 만들기
             </Button>
           </div>
 
@@ -74,22 +78,22 @@ export function Header() {
             <div className="flex flex-col space-y-4">
               <button className="flex items-center space-x-2 text-pink-500 font-medium py-2">
                 <Map className="w-5 h-5" />
-                <span>Map</span>
+                <span>지도</span>
               </button>
               <button className="flex items-center space-x-2 text-gray-600 font-medium py-2">
                 <BookOpen className="w-5 h-5" />
-                <span>My Courses</span>
+                <span>내 코스</span>
               </button>
               <button className="flex items-center space-x-2 text-gray-600 font-medium py-2">
                 <Users className="w-5 h-5" />
-                <span>Community</span>
+                <span>커뮤니티</span>
               </button>
               <Button
                 size="sm"
                 className="bg-gradient-to-r from-pink-100 via-pink-200 to-pink-500 text-white mt-2"
               >
                 <Plus className="w-4 h-4 mr-2" />
-                Create Course
+                코스 만들기
               </Button>
             </div>
           </div>

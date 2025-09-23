@@ -57,7 +57,7 @@ export function CourseCard({
         <div className="flex items-center space-x-4 mb-4 text-sm text-[var(--text-secondary)]">
           <div className="flex items-center space-x-1">
             <MapPin className="w-4 h-4 text-[var(--coral-pink)]" />
-            <span>{placeCount} places</span>
+            <span>{placeCount}개 장소</span>
           </div>
           <div className="flex items-center space-x-1">
             <Heart className="w-4 h-4 text-[var(--coral-pink)]" />
@@ -73,7 +73,7 @@ export function CourseCard({
         <div className="mb-4">
           <div className="flex items-center space-x-2 mb-2">
             <span className="text-xs font-medium text-[var(--text-secondary)]">
-              Course Preview:
+              코스 미리보기:
             </span>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -105,7 +105,7 @@ export function CourseCard({
             className="border-[var(--coral-pink)] text-[var(--coral-pink)] hover:bg-[var(--coral-pink)] hover:text-white transition-all duration-200"
           >
             <Edit className="w-4 h-4 mr-1" />
-            Edit
+            수정
           </Button>
           <Button
             size="sm"
@@ -113,7 +113,7 @@ export function CourseCard({
             className="border-[var(--coral-pink)] text-[var(--coral-pink)] hover:bg-[var(--coral-pink)] hover:text-white transition-all duration-200"
           >
             <Palette className="w-4 h-4 mr-1" />
-            3D View
+            3D 뷰
           </Button>
         </div>
       </CardContent>

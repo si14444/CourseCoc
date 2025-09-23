@@ -34,11 +34,10 @@ export function EmptyState() {
       {/* Encouraging Content */}
       <div className="max-w-md mx-auto mb-8">
         <h2 className="font-bold text-[var(--text-primary)] mb-3">
-          No courses yet
+          아직 코스가 없어요
         </h2>
         <p className="text-[var(--text-secondary)] leading-relaxed">
-          Create your first date course and start planning amazing romantic
-          experiences! Every great love story begins with a perfect first step.
+          첫 번째 데이트 코스를 만들고 멋진 로맨틱한 경험을 계획해보세요! 모든 아름다운 사랑 이야기는 완벽한 첫 걸음부터 시작됩니다.
         </p>
       </div>
 
@@ -48,7 +47,7 @@ export function EmptyState() {
         className="bg-gradient-to-r from-[var(--very-light-pink)] via-[var(--light-pink)] to-[var(--coral-pink)] text-white hover:shadow-lg hover:shadow-[var(--pink-shadow)] transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-105 px-8 py-3"
       >
         <Heart className="w-5 h-5 mr-2 fill-current" />
-        Create First Course
+        첫 코스 만들기
       </Button>
 
       {/* Subtle decorative elements */}

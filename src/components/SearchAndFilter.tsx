@@ -9,9 +9,9 @@ export function SearchAndFilter() {
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
 
   const filterOptions = [
-    { id: "romantic", label: "Romantic", icon: Heart },
-    { id: "outdoor", label: "Outdoor", icon: MapPin },
-    { id: "quick", label: "Quick Date", icon: Clock },
+    { id: "romantic", label: "로맨틱", icon: Heart },
+    { id: "outdoor", label: "야외", icon: MapPin },
+    { id: "quick", label: "빠른 데이트", icon: Clock },
   ];
 
   const toggleFilter = (filterId: string) => {
@@ -30,7 +30,7 @@ export function SearchAndFilter() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[var(--text-secondary)]" />
           <Input
-            placeholder="Search courses…"
+            placeholder="코스 검색..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10 rounded-xl border-[var(--border)] focus:border-[var(--coral-pink)] focus:ring-2 focus:ring-[var(--coral-pink)]/20 bg-white transition-all duration-200"
@@ -43,7 +43,7 @@ export function SearchAndFilter() {
           className="border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--coral-pink)] hover:text-[var(--coral-pink)] hover:bg-[var(--very-light-pink)] transition-all duration-200 rounded-xl"
         >
           <Filter className="w-4 h-4 mr-2" />
-          Filters
+          필터
           {activeFilters.length > 0 && (
             <Badge
               variant="secondary"
@@ -83,7 +83,7 @@ export function SearchAndFilter() {
       {/* Active Filters Display */}
       {activeFilters.length > 0 && (
         <div className="mt-3 flex items-center gap-2 text-sm text-[var(--text-secondary)]">
-          <span>Active filters:</span>
+          <span>활성 필터:</span>
           {activeFilters.map((filterId) => {
             const filter = filterOptions.find((f) => f.id === filterId);
             if (!filter) return null;
@@ -102,7 +102,7 @@ export function SearchAndFilter() {
             onClick={() => setActiveFilters([])}
             className="text-[var(--coral-pink)] hover:underline"
           >
-            Clear all
+            전체 삭제
           </button>
         </div>
       )}
