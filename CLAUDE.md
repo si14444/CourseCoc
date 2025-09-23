@@ -28,6 +28,7 @@ npm run lint
 - **Framework**: Next.js 15.5.2 with App Router
 - **Language**: TypeScript 5
 - **Styling**: TailwindCSS v4 + Custom CSS Variables
+- **Maps**: Kakao Maps API (react-kakao-maps-sdk)
 - **Build Tool**: Turbopack (enabled by default)
 - **Fonts**: Geist Sans & Geist Mono from Google Fonts
 

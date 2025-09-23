@@ -7,6 +7,9 @@ interface CourseStore extends AppState {
   courses: Course[]
   communityPosts: CommunityPost[]
   
+  // 초기화
+  initializeFromStorage: () => void
+  
   // 액션들
   setCurrentCourse: (course: Course | null) => void
   setSelectedPlace: (place: Place | null) => void
@@ -31,8 +34,27 @@ interface CourseStore extends AppState {
   generateShareLink: (courseId: string) => string
 }
 
+// 초기 상태를 함수로 분리해서 클라이언트에서만 실행
+const getInitialCourses = () => {
+  if (typeof window === 'undefined') return []
+  try {
+    return JSON.parse(localStorage.getItem('coursecoc-courses') || '[]')
+  } catch {
+    return []
+  }
+}
+
+const getInitialPosts = () => {
+  if (typeof window === 'undefined') return []
+  try {
+    return JSON.parse(localStorage.getItem('coursecoc-posts') || '[]')
+  } catch {
+    return []
+  }
+}
+
 export const useCourseStore = create<CourseStore>((set, get) => ({
-  // 초기 상태
+  // 초기 상태 - 클라이언트에서만 localStorage 읽기
   currentCourse: null,
   selectedPlace: null,
   isCreatingCourse: false,
@@ -41,6 +63,14 @@ export const useCourseStore = create<CourseStore>((set, get) => ({
   courses: [],
   communityPosts: [],
   
+  // 초기화 함수 (클라이언트에서만 실행)
+  initializeFromStorage: () => {
+    set({
+      courses: getInitialCourses(),
+      communityPosts: getInitialPosts(),
+    })
+  },
+
   // 기본 액션들
   setCurrentCourse: (course) => set({ currentCourse: course }),
   setSelectedPlace: (place) => set({ selectedPlace: place }),
@@ -67,11 +97,20 @@ export const useCourseStore = create<CourseStore>((set, get) => ({
       updatedAt: new Date(),
     }
     
-    set((state) => ({
-      courses: [...state.courses, newCourse],
-      currentCourse: newCourse,
-      isCreatingCourse: true,
-    }))
+    set((state) => {
+      const updatedCourses = [...state.courses, newCourse]
+      
+      // LocalStorage에 저장
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('coursecoc-courses', JSON.stringify(updatedCourses))
+      }
+      
+      return {
+        courses: updatedCourses,
+        currentCourse: newCourse,
+        isCreatingCourse: true,
+      }
+    })
     
     return newCourse
   },
@@ -145,11 +184,18 @@ export const useCourseStore = create<CourseStore>((set, get) => ({
   },
   
   saveCourse: (course) => {
-    set((state) => ({
-      courses: state.courses.map((c) =>
+    set((state) => {
+      const updatedCourses = state.courses.map((c) =>
         c.id === course.id ? { ...course, updatedAt: new Date() } : c
-      ),
-    }))
+      )
+      
+      // LocalStorage에 저장
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('coursecoc-courses', JSON.stringify(updatedCourses))
+      }
+      
+      return { courses: updatedCourses }
+    })
   },
   
   deleteCourse: (courseId) => {
