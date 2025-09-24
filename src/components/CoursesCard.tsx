@@ -2,10 +2,12 @@
 
 import { Edit, Eye, Heart, MapPin, Palette } from "lucide-react";
 import { useState } from "react";
+import Link from "next/link";
 import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 
 interface CourseCardProps {
+  id?: number;
   title: string;
   description: string;
   placeCount: number;
@@ -16,6 +18,7 @@ interface CourseCardProps {
 }
 
 export function CourseCard({
+  id = 1,
   title,
   description,
   placeCount,
@@ -27,11 +30,12 @@ export function CourseCard({
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <Card
-      className="bg-white rounded-2xl shadow-[0_4px_20px_var(--pink-shadow)] hover:shadow-[0_8px_30px_var(--pink-shadow-hover)] transition-all duration-300 transform hover:-translate-y-1 overflow-hidden group"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
+    <Link href={`/community/course/${id}`}>
+      <Card
+        className="bg-white rounded-2xl shadow-[0_4px_20px_var(--pink-shadow)] hover:shadow-[0_8px_30px_var(--pink-shadow-hover)] transition-all duration-300 transform hover:-translate-y-1 overflow-hidden group cursor-pointer"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
       {/* Image Header */}
       {imageUrl && (
         <div className="h-48 bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] relative overflow-hidden">
@@ -120,5 +124,6 @@ export function CourseCard({
         </div>
       </CardContent>
     </Card>
+    </Link>
   );
 }
