@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Header } from "../../../components/Header";
 import {
   Camera,
@@ -151,6 +151,8 @@ export default function WritePage() {
 
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const heroImageInputRef = useRef<HTMLInputElement>(null);
+  const locationImageInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
 
   // 카카오맵 API 로드
   useEffect(() => {
@@ -252,6 +254,46 @@ export default function WritePage() {
       locations: newLocations
     }));
     setDraggedIndex(null);
+  };
+
+  // 대표 이미지 업로드 처리
+  const handleHeroImageClick = () => {
+    heroImageInputRef.current?.click();
+  };
+
+  const handleHeroImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setCourseData(prev => ({
+          ...prev,
+          heroImage: event.target?.result as string
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // 장소 이미지 업로드 처리
+  const handleLocationImageClick = (locationId: string) => {
+    locationImageInputRefs.current[locationId]?.click();
+  };
+
+  const handleLocationImageChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setCourseData(prev => ({
+          ...prev,
+          locations: prev.locations.map((loc, i) =>
+            i === index ? { ...loc, image: event.target?.result as string } : loc
+          )
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -419,10 +461,35 @@ export default function WritePage() {
                         <Camera className="w-4 h-4 inline mr-1" />
                         대표 이미지
                       </label>
-                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-[var(--coral-pink)] transition-colors">
-                        <Camera className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                        <p className="text-sm text-gray-500">클릭하여 이미지를 업로드하세요</p>
-                        <input type="file" className="hidden" accept="image/*" />
+                      <div
+                        onClick={handleHeroImageClick}
+                        className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-[var(--coral-pink)] transition-colors cursor-pointer"
+                      >
+                        {courseData.heroImage ? (
+                          <div className="relative">
+                            <img
+                              src={courseData.heroImage}
+                              alt="대표 이미지"
+                              className="w-full h-32 object-cover rounded-lg mx-auto"
+                            />
+                            <div className="absolute inset-0 bg-black bg-opacity-40 rounded-lg flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                              <Camera className="w-8 h-8 text-white" />
+                              <span className="text-white ml-2">이미지 변경</span>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <Camera className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                            <p className="text-sm text-gray-500">클릭하여 이미지를 업로드하세요</p>
+                          </>
+                        )}
+                        <input
+                          ref={heroImageInputRef}
+                          type="file"
+                          className="hidden"
+                          accept="image/*"
+                          onChange={handleHeroImageChange}
+                        />
                       </div>
                     </div>
 
@@ -531,10 +598,35 @@ export default function WritePage() {
                                 />
 
                                 {/* 이미지 업로드 */}
-                                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-[var(--coral-pink)] transition-colors">
-                                  <Camera className="w-6 h-6 mx-auto mb-2 text-gray-400" />
-                                  <p className="text-xs text-gray-500">장소 이미지 업로드</p>
-                                  <input type="file" className="hidden" accept="image/*" />
+                                <div
+                                  onClick={() => handleLocationImageClick(location.id)}
+                                  className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-[var(--coral-pink)] transition-colors cursor-pointer"
+                                >
+                                  {location.image ? (
+                                    <div className="relative">
+                                      <img
+                                        src={location.image}
+                                        alt={`${location.name} 이미지`}
+                                        className="w-full h-24 object-cover rounded-lg mx-auto"
+                                      />
+                                      <div className="absolute inset-0 bg-black bg-opacity-40 rounded-lg flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                                        <Camera className="w-6 h-6 text-white" />
+                                        <span className="text-white text-xs ml-1">변경</span>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <>
+                                      <Camera className="w-6 h-6 mx-auto mb-2 text-gray-400" />
+                                      <p className="text-xs text-gray-500">장소 이미지 업로드</p>
+                                    </>
+                                  )}
+                                  <input
+                                    ref={el => locationImageInputRefs.current[location.id] = el}
+                                    type="file"
+                                    className="hidden"
+                                    accept="image/*"
+                                    onChange={(e) => handleLocationImageChange(e, index)}
+                                  />
                                 </div>
                               </div>
                             </div>
@@ -605,9 +697,17 @@ export default function WritePage() {
                       <div className="bg-white rounded-2xl shadow-[0_4px_20px_var(--pink-shadow)] overflow-hidden">
                         {/* 이미지 영역 */}
                         <div className="h-32 bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] relative overflow-hidden">
-                          <div className="absolute inset-0 flex items-center justify-center text-gray-400">
-                            <Camera className="w-8 h-8" />
-                          </div>
+                          {courseData.heroImage ? (
+                            <img
+                              src={courseData.heroImage}
+                              alt="코스 대표 이미지"
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center text-gray-400">
+                              <Camera className="w-8 h-8" />
+                            </div>
+                          )}
                         </div>
 
                         <div className="p-4">
@@ -715,9 +815,17 @@ export default function WritePage() {
                       <div className="bg-white rounded-2xl shadow-[0_4px_20px_var(--pink-shadow)] overflow-hidden">
                         {/* 최종 미리보기 카드 */}
                         <div className="h-32 bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] relative overflow-hidden">
-                          <div className="absolute inset-0 flex items-center justify-center text-gray-400">
-                            <Camera className="w-8 h-8" />
-                          </div>
+                          {courseData.heroImage ? (
+                            <img
+                              src={courseData.heroImage}
+                              alt="코스 대표 이미지"
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center text-gray-400">
+                              <Camera className="w-8 h-8" />
+                            </div>
+                          )}
                         </div>
 
                         <div className="p-4">
