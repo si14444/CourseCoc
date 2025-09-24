@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, Map, Menu, Plus, Users, X } from "lucide-react";
+import { BookOpen, Menu, Plus, Users, X, LogIn } from "lucide-react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Badge } from "./ui/badge";
@@ -40,10 +40,6 @@ export function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/map" className="flex items-center space-x-2 text-gray-600 hover:text-pink-500 font-medium transition-colors duration-200">
-              <Map className="w-5 h-5" />
-              <span>지도</span>
-            </Link>
             <Link href="/courses" className="flex items-center space-x-2 text-gray-600 hover:text-pink-500 font-medium transition-colors duration-200">
               <BookOpen className="w-5 h-5" />
               <span>내 코스</span>
@@ -54,8 +50,14 @@ export function Header() {
             </Link>
           </nav>
 
-          {/* CTA Button */}
-          <div className="hidden md:block">
+          {/* Auth & CTA Buttons */}
+          <div className="hidden md:flex items-center space-x-3">
+            <Link href="/auth/login">
+              <Button variant="outline" className="border-[var(--color-border)] text-[var(--text-primary)] hover:bg-[var(--very-light-pink)]">
+                <LogIn className="w-4 h-4 mr-2" />
+                로그인
+              </Button>
+            </Link>
             <Link href="/community/write">
               <Button className="bg-gradient-to-r from-[var(--very-light-pink)] via-[var(--light-pink)] to-[var(--coral-pink)] text-white hover:shadow-xl hover:shadow-[var(--pink-shadow)] transition-all duration-300 transform hover:-translate-y-1 hover:scale-105">
                 <Plus className="w-4 h-4 mr-2" />
@@ -81,10 +83,6 @@ export function Header() {
         {isMobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-pink-200">
             <div className="flex flex-col space-y-4">
-              <Link href="/map" className="flex items-center space-x-2 text-gray-600 hover:text-pink-500 font-medium py-2">
-                <Map className="w-5 h-5" />
-                <span>지도</span>
-              </Link>
               <Link href="/courses" className="flex items-center space-x-2 text-gray-600 hover:text-pink-500 font-medium py-2">
                 <BookOpen className="w-5 h-5" />
                 <span>내 코스</span>
@@ -93,15 +91,27 @@ export function Header() {
                 <Users className="w-5 h-5" />
                 <span>커뮤니티</span>
               </Link>
-              <Link href="/community/write">
-                <Button
-                  size="sm"
-                  className="bg-gradient-to-r from-[var(--very-light-pink)] via-[var(--light-pink)] to-[var(--coral-pink)] text-white mt-2 hover:shadow-lg hover:shadow-[var(--pink-shadow)] transition-all duration-300"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  코스 만들기
-                </Button>
-              </Link>
+
+              {/* 구분선 */}
+              <div className="border-t border-pink-200 pt-4">
+                <div className="mb-3">
+                  <Link href="/auth/login">
+                    <Button variant="outline" size="sm" className="w-full border-[var(--color-border)] text-[var(--text-primary)] hover:bg-[var(--very-light-pink)]">
+                      <LogIn className="w-4 h-4 mr-2" />
+                      로그인
+                    </Button>
+                  </Link>
+                </div>
+                <Link href="/community/write">
+                  <Button
+                    size="sm"
+                    className="w-full bg-gradient-to-r from-[var(--very-light-pink)] via-[var(--light-pink)] to-[var(--coral-pink)] text-white hover:shadow-lg hover:shadow-[var(--pink-shadow)] transition-all duration-300"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    코스 만들기
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
         )}
