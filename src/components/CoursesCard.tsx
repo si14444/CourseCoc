@@ -1,7 +1,9 @@
-import { MapPin, Heart, Eye, Edit, Palette } from "lucide-react";
+"use client";
+
+import { Edit, Eye, Heart, MapPin, Palette } from "lucide-react";
+import { useState } from "react";
 import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
-import { useState } from "react";
 
 interface CourseCardProps {
   title: string;

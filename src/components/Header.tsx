@@ -1,7 +1,9 @@
-import { Heart, Plus, Map, BookOpen, Users, Menu, X } from "lucide-react";
-import { Button } from "./ui/button";
+"use client";
+
+import { BookOpen, Map, Menu, Plus, Users, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Badge } from "./ui/badge";
-import { useState, useEffect } from "react";
+import { Button } from "./ui/button";
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

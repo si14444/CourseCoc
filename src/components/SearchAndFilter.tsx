@@ -1,8 +1,10 @@
-import { Search, Filter, MapPin, Clock, Heart } from "lucide-react";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
+"use client";
+
+import { Clock, Filter, Heart, MapPin, Search } from "lucide-react";
 import { useState } from "react";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 
 export function SearchAndFilter() {
   const [searchQuery, setSearchQuery] = useState("");
