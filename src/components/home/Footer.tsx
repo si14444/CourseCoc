@@ -16,30 +16,29 @@ export function Footer() {
                   variant="secondary"
                   className="bg-[var(--coral-pink)] text-white border-[var(--coral-pink)] text-xs"
                 >
-                  Beta
+                  베타
                 </Badge>
               </div>
             </div>
             <p className="text-white/70 mb-6 leading-relaxed max-w-md">
-              Create perfect date courses and turn ordinary moments into
-              extraordinary memories. Every love story deserves a beautiful
-              journey.
+              완벽한 데이트 코스를 만들고 평범한 순간을 특별한 추억으로 바꿔보세요.
+              모든 사랑 이야기는 아름다운 여정을 가질 자격이 있습니다.
             </p>
             <div className="flex items-center space-x-4 text-sm text-white/60">
-              <span>Made with ❤️ for couples worldwide</span>
+              <span>전 세계 커플을 위해 ❤️로 만들었습니다</span>
             </div>
           </div>
 
           {/* Product */}
           <div>
-            <h3 className="font-semibold text-white mb-4">Product</h3>
+            <h3 className="font-semibold text-white mb-4">제품</h3>
             <ul className="space-y-3 text-white/70">
               <li>
                 <a
                   href="#"
                   className="hover:text-[var(--coral-pink)] transition-colors"
                 >
-                  Features
+                  기능
                 </a>
               </li>
               <li>
@@ -47,7 +46,7 @@ export function Footer() {
                   href="#"
                   className="hover:text-[var(--coral-pink)] transition-colors"
                 >
-                  Pricing
+                  가격
                 </a>
               </li>
               <li>
@@ -55,7 +54,7 @@ export function Footer() {
                   href="#"
                   className="hover:text-[var(--coral-pink)] transition-colors"
                 >
-                  Templates
+                  템플릿
                 </a>
               </li>
               <li>
@@ -63,7 +62,7 @@ export function Footer() {
                   href="#"
                   className="hover:text-[var(--coral-pink)] transition-colors"
                 >
-                  Integrations
+                  연동
                 </a>
               </li>
             </ul>
@@ -71,14 +70,14 @@ export function Footer() {
 
           {/* Company */}
           <div>
-            <h3 className="font-semibold text-white mb-4">Company</h3>
+            <h3 className="font-semibold text-white mb-4">회사</h3>
             <ul className="space-y-3 text-white/70">
               <li>
                 <a
                   href="#"
                   className="hover:text-[var(--coral-pink)] transition-colors"
                 >
-                  About
+                  소개
                 </a>
               </li>
               <li>
@@ -86,7 +85,7 @@ export function Footer() {
                   href="#"
                   className="hover:text-[var(--coral-pink)] transition-colors"
                 >
-                  Blog
+                  블로그
                 </a>
               </li>
               <li>
@@ -94,7 +93,7 @@ export function Footer() {
                   href="#"
                   className="hover:text-[var(--coral-pink)] transition-colors"
                 >
-                  Careers
+                  채용
                 </a>
               </li>
               <li>
@@ -102,7 +101,7 @@ export function Footer() {
                   href="#"
                   className="hover:text-[var(--coral-pink)] transition-colors"
                 >
-                  Contact
+                  문의
                 </a>
               </li>
             </ul>
@@ -119,19 +118,19 @@ export function Footer() {
               href="#"
               className="hover:text-[var(--coral-pink)] transition-colors"
             >
-              Privacy Policy
+              개인정보처리방침
             </a>
             <a
               href="#"
               className="hover:text-[var(--coral-pink)] transition-colors"
             >
-              Terms of Service
+              이용약관
             </a>
             <a
               href="#"
               className="hover:text-[var(--coral-pink)] transition-colors"
             >
-              Cookie Policy
+              쿠키 정책
             </a>
           </div>
         </div>

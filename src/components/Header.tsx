@@ -56,7 +56,7 @@ export function Header() {
 
           {/* CTA Button */}
           <div className="hidden md:block">
-            <Button className="bg-gradient-to-r from-pink-100 via-pink-200 to-pink-500 text-white hover:shadow-lg hover:shadow-pink-300/30 transition-all duration-300 transform hover:-translate-y-0.5">
+            <Button className="bg-gradient-to-r from-[var(--very-light-pink)] via-[var(--light-pink)] to-[var(--coral-pink)] text-white hover:shadow-xl hover:shadow-[var(--pink-shadow)] transition-all duration-300 transform hover:-translate-y-1 hover:scale-105">
               <Plus className="w-4 h-4 mr-2" />
               코스 만들기
             </Button>
@@ -93,7 +93,7 @@ export function Header() {
               </Link>
               <Button
                 size="sm"
-                className="bg-gradient-to-r from-pink-100 via-pink-200 to-pink-500 text-white mt-2"
+                className="bg-gradient-to-r from-[var(--very-light-pink)] via-[var(--light-pink)] to-[var(--coral-pink)] text-white mt-2 hover:shadow-lg hover:shadow-[var(--pink-shadow)] transition-all duration-300"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 코스 만들기

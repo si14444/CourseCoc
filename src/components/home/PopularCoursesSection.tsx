@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { CourseCard } from "../CoursesCard";
 import { Button } from "../ui/button";
 
@@ -88,14 +89,16 @@ export function PopularCoursesSection() {
 
         {/* View All Button */}
         <div className="text-center">
-          <Button
-            variant="outline"
-            size="lg"
-            className="border-[var(--coral-pink)] text-[var(--coral-pink)] hover:bg-[var(--coral-pink)] hover:text-white transition-all duration-300 px-8 py-4"
-          >
-            모든 코스 보기
-            <ArrowRight className="w-5 h-5 ml-2" />
-          </Button>
+          <Link href="/community">
+            <Button
+              variant="outline"
+              size="lg"
+              className="border-[var(--coral-pink)] text-[var(--coral-pink)] hover:bg-[var(--coral-pink)] hover:text-white transition-all duration-300 px-8 py-4"
+            >
+              모든 코스 보기
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

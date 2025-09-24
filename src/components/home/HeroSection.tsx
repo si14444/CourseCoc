@@ -1,4 +1,5 @@
 import { ArrowRight, Heart, Plus, Sparkles } from "lucide-react";
+import Link from "next/link";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 
@@ -75,14 +76,16 @@ export function HeroSection() {
             <Plus className="w-5 h-5 mr-2" />
             코스 만들기 시작
           </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            className="border-[var(--coral-pink)] text-[var(--coral-pink)] hover:bg-[var(--coral-pink)] hover:text-white transition-all duration-300 px-8 py-4"
-          >
-            코스 둘러보기
-            <ArrowRight className="w-5 h-5 ml-2" />
-          </Button>
+          <Link href="/community">
+            <Button
+              variant="outline"
+              size="lg"
+              className="border-[var(--coral-pink)] text-[var(--coral-pink)] hover:bg-[var(--coral-pink)] hover:text-white transition-all duration-300 px-8 py-4"
+            >
+              코스 둘러보기
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+          </Link>
         </div>
 
         {/* Stats */}
