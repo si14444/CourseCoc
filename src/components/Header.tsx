@@ -2,6 +2,7 @@
 
 import { BookOpen, Map, Menu, Plus, Users, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 
@@ -18,7 +19,7 @@ export function Header() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center space-x-2">
             <div className="relative">
               <img
                 src="/logo.png"
@@ -35,22 +36,22 @@ export function Header() {
                 Beta
               </Badge>
             </div>
-          </div>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <button className="flex items-center space-x-2 text-pink-500 font-medium transition-colors duration-200">
+            <Link href="/map" className="flex items-center space-x-2 text-gray-600 hover:text-pink-500 font-medium transition-colors duration-200">
               <Map className="w-5 h-5" />
               <span>지도</span>
-            </button>
-            <button className="flex items-center space-x-2 text-gray-600 hover:text-pink-500 font-medium transition-colors duration-200">
+            </Link>
+            <Link href="/courses" className="flex items-center space-x-2 text-gray-600 hover:text-pink-500 font-medium transition-colors duration-200">
               <BookOpen className="w-5 h-5" />
               <span>내 코스</span>
-            </button>
-            <button className="flex items-center space-x-2 text-gray-600 hover:text-pink-500 font-medium transition-colors duration-200">
+            </Link>
+            <Link href="/community" className="flex items-center space-x-2 text-gray-600 hover:text-pink-500 font-medium transition-colors duration-200">
               <Users className="w-5 h-5" />
               <span>커뮤니티</span>
-            </button>
+            </Link>
           </nav>
 
           {/* CTA Button */}
@@ -78,18 +79,18 @@ export function Header() {
         {isMobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-pink-200">
             <div className="flex flex-col space-y-4">
-              <button className="flex items-center space-x-2 text-pink-500 font-medium py-2">
+              <Link href="/map" className="flex items-center space-x-2 text-gray-600 hover:text-pink-500 font-medium py-2">
                 <Map className="w-5 h-5" />
                 <span>지도</span>
-              </button>
-              <button className="flex items-center space-x-2 text-gray-600 font-medium py-2">
+              </Link>
+              <Link href="/courses" className="flex items-center space-x-2 text-gray-600 hover:text-pink-500 font-medium py-2">
                 <BookOpen className="w-5 h-5" />
                 <span>내 코스</span>
-              </button>
-              <button className="flex items-center space-x-2 text-gray-600 font-medium py-2">
+              </Link>
+              <Link href="/community" className="flex items-center space-x-2 text-gray-600 hover:text-pink-500 font-medium py-2">
                 <Users className="w-5 h-5" />
                 <span>커뮤니티</span>
-              </button>
+              </Link>
               <Button
                 size="sm"
                 className="bg-gradient-to-r from-pink-100 via-pink-200 to-pink-500 text-white mt-2"

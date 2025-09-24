@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { CourseCard } from "../components/CoursesCard";
-import { EmptyState } from "../components/EmptyState";
-import { Header } from "../components/Header";
-import { SearchAndFilter } from "../components/SearchAndFilter";
+import { CourseCard } from "../../components/CoursesCard";
+import { EmptyState } from "../../components/EmptyState";
+import { Header } from "../../components/Header";
+import { SearchAndFilter } from "../../components/SearchAndFilter";
 
 // 샘플 데이터
 const sampleCourses = [
