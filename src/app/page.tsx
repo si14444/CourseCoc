@@ -25,24 +25,6 @@ export default function App() {
       {/* Footer */}
       <Footer />
 
-      {/* Floating Hearts Animation */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-10">
-        <div className="absolute top-1/4 left-1/4 w-4 h-4 text-[var(--light-pink)] opacity-20 animate-pulse">
-          ❤️
-        </div>
-        <div
-          className="absolute top-3/4 right-1/3 w-3 h-3 text-[var(--coral-pink)] opacity-15 animate-pulse"
-          style={{ animationDelay: "2s" }}
-        >
-          💖
-        </div>
-        <div
-          className="absolute top-1/2 right-1/4 w-2 h-2 text-[var(--light-pink)] opacity-10 animate-pulse"
-          style={{ animationDelay: "4s" }}
-        >
-          💕
-        </div>
-      </div>
     </div>
   );
 }

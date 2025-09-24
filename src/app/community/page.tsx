@@ -59,7 +59,7 @@ export default function Coumunity() {
 
       {/* Main Content */}
       <main className="pt-20 pb-8">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Welcome Section */}
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
@@ -104,24 +104,6 @@ export default function Coumunity() {
             </div>
           )}
 
-          {/* Floating Hearts Animation */}
-          <div className="fixed inset-0 pointer-events-none overflow-hidden">
-            <div className="absolute top-1/4 left-1/4 w-4 h-4 text-pink-200 opacity-20 animate-pulse">
-              ❤️
-            </div>
-            <div
-              className="absolute top-3/4 right-1/3 w-3 h-3 text-pink-500 opacity-15 animate-pulse"
-              style={{ animationDelay: "2s" }}
-            >
-              💖
-            </div>
-            <div
-              className="absolute top-1/2 right-1/4 w-2 h-2 text-pink-200 opacity-10 animate-pulse"
-              style={{ animationDelay: "4s" }}
-            >
-              💕
-            </div>
-          </div>
         </div>
       </main>
     </div>

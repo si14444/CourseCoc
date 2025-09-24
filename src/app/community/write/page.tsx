@@ -386,7 +386,7 @@ export default function WritePage() {
           </div>
         </div>
 
-        <div className="max-w-6xl mx-auto px-6 py-12">
+        <div className="max-w-7xl mx-auto px-6 py-12">
           <div className={`grid ${step === 4 ? 'grid-cols-1' : 'lg:grid-cols-3'} gap-8`}>
             {/* 메인 입력 영역 */}
             <div className={step === 4 ? 'col-span-1' : 'lg:col-span-2'}>

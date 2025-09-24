@@ -39,7 +39,7 @@ export function HeroSection() {
         />
       </div>
 
-      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         {/* Beta Badge */}
         <div className="mb-6">
           <Badge

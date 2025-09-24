@@ -123,7 +123,7 @@ export default function MyCoursesPage() {
       <Header />
 
       <main className="pt-20 pb-8">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* 페이지 헤더 */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
             <div>
@@ -349,24 +349,6 @@ export default function MyCoursesPage() {
             </div>
           )}
 
-          {/* 플로팅 하트 애니메이션 (커뮤니티와 동일) */}
-          <div className="fixed inset-0 pointer-events-none overflow-hidden">
-            <div className="absolute top-1/4 left-1/4 w-4 h-4 text-pink-200 opacity-20 animate-pulse">
-              ❤️
-            </div>
-            <div
-              className="absolute top-3/4 right-1/3 w-3 h-3 text-pink-500 opacity-15 animate-pulse"
-              style={{ animationDelay: "2s" }}
-            >
-              💖
-            </div>
-            <div
-              className="absolute top-1/2 right-1/4 w-2 h-2 text-pink-200 opacity-10 animate-pulse"
-              style={{ animationDelay: "4s" }}
-            >
-              💕
-            </div>
-          </div>
         </div>
       </main>
     </div>
