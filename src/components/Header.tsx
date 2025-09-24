@@ -56,10 +56,12 @@ export function Header() {
 
           {/* CTA Button */}
           <div className="hidden md:block">
-            <Button className="bg-gradient-to-r from-[var(--very-light-pink)] via-[var(--light-pink)] to-[var(--coral-pink)] text-white hover:shadow-xl hover:shadow-[var(--pink-shadow)] transition-all duration-300 transform hover:-translate-y-1 hover:scale-105">
-              <Plus className="w-4 h-4 mr-2" />
-              코스 만들기
-            </Button>
+            <Link href="/community/write">
+              <Button className="bg-gradient-to-r from-[var(--very-light-pink)] via-[var(--light-pink)] to-[var(--coral-pink)] text-white hover:shadow-xl hover:shadow-[var(--pink-shadow)] transition-all duration-300 transform hover:-translate-y-1 hover:scale-105">
+                <Plus className="w-4 h-4 mr-2" />
+                코스 만들기
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -91,13 +93,15 @@ export function Header() {
                 <Users className="w-5 h-5" />
                 <span>커뮤니티</span>
               </Link>
-              <Button
-                size="sm"
-                className="bg-gradient-to-r from-[var(--very-light-pink)] via-[var(--light-pink)] to-[var(--coral-pink)] text-white mt-2 hover:shadow-lg hover:shadow-[var(--pink-shadow)] transition-all duration-300"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                코스 만들기
-              </Button>
+              <Link href="/community/write">
+                <Button
+                  size="sm"
+                  className="bg-gradient-to-r from-[var(--very-light-pink)] via-[var(--light-pink)] to-[var(--coral-pink)] text-white mt-2 hover:shadow-lg hover:shadow-[var(--pink-shadow)] transition-all duration-300"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  코스 만들기
+                </Button>
+              </Link>
             </div>
           </div>
         )}
