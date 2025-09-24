@@ -17,11 +17,21 @@ import {
 } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent } from "../../../components/ui/card";
+import { AddressAutocomplete } from "../../../components/ui/AddressAutocomplete";
 import { Map, MapMarker, Polyline } from "react-kakao-maps-sdk";
 
 declare global {
   interface Window {
-    kakao: any;
+    kakao: {
+      maps: {
+        load: (callback: () => void) => void;
+        services: {
+          Status: {
+            OK: string;
+          };
+        };
+      };
+    };
   }
 }
 
@@ -177,27 +187,23 @@ export default function WritePage() {
     }));
   };
 
-  // 주소로 좌표 검색
-  const searchCoordinates = async (address: string, index: number) => {
-    if (!window.kakao || !address.trim()) return;
+  // 주소 자동완성 선택 시 처리
+  const handleAddressSelect = (index: number, result: { x: string; y: string; road_address_name?: string; address_name: string }) => {
+    const coords = {
+      lat: parseFloat(result.y),
+      lng: parseFloat(result.x)
+    };
 
-    const geocoder = new window.kakao.maps.services.Geocoder();
-
-    geocoder.addressSearch(address, (result: any, status: any) => {
-      if (status === window.kakao.maps.services.Status.OK) {
-        const coords = {
-          lat: parseFloat(result[0].y),
-          lng: parseFloat(result[0].x)
-        };
-
-        setCourseData(prev => ({
-          ...prev,
-          locations: prev.locations.map((loc, i) =>
-            i === index ? { ...loc, position: coords } : loc
-          )
-        }));
-      }
-    });
+    setCourseData(prev => ({
+      ...prev,
+      locations: prev.locations.map((loc, i) =>
+        i === index ? {
+          ...loc,
+          address: result.road_address_name || result.address_name,
+          position: coords
+        } : loc
+      )
+    }));
   };
 
   const updateLocation = (index: number, field: keyof Location, value: string) => {
@@ -207,11 +213,6 @@ export default function WritePage() {
         i === index ? { ...loc, [field]: value } : loc
       )
     }));
-
-    // 주소가 변경되면 좌표 검색
-    if (field === 'address' && value.trim()) {
-      searchCoordinates(value, index);
-    }
   };
 
   const removeLocation = (index: number) => {
@@ -498,11 +499,11 @@ export default function WritePage() {
 
                                 {/* 주소 & 시간 */}
                                 <div className="grid md:grid-cols-2 gap-4">
-                                  <input
-                                    type="text"
+                                  <AddressAutocomplete
                                     value={location.address}
-                                    onChange={(e) => updateLocation(index, 'address', e.target.value)}
-                                    placeholder="주소를 입력하세요"
+                                    onChange={(value) => updateLocation(index, 'address', value)}
+                                    onSelect={(result) => handleAddressSelect(index, result)}
+                                    placeholder="주소 또는 장소명을 입력하세요"
                                   />
                                   <input
                                     type="text"
