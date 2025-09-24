@@ -126,7 +126,8 @@
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -135,10 +136,15 @@
 }
 
 @keyframes pulse-romantic {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
     opacity: 0.8;
   }
+}
+
+button {
+  cursor: pointer;
 }
