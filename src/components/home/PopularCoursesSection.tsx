@@ -7,49 +7,49 @@ export function PopularCoursesSection() {
   const popularCourses = [
     {
       id: 1,
-      title: "Romantic Evening in the City",
+      title: "도심 속 로맨틱 이브닝",
       description:
-        "A perfect date night course featuring intimate dinner spots and scenic city views. Experience the magic of urban romance.",
+        "친밀한 디너 스팟과 아름다운 도시 야경을 즐기는 완벽한 데이트 코스입니다. 도시의 로맨스를 경험해보세요.",
       placeCount: 5,
       likes: 124,
       views: 856,
       steps: [
-        "Sunset Café",
-        "Art Gallery",
-        "Dinner",
-        "Night Walk",
-        "Dessert Bar",
+        "선셋 카페",
+        "미술관",
+        "저녁식사",
+        "야경 산책",
+        "디저트 바",
       ],
       imageUrl:
         "https://images.unsplash.com/photo-1621596016740-c831e613dc49?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyb21hbnRpYyUyMGRpbm5lciUyMGRhdGUlMjByZXN0YXVyYW50fGVufDF8fHx8MTc1ODYzMTA0N3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
     },
     {
       id: 2,
-      title: "Nature & Love Adventure",
+      title: "자연 속 사랑 여행",
       description:
-        "Discover beautiful outdoor locations perfect for couples who love nature and adventure. Fresh air, stunning views guaranteed.",
+        "자연과 모험을 사랑하는 커플을 위한 아름다운 야외 장소들을 발견해보세요. 신선한 공기와 멋진 경관이 보장됩니다.",
       placeCount: 4,
       likes: 89,
       views: 623,
-      steps: ["Park Walk", "Picnic Spot", "Lake View", "Sunset Point"],
+      steps: ["공원 산책", "피크닉 장소", "호수 전망", "일몰 명소"],
       imageUrl:
         "https://images.unsplash.com/photo-1724216605131-c8b0d4974458?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb3VwbGVzJTIwd2Fsa2luZyUyMHBhcmslMjBzdW5zZXR8ZW58MXx8fHwxNzU4NjMxMDQ5fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
     },
     {
       id: 3,
-      title: "Cultural Date Experience",
+      title: "문화적 데이트 체험",
       description:
-        "Immerse yourselves in art, culture, and intellectual conversations. Perfect for couples who appreciate the finer things.",
+        "예술, 문화, 그리고 지적인 대화에 흠뻑 빠져보세요. 세련된 것을 좋아하는 커플에게 완벽한 코스입니다.",
       placeCount: 6,
       likes: 156,
       views: 1024,
       steps: [
-        "Museum Tour",
-        "Art Gallery",
-        "Coffee Shop",
-        "Bookstore",
-        "Wine Bar",
-        "Live Music",
+        "박물관 투어",
+        "갤러리",
+        "커피숍",
+        "서점",
+        "와인바",
+        "라이브 음악",
       ],
       imageUrl:
         "https://images.unsplash.com/photo-1696238378039-821fc376ebd4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhcnQlMjBnYWxsZXJ5JTIwbXVzZXVtJTIwZGF0ZXxlbnwxfHx8fDE3NTg2MzEwNTJ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
@@ -62,11 +62,11 @@ export function PopularCoursesSection() {
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-primary)] mb-4">
-            Popular Date Courses
+            인기 데이트 코스
           </h2>
           <p className="text-lg text-[var(--text-secondary)] max-w-2xl mx-auto mb-8">
-            Discover the most loved date courses created by our community. Get
-            inspired and create your own romantic journey.
+            우리 커뮤니티에서 만들어진 가장 사랑받는 데이트 코스들을 발견해보세요.
+            영감을 얻고 나만의 로맨틱한 여정을 만들어보세요.
           </p>
         </div>
 
@@ -93,7 +93,7 @@ export function PopularCoursesSection() {
             size="lg"
             className="border-[var(--coral-pink)] text-[var(--coral-pink)] hover:bg-[var(--coral-pink)] hover:text-white transition-all duration-300 px-8 py-4"
           >
-            View All Courses
+            모든 코스 보기
             <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
         </div>

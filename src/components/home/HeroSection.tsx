@@ -46,24 +46,24 @@ export function HeroSection() {
             className="bg-[var(--light-pink)] text-[var(--coral-pink)] border-[var(--coral-pink)] px-4 py-2"
           >
             <Sparkles className="w-4 h-4 mr-2" />
-            Now in Beta
+            베타 버전
           </Badge>
         </div>
 
         {/* Main Headline */}
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-[var(--text-primary)] mb-6 leading-tight">
-          Create Perfect
+          완벽한
           <span className="block text-[var(--coral-pink)] relative">
-            Date Courses
+            데이트 코스 만들기
             <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-transparent via-[var(--coral-pink)] to-transparent opacity-60"></div>
           </span>
         </h1>
 
         {/* Subtitle */}
         <p className="text-lg md:text-xl text-[var(--text-secondary)] max-w-3xl mx-auto mb-8 leading-relaxed">
-          Design romantic experiences that tell beautiful stories. Every step,
-          every moment, crafted with love. Turn ordinary dates into
-          extraordinary memories.
+          아름다운 이야기를 담은 로맨틱한 경험을 디자인해보세요. 모든 순간,
+          모든 발걸음이 사랑으로 만들어집니다. 평범한 데이트를
+          특별한 추억으로 바꿔보세요.
         </p>
 
         {/* CTA Buttons */}
@@ -73,14 +73,14 @@ export function HeroSection() {
             className="bg-gradient-to-r from-[var(--very-light-pink)] via-[var(--light-pink)] to-[var(--coral-pink)] text-white hover:shadow-xl hover:shadow-[var(--pink-shadow)] transition-all duration-300 transform hover:-translate-y-1 hover:scale-105 px-8 py-4"
           >
             <Plus className="w-5 h-5 mr-2" />
-            Start Creating
+            코스 만들기 시작
           </Button>
           <Button
             variant="outline"
             size="lg"
             className="border-[var(--coral-pink)] text-[var(--coral-pink)] hover:bg-[var(--coral-pink)] hover:text-white transition-all duration-300 px-8 py-4"
           >
-            Explore Courses
+            코스 둘러보기
             <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
         </div>
@@ -92,7 +92,7 @@ export function HeroSection() {
               1,200+
             </div>
             <div className="text-sm text-[var(--text-secondary)]">
-              Date Courses Created
+              생성된 데이트 코스
             </div>
           </div>
           <div className="text-center">
@@ -100,7 +100,7 @@ export function HeroSection() {
               25K+
             </div>
             <div className="text-sm text-[var(--text-secondary)]">
-              Happy Couples
+              행복한 커플
             </div>
           </div>
           <div className="text-center">
@@ -108,7 +108,7 @@ export function HeroSection() {
               500+
             </div>
             <div className="text-sm text-[var(--text-secondary)]">
-              Cities Covered
+              서비스 제공 도시
             </div>
           </div>
         </div>
