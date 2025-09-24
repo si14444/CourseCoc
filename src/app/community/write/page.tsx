@@ -13,11 +13,15 @@ import {
   GripVertical,
   Eye,
   Save,
-  Send
+  Send,
+  Heart,
+  Bookmark,
+  Share2
 } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent } from "../../../components/ui/card";
 import { AddressAutocomplete } from "../../../components/ui/AddressAutocomplete";
+import { RichTextEditor } from "../../../components/ui/RichTextEditor";
 import { Map, MapMarker, Polyline } from "react-kakao-maps-sdk";
 
 declare global {
@@ -58,6 +62,7 @@ interface CourseData {
   season: string;
   heroImage?: string;
   locations: Location[];
+  content: string;
 }
 
 const AVAILABLE_TAGS = [
@@ -146,7 +151,8 @@ export default function WritePage() {
     duration: "",
     budget: "",
     season: "",
-    locations: []
+    locations: [],
+    content: ""
   });
 
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
@@ -311,38 +317,79 @@ export default function WritePage() {
               특별한 추억이 될 로맨틱한 코스를 공유해보세요
             </p>
 
-            {/* 진행 단계 표시기 */}
-            <div className="flex justify-center items-center mt-8 space-x-4">
-              <div className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium ${
-                step >= 1 ? 'bg-[var(--coral-pink)] text-white' : 'bg-gray-200 text-gray-500'
-              }`}>
-                1
+            {/* 진행 단계 표시기 - 개선된 버전 */}
+            <div className="flex justify-center items-center mt-10 space-x-4">
+              <div className="flex flex-col items-center">
+                <div className={`flex items-center justify-center w-12 h-12 rounded-full text-sm font-semibold transition-all duration-300 ${
+                  step >= 1 ? 'bg-[var(--coral-pink)] text-white shadow-[0_4px_12px_var(--pink-shadow)]' : 'bg-gray-200 text-gray-500'
+                }`}>
+                  1
+                </div>
+                <span className={`text-xs mt-2 font-medium transition-colors duration-300 ${
+                  step >= 1 ? 'text-[var(--coral-pink)]' : 'text-[var(--text-secondary)]'
+                }`}>
+                  기본정보
+                </span>
               </div>
-              <div className={`w-16 h-0.5 ${step >= 2 ? 'bg-[var(--coral-pink)]' : 'bg-gray-200'}`} />
-              <div className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium ${
-                step >= 2 ? 'bg-[var(--coral-pink)] text-white' : 'bg-gray-200 text-gray-500'
-              }`}>
-                2
+
+              <div className={`w-16 h-0.5 rounded-full transition-colors duration-300 ${
+                step >= 2 ? 'bg-[var(--coral-pink)]' : 'bg-gray-200'
+              }`} />
+
+              <div className="flex flex-col items-center">
+                <div className={`flex items-center justify-center w-12 h-12 rounded-full text-sm font-semibold transition-all duration-300 ${
+                  step >= 2 ? 'bg-[var(--coral-pink)] text-white shadow-[0_4px_12px_var(--pink-shadow)]' : 'bg-gray-200 text-gray-500'
+                }`}>
+                  2
+                </div>
+                <span className={`text-xs mt-2 font-medium transition-colors duration-300 ${
+                  step >= 2 ? 'text-[var(--coral-pink)]' : 'text-[var(--text-secondary)]'
+                }`}>
+                  장소추가
+                </span>
               </div>
-              <div className={`w-16 h-0.5 ${step >= 3 ? 'bg-[var(--coral-pink)]' : 'bg-gray-200'}`} />
-              <div className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium ${
-                step >= 3 ? 'bg-[var(--coral-pink)] text-white' : 'bg-gray-200 text-gray-500'
-              }`}>
-                3
+
+              <div className={`w-16 h-0.5 rounded-full transition-colors duration-300 ${
+                step >= 3 ? 'bg-[var(--coral-pink)]' : 'bg-gray-200'
+              }`} />
+
+              <div className="flex flex-col items-center">
+                <div className={`flex items-center justify-center w-12 h-12 rounded-full text-sm font-semibold transition-all duration-300 ${
+                  step >= 3 ? 'bg-[var(--coral-pink)] text-white shadow-[0_4px_12px_var(--pink-shadow)]' : 'bg-gray-200 text-gray-500'
+                }`}>
+                  3
+                </div>
+                <span className={`text-xs mt-2 font-medium transition-colors duration-300 ${
+                  step >= 3 ? 'text-[var(--coral-pink)]' : 'text-[var(--text-secondary)]'
+                }`}>
+                  내용작성
+                </span>
               </div>
-            </div>
-            <div className="flex justify-center items-center mt-2 space-x-8 text-sm text-[var(--text-secondary)]">
-              <span>기본정보</span>
-              <span>장소추가</span>
-              <span>미리보기</span>
+
+              <div className={`w-16 h-0.5 rounded-full transition-colors duration-300 ${
+                step >= 4 ? 'bg-[var(--coral-pink)]' : 'bg-gray-200'
+              }`} />
+
+              <div className="flex flex-col items-center">
+                <div className={`flex items-center justify-center w-12 h-12 rounded-full text-sm font-semibold transition-all duration-300 ${
+                  step >= 4 ? 'bg-[var(--coral-pink)] text-white shadow-[0_4px_12px_var(--pink-shadow)]' : 'bg-gray-200 text-gray-500'
+                }`}>
+                  4
+                </div>
+                <span className={`text-xs mt-2 font-medium transition-colors duration-300 ${
+                  step >= 4 ? 'text-[var(--coral-pink)]' : 'text-[var(--text-secondary)]'
+                }`}>
+                  미리보기
+                </span>
+              </div>
             </div>
           </div>
         </div>
 
         <div className="max-w-6xl mx-auto px-6 py-12">
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className={`grid ${step === 4 ? 'grid-cols-1' : 'lg:grid-cols-3'} gap-8`}>
             {/* 메인 입력 영역 */}
-            <div className="lg:col-span-2">
+            <div className={step === 4 ? 'col-span-1' : 'lg:col-span-2'}>
               {step === 1 && (
                 <Card className="shadow-romantic">
                   <CardContent className="p-8">
@@ -655,15 +702,234 @@ export default function WritePage() {
               {step === 3 && (
                 <Card className="shadow-romantic">
                   <CardContent className="p-8">
-                    <h2 className="text-2xl font-bold mb-6 text-[var(--text-primary)]">미리보기 및 게시</h2>
-                    <p className="text-[var(--text-secondary)] mb-8">
-                      작성하신 데이트 코스를 확인하고 게시해보세요
+                    <h2 className="text-2xl font-bold mb-6 text-[var(--text-primary)]">상세 내용 작성</h2>
+                    <p className="text-[var(--text-secondary)] mb-6">
+                      블로그처럼 자유롭게 글을 작성하고 이미지를 추가해보세요
                     </p>
 
-                    {/* 미리보기 섹션은 오른쪽 사이드바에서 처리 */}
+                    {/* 리치 텍스트 에디터 */}
+                    <div className="mb-8">
+                      <label className="block text-sm font-medium text-[var(--text-secondary)] mb-3">
+                        데이트 코스 상세 내용
+                      </label>
+                      <RichTextEditor
+                        content={courseData.content}
+                        onChange={(content) => setCourseData(prev => ({ ...prev, content }))}
+                        placeholder="데이트 코스에 대한 상세한 이야기를 들려주세요.
+
+어떤 기분이었는지, 무엇이 특별했는지, 연인과 함께한 순간들을 자유롭게 표현해보세요.
+
+이미지를 추가하고 텍스트를 꾸며서 더욱 생생한 이야기를 만들어보세요! ✨"
+                        className="w-full"
+                      />
+                    </div>
 
                     <div className="flex justify-between">
                       <Button onClick={() => setStep(2)} variant="outline">
+                        이전 단계
+                      </Button>
+                      <Button
+                        onClick={() => setStep(4)}
+                        disabled={!courseData.content.trim()}
+                        className="btn-primary"
+                      >
+                        다음 단계
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {step === 4 && (
+                <Card className="shadow-romantic">
+                  <CardContent className="p-8">
+                    <h2 className="text-2xl font-bold mb-6 text-[var(--text-primary)]">최종 미리보기 및 게시</h2>
+                    <p className="text-[var(--text-secondary)] mb-8">
+                      작성하신 데이트 코스를 최종 확인하고 게시해보세요
+                    </p>
+
+                    {/* 상세 페이지와 동일한 미리보기 */}
+                    <div className="bg-white border border-[var(--color-border)] rounded-lg overflow-hidden mb-8">
+                      {/* Hero Section - 상세 페이지와 동일 */}
+                      <div className="relative h-96 overflow-hidden">
+                        {courseData.heroImage ? (
+                          <img
+                            src={courseData.heroImage}
+                            alt={courseData.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] flex items-center justify-center">
+                            <Camera className="w-16 h-16 text-gray-400" />
+                          </div>
+                        )}
+                        <div className="absolute inset-0 bg-black bg-opacity-30" />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="text-center text-white px-4">
+                            <h1 className="text-4xl font-bold mb-4">{courseData.title || "코스 제목"}</h1>
+                            <p className="text-lg opacity-90 max-w-2xl">{courseData.description || "코스 설명"}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="p-6">
+                        {/* Course Info - 상세 페이지와 동일 */}
+                        <div className="flex flex-wrap gap-6 mb-8 text-sm text-gray-600">
+                          {courseData.duration && (
+                            <div className="flex items-center gap-2">
+                              <Clock className="w-4 h-4" />
+                              <span>{courseData.duration}</span>
+                            </div>
+                          )}
+                          <div className="flex items-center gap-2">
+                            <MapPin className="w-4 h-4" />
+                            <span>{courseData.locations.length}개 장소</span>
+                          </div>
+                          {courseData.budget && (
+                            <div className="flex items-center gap-2">
+                              <DollarSign className="w-4 h-4" />
+                              <span>{courseData.budget}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Action Buttons - 상세 페이지와 동일 */}
+                        <div className="flex gap-4 mb-12">
+                          <button className="flex items-center gap-2 px-6 py-3 bg-[var(--coral-pink)] text-white rounded-lg hover:opacity-90 transition-opacity">
+                            <Heart className="w-5 h-5" />
+                            좋아요 0
+                          </button>
+                          <button className="flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                            <Bookmark className="w-5 h-5" />
+                            저장
+                          </button>
+                          <button className="flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                            <Share2 className="w-5 h-5" />
+                            공유
+                          </button>
+                        </div>
+
+                        {/* 지도 미리보기 - 상세 페이지와 동일 */}
+                        {courseData.locations.length > 0 && (
+                          <div className="mb-16">
+                            <h2 className="text-2xl font-bold mb-6">코스 지도 미리보기</h2>
+                            <div className="h-[500px] bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] rounded-2xl overflow-hidden">
+                              {isMapLoaded ? (
+                                <PreviewMap locations={courseData.locations} />
+                              ) : (
+                                <div className="flex items-center justify-center h-full">
+                                  <div className="text-center">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--coral-pink)] mx-auto mb-4"></div>
+                                    <p className="text-gray-600">지도 로딩중...</p>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-600 mt-4 text-center">
+                              지도를 드래그하여 이동하고, 스크롤로 확대/축소할 수 있습니다. 핀을 클릭하면 장소 정보를 확인할 수 있어요!
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Course Steps - 상세 페이지와 동일한 그리드 레이아웃 */}
+                        {courseData.locations.length > 0 && (
+                          <div className="space-y-16 mb-16">
+                            {courseData.locations.map((location, index) => (
+                              <div key={location.id} className="grid md:grid-cols-2 gap-8 items-center">
+                                {/* Image */}
+                                <div className={`${index % 2 === 1 ? 'md:order-2' : ''}`}>
+                                  <div className="relative">
+                                    {location.image ? (
+                                      <img
+                                        src={location.image}
+                                        alt={location.name}
+                                        className="w-full h-64 object-cover rounded-2xl"
+                                      />
+                                    ) : (
+                                      <div className="w-full h-64 bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] rounded-2xl flex items-center justify-center">
+                                        <Camera className="w-12 h-12 text-gray-400" />
+                                      </div>
+                                    )}
+                                    <div className="absolute top-4 left-4 w-10 h-10 bg-[var(--coral-pink)] text-white rounded-full flex items-center justify-center font-bold text-lg">
+                                      {index + 1}
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Content */}
+                                <div className={`${index % 2 === 1 ? 'md:order-1' : ''}`}>
+                                  <div className="mb-4">
+                                    {location.time && (
+                                      <span className="text-sm text-[var(--coral-pink)] font-medium">{location.time}</span>
+                                    )}
+                                    <h3 className="text-2xl font-bold mt-1 mb-3">{location.name || `장소 ${index + 1}`}</h3>
+                                    <p className="text-lg text-gray-600 mb-4">{location.description || "장소 설명"}</p>
+                                  </div>
+                                  <p className="text-gray-700 leading-relaxed">{location.detail || "장소에 대한 자세한 내용이 여기에 표시됩니다."}</p>
+                                  {location.address && (
+                                    <p className="text-sm text-gray-500 mt-3">📍 {location.address}</p>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* 상세 내용 */}
+                        {courseData.content && (
+                          <div className="mb-12">
+                            <div
+                              className="prose-preview text-[var(--text-primary)] leading-relaxed"
+                              dangerouslySetInnerHTML={{ __html: courseData.content }}
+                            />
+                          </div>
+                        )}
+
+                        {/* Tags - 상세 페이지와 동일 */}
+                        {courseData.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mb-8">
+                            {courseData.tags.map(tag => (
+                              <span
+                                key={tag}
+                                className="px-3 py-1 bg-[var(--very-light-pink)] text-[var(--coral-pink)] rounded-full text-sm"
+                              >
+                                #{tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Course Info Summary - 상세 페이지와 동일 */}
+                        {(courseData.duration || courseData.budget || courseData.season) && (
+                          <div className="bg-[var(--very-light-pink)] rounded-2xl p-8">
+                            <h3 className="text-xl font-bold mb-6">코스 정보</h3>
+                            <div className="grid md:grid-cols-3 gap-6">
+                              {courseData.duration && (
+                                <div>
+                                  <div className="text-sm text-gray-600 mb-1">소요 시간</div>
+                                  <div className="font-semibold">{courseData.duration}</div>
+                                </div>
+                              )}
+                              {courseData.budget && (
+                                <div>
+                                  <div className="text-sm text-gray-600 mb-1">예상 비용</div>
+                                  <div className="font-semibold">{courseData.budget}</div>
+                                </div>
+                              )}
+                              {courseData.season && (
+                                <div>
+                                  <div className="text-sm text-gray-600 mb-1">추천 계절</div>
+                                  <div className="font-semibold">{courseData.season}</div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <Button onClick={() => setStep(3)} variant="outline">
                         이전 단계
                       </Button>
                       <div className="space-x-4">
@@ -682,9 +948,10 @@ export default function WritePage() {
               )}
             </div>
 
-            {/* 사이드바 - 미리보기 */}
-            <div className="lg:col-span-1">
-              <div className="sticky top-24">
+            {/* 사이드바 - 미리보기 (4단계가 아닐 때만 표시) */}
+            {step !== 4 && (
+              <div className="lg:col-span-1">
+                <div className="sticky top-24">
                 <Card className="shadow-romantic">
                   <CardContent className="p-6">
                     <div className="flex items-center space-x-2 mb-4">
@@ -812,69 +1079,85 @@ export default function WritePage() {
                     )}
 
                     {step === 3 && (
-                      <div className="bg-white rounded-2xl shadow-[0_4px_20px_var(--pink-shadow)] overflow-hidden">
+                      <div className="space-y-4">
                         {/* 최종 미리보기 카드 */}
-                        <div className="h-32 bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] relative overflow-hidden">
-                          {courseData.heroImage ? (
-                            <img
-                              src={courseData.heroImage}
-                              alt="코스 대표 이미지"
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="absolute inset-0 flex items-center justify-center text-gray-400">
-                              <Camera className="w-8 h-8" />
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="p-4">
-                          <h4 className="font-bold text-[var(--text-primary)] mb-2 line-clamp-1">
-                            {courseData.title || "코스 제목"}
-                          </h4>
-
-                          <p className="text-[var(--text-secondary)] text-sm line-clamp-2 mb-3">
-                            {courseData.description || "코스 설명"}
-                          </p>
-
-                          <div className="flex items-center space-x-3 mb-3 text-xs text-[var(--text-secondary)]">
-                            <div className="flex items-center space-x-1">
-                              <MapPin className="w-3 h-3 text-[var(--coral-pink)]" />
-                              <span>{courseData.locations.length}개 장소</span>
-                            </div>
-                            {courseData.duration && (
-                              <div className="flex items-center space-x-1">
-                                <Clock className="w-3 h-3 text-[var(--coral-pink)]" />
-                                <span>{courseData.duration}</span>
+                        <div className="bg-white rounded-2xl shadow-[0_4px_20px_var(--pink-shadow)] overflow-hidden">
+                          <div className="h-32 bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] relative overflow-hidden">
+                            {courseData.heroImage ? (
+                              <img
+                                src={courseData.heroImage}
+                                alt="코스 대표 이미지"
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="absolute inset-0 flex items-center justify-center text-gray-400">
+                                <Camera className="w-8 h-8" />
                               </div>
                             )}
                           </div>
 
-                          {courseData.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-1">
-                              {courseData.tags.slice(0, 3).map(tag => (
-                                <span
-                                  key={tag}
-                                  className="px-2 py-0.5 bg-[var(--very-light-pink)] text-[var(--coral-pink)] rounded-full text-xs"
-                                >
-                                  #{tag}
-                                </span>
-                              ))}
-                              {courseData.tags.length > 3 && (
-                                <span className="text-xs text-[var(--text-secondary)]">
-                                  +{courseData.tags.length - 3}
-                                </span>
+                          <div className="p-4">
+                            <h4 className="font-bold text-[var(--text-primary)] mb-2 line-clamp-1">
+                              {courseData.title || "코스 제목"}
+                            </h4>
+
+                            <p className="text-[var(--text-secondary)] text-sm line-clamp-2 mb-3">
+                              {courseData.description || "코스 설명"}
+                            </p>
+
+                            <div className="flex items-center space-x-3 mb-3 text-xs text-[var(--text-secondary)]">
+                              <div className="flex items-center space-x-1">
+                                <MapPin className="w-3 h-3 text-[var(--coral-pink)]" />
+                                <span>{courseData.locations.length}개 장소</span>
+                              </div>
+                              {courseData.duration && (
+                                <div className="flex items-center space-x-1">
+                                  <Clock className="w-3 h-3 text-[var(--coral-pink)]" />
+                                  <span>{courseData.duration}</span>
+                                </div>
                               )}
                             </div>
-                          )}
+
+                            {courseData.tags.length > 0 && (
+                              <div className="flex flex-wrap gap-1">
+                                {courseData.tags.slice(0, 3).map(tag => (
+                                  <span
+                                    key={tag}
+                                    className="px-2 py-0.5 bg-[var(--very-light-pink)] text-[var(--coral-pink)] rounded-full text-xs"
+                                  >
+                                    #{tag}
+                                  </span>
+                                ))}
+                                {courseData.tags.length > 3 && (
+                                  <span className="text-xs text-[var(--text-secondary)]">
+                                    +{courseData.tags.length - 3}
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </div>
+
+                        {/* 상세 내용 미리보기 */}
+                        {courseData.content && (
+                          <div className="bg-white rounded-lg p-4 border border-[var(--color-border)]">
+                            <h5 className="text-sm font-medium text-[var(--text-secondary)] mb-3">
+                              상세 내용 미리보기
+                            </h5>
+                            <div
+                              className="prose-preview text-sm text-[var(--text-primary)] max-h-40 overflow-y-auto"
+                              dangerouslySetInnerHTML={{ __html: courseData.content }}
+                            />
+                          </div>
+                        )}
                       </div>
                     )}
 
                   </CardContent>
                 </Card>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
