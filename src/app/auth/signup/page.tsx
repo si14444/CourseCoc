@@ -24,11 +24,14 @@ import { Calendar, Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { signUp } from "@/lib/auth";
 
 export default function SignupPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -48,22 +51,39 @@ export default function SignupPage() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
 
     // Basic validation
     if (formData.password !== formData.confirmPassword) {
-      alert("비밀번호가 일치하지 않습니다.");
+      setError("비밀번호가 일치하지 않습니다.");
+      setLoading(false);
       return;
     }
 
     if (!formData.agreeTerms || !formData.agreePrivacy) {
-      alert("필수 약관에 동의해주세요.");
+      setError("필수 약관에 동의해주세요.");
+      setLoading(false);
       return;
     }
 
-    // Handle signup logic here
-    console.log("Signup attempt:", formData);
+    if (formData.password.length < 6) {
+      setError("비밀번호는 6자 이상이어야 합니다.");
+      setLoading(false);
+      return;
+    }
+
+    const result = await signUp(formData);
+
+    if (result.success) {
+      router.push("/");
+    } else {
+      setError(result.error);
+    }
+
+    setLoading(false);
   };
 
   const handleSocialSignup = (provider: "google" | "kakao") => {
@@ -106,6 +126,11 @@ export default function SignupPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
+                {error}
+              </div>
+            )}
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Email Input */}
               <div className="space-y-2">
@@ -317,9 +342,10 @@ export default function SignupPage() {
               {/* Signup Button */}
               <Button
                 type="submit"
-                className="w-full py-3 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-[1.02] shadow-md hover:shadow-lg"
+                disabled={loading}
+                className="w-full py-3 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-[1.02] shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                회원가입
+                {loading ? "가입 중..." : "회원가입"}
               </Button>
             </form>
 

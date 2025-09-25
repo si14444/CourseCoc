@@ -1,14 +1,21 @@
 "use client";
 
-import { BookOpen, Menu, Plus, Users, X, LogIn } from "lucide-react";
+import { BookOpen, Menu, Plus, Users, X, LogIn, LogOut, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
+import { useAuth } from "@/contexts/AuthContext";
+import { logOut } from "@/lib/auth";
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const { user, loading } = useAuth();
+
+  const handleLogout = async () => {
+    await logOut();
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -52,14 +59,31 @@ export function Header() {
 
           {/* Auth & CTA Buttons */}
           <div className="hidden md:flex items-center space-x-3">
-            <Link href="/auth/login">
-              <Button variant="outline" className="border-[var(--color-border)] text-[var(--text-primary)] hover:bg-[var(--very-light-pink)]">
-                <LogIn className="w-4 h-4 mr-2" />
-                로그인
-              </Button>
-            </Link>
+            {user ? (
+              <>
+                <span className="text-sm text-muted-foreground">
+                  <User className="w-4 h-4 inline mr-1" />
+                  {user.email}
+                </span>
+                <Button
+                  variant="outline"
+                  onClick={handleLogout}
+                  className="border-border text-foreground hover:bg-accent"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  로그아웃
+                </Button>
+              </>
+            ) : (
+              <Link href="/auth/login">
+                <Button variant="outline" className="border-border text-foreground hover:bg-accent">
+                  <LogIn className="w-4 h-4 mr-2" />
+                  로그인
+                </Button>
+              </Link>
+            )}
             <Link href="/community/write">
-              <Button className="bg-gradient-to-r from-[var(--very-light-pink)] via-[var(--light-pink)] to-[var(--coral-pink)] text-white hover:shadow-xl hover:shadow-[var(--pink-shadow)] transition-all duration-300 transform hover:-translate-y-1 hover:scale-105">
+              <Button className="bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-105">
                 <Plus className="w-4 h-4 mr-2" />
                 코스 만들기
               </Button>
@@ -94,18 +118,40 @@ export function Header() {
 
               {/* 구분선 */}
               <div className="border-t border-pink-200 pt-4">
-                <div className="mb-3">
-                  <Link href="/auth/login">
-                    <Button variant="outline" size="sm" className="w-full border-[var(--color-border)] text-[var(--text-primary)] hover:bg-[var(--very-light-pink)]">
-                      <LogIn className="w-4 h-4 mr-2" />
-                      로그인
-                    </Button>
-                  </Link>
-                </div>
+                {user ? (
+                  <>
+                    <div className="mb-3">
+                      <span className="text-sm text-muted-foreground flex items-center">
+                        <User className="w-4 h-4 mr-1" />
+                        {user.email}
+                      </span>
+                    </div>
+                    <div className="mb-3">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleLogout}
+                        className="w-full border-border text-foreground hover:bg-accent"
+                      >
+                        <LogOut className="w-4 h-4 mr-2" />
+                        로그아웃
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="mb-3">
+                    <Link href="/auth/login">
+                      <Button variant="outline" size="sm" className="w-full border-border text-foreground hover:bg-accent">
+                        <LogIn className="w-4 h-4 mr-2" />
+                        로그인
+                      </Button>
+                    </Link>
+                  </div>
+                )}
                 <Link href="/community/write">
                   <Button
                     size="sm"
-                    className="w-full bg-gradient-to-r from-[var(--very-light-pink)] via-[var(--light-pink)] to-[var(--coral-pink)] text-white hover:shadow-lg hover:shadow-[var(--pink-shadow)] transition-all duration-300"
+                    className="w-full bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-lg transition-all duration-300"
                   >
                     <Plus className="w-4 h-4 mr-2" />
                     코스 만들기
