@@ -139,3 +139,25 @@ export const updateUserNickname = async (uid: string, nickname: string) => {
     return { success: false, error: firebaseError.message };
   }
 };
+
+export const deleteUserAccount = async (uid: string) => {
+  try {
+    if (!auth.currentUser) {
+      return { success: false, error: '로그인이 필요합니다.' };
+    }
+
+    // Delete user profile from Firestore
+    await setDoc(doc(db, 'users', uid), {}, { merge: true });
+
+    // Delete user account from Firebase Auth
+    await auth.currentUser.delete();
+
+    return { success: true };
+  } catch (error) {
+    const firebaseError = error as FirebaseError;
+    if (firebaseError.code === 'auth/requires-recent-login') {
+      return { success: false, error: '보안을 위해 다시 로그인한 후 시도해주세요.' };
+    }
+    return { success: false, error: firebaseError.message };
+  }
+};

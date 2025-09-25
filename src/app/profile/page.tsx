@@ -10,12 +10,12 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Camera, Edit, Save, User, X } from "lucide-react";
+import { Camera, Edit, Save, Trash2, User, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { uploadProfileImage, updateUserNickname } from "@/lib/auth";
+import { uploadProfileImage, updateUserNickname, deleteUserAccount } from "@/lib/auth";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -29,6 +29,10 @@ export default function ProfilePage() {
   const [isEditingNickname, setIsEditingNickname] = useState(false);
   const [newNickname, setNewNickname] = useState("");
   const [updatingNickname, setUpdatingNickname] = useState(false);
+
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -126,6 +130,41 @@ export default function ProfilePage() {
       setError("닉네임 업데이트 중 오류가 발생했습니다.");
     } finally {
       setUpdatingNickname(false);
+    }
+  };
+
+  const handleDeleteAccount = () => {
+    setShowDeleteConfirm(true);
+    setError("");
+    setSuccess("");
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteConfirm(false);
+    setDeleteConfirmText("");
+    setError("");
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!user || deleteConfirmText !== "회원탈퇴") {
+      setError("'회원탈퇴'를 정확히 입력해주세요.");
+      return;
+    }
+
+    setDeleting(true);
+    setError("");
+
+    try {
+      const result = await deleteUserAccount(user.uid);
+      if (result.success) {
+        router.push("/");
+      } else {
+        setError(result.error);
+      }
+    } catch (error) {
+      setError("회원탈퇴 처리 중 오류가 발생했습니다.");
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -321,6 +360,73 @@ export default function ProfilePage() {
                 </div>
               )}
             </div>
+
+            {/* Delete Account Section */}
+            {!showDeleteConfirm ? (
+              <div className="pt-6 border-t border-border">
+                <div className="space-y-3">
+                  <h3 className="text-sm font-medium text-foreground">계정 관리</h3>
+                  <p className="text-xs text-muted-foreground">
+                    계정을 삭제하면 모든 데이터가 영구적으로 삭제되며 복구할 수 없습니다.
+                  </p>
+                  <Button
+                    onClick={handleDeleteAccount}
+                    variant="destructive"
+                    size="sm"
+                    className="w-full"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    회원탈퇴
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="pt-6 border-t border-border">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-medium text-foreground">회원탈퇴 확인</h3>
+                    <p className="text-xs text-muted-foreground">
+                      정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
+                    </p>
+                    <p className="text-xs text-red-600">
+                      확인하려면 아래에 <strong>&quot;회원탈퇴&quot;</strong>를 정확히 입력하세요.
+                    </p>
+                  </div>
+                  <Input
+                    type="text"
+                    placeholder="회원탈퇴"
+                    value={deleteConfirmText}
+                    onChange={(e) => setDeleteConfirmText(e.target.value)}
+                    disabled={deleting}
+                    className="text-center"
+                  />
+                  <div className="flex space-x-2">
+                    <Button
+                      onClick={handleCancelDelete}
+                      variant="outline"
+                      size="sm"
+                      className="flex-1"
+                      disabled={deleting}
+                    >
+                      취소
+                    </Button>
+                    <Button
+                      onClick={handleConfirmDelete}
+                      variant="destructive"
+                      size="sm"
+                      className="flex-1"
+                      disabled={deleting || deleteConfirmText !== "회원탈퇴"}
+                    >
+                      {deleting ? (
+                        <div className="w-4 h-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                      ) : (
+                        "삭제"
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Back Button */}
             <Button
