@@ -3,11 +3,11 @@ import {
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
-  FirebaseError,
-} from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { auth, db, storage } from './firebase';
+  AuthError,
+} from "firebase/auth";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { auth, db, storage } from "./firebase";
 
 export interface SignupData {
   email: string;
@@ -30,7 +30,11 @@ export interface UserProfile {
 export const signUp = async (userData: SignupData) => {
   try {
     const { email, password, nickname, birthYear, gender } = userData;
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
 
     // Update Firebase Auth profile
     await updateProfile(userCredential.user, {
@@ -47,22 +51,26 @@ export const signUp = async (userData: SignupData) => {
       createdAt: new Date(),
     };
 
-    await setDoc(doc(db, 'users', userCredential.user.uid), userProfile);
+    await setDoc(doc(db, "users", userCredential.user.uid), userProfile);
 
     return { success: true, user: userCredential.user };
   } catch (error) {
-    const firebaseError = error as FirebaseError;
-    return { success: false, error: firebaseError.message };
+    const authError = error as AuthError;
+    return { success: false, error: authError.message || 'An error occurred' };
   }
 };
 
 export const signIn = async (email: string, password: string) => {
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
     return { success: true, user: userCredential.user };
   } catch (error) {
-    const firebaseError = error as FirebaseError;
-    return { success: false, error: firebaseError.message };
+    const authError = error as AuthError;
+    return { success: false, error: authError.message || 'An error occurred' };
   }
 };
 
@@ -71,22 +79,22 @@ export const logOut = async () => {
     await signOut(auth);
     return { success: true };
   } catch (error) {
-    const firebaseError = error as FirebaseError;
-    return { success: false, error: firebaseError.message };
+    const authError = error as AuthError;
+    return { success: false, error: authError.message || 'An error occurred' };
   }
 };
 
 export const getUserProfile = async (uid: string) => {
   try {
-    const userDoc = await getDoc(doc(db, 'users', uid));
+    const userDoc = await getDoc(doc(db, "users", uid));
     if (userDoc.exists()) {
       return { success: true, profile: userDoc.data() as UserProfile };
     } else {
-      return { success: false, error: 'User profile not found' };
+      return { success: false, error: "User profile not found" };
     }
   } catch (error) {
-    const firebaseError = error as FirebaseError;
-    return { success: false, error: firebaseError.message };
+    const authError = error as AuthError;
+    return { success: false, error: authError.message || 'An error occurred' };
   }
 };
 
@@ -98,7 +106,7 @@ export const uploadProfileImage = async (file: File, uid: string) => {
 
     // Update user profile in Firestore
     await setDoc(
-      doc(db, 'users', uid),
+      doc(db, "users", uid),
       { profileImageUrl: downloadURL },
       { merge: true }
     );
@@ -112,19 +120,15 @@ export const uploadProfileImage = async (file: File, uid: string) => {
 
     return { success: true, url: downloadURL };
   } catch (error) {
-    const firebaseError = error as FirebaseError;
-    return { success: false, error: firebaseError.message };
+    const authError = error as AuthError;
+    return { success: false, error: authError.message || 'An error occurred' };
   }
 };
 
 export const updateUserNickname = async (uid: string, nickname: string) => {
   try {
     // Update user profile in Firestore
-    await setDoc(
-      doc(db, 'users', uid),
-      { nickname },
-      { merge: true }
-    );
+    await setDoc(doc(db, "users", uid), { nickname }, { merge: true });
 
     // Update Firebase Auth profile
     if (auth.currentUser) {
@@ -135,29 +139,32 @@ export const updateUserNickname = async (uid: string, nickname: string) => {
 
     return { success: true };
   } catch (error) {
-    const firebaseError = error as FirebaseError;
-    return { success: false, error: firebaseError.message };
+    const authError = error as AuthError;
+    return { success: false, error: authError.message || 'An error occurred' };
   }
 };
 
 export const deleteUserAccount = async (uid: string) => {
   try {
     if (!auth.currentUser) {
-      return { success: false, error: '로그인이 필요합니다.' };
+      return { success: false, error: "로그인이 필요합니다." };
     }
 
     // Delete user profile from Firestore
-    await setDoc(doc(db, 'users', uid), {}, { merge: true });
+    await setDoc(doc(db, "users", uid), {}, { merge: true });
 
     // Delete user account from Firebase Auth
     await auth.currentUser.delete();
 
     return { success: true };
   } catch (error) {
-    const firebaseError = error as FirebaseError;
-    if (firebaseError.code === 'auth/requires-recent-login') {
-      return { success: false, error: '보안을 위해 다시 로그인한 후 시도해주세요.' };
+    const authError = error as AuthError;
+    if (authError.code === "auth/requires-recent-login") {
+      return {
+        success: false,
+        error: "보안을 위해 다시 로그인한 후 시도해주세요.",
+      };
     }
-    return { success: false, error: firebaseError.message };
+    return { success: false, error: authError.message || 'An error occurred' };
   }
 };

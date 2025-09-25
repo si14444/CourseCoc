@@ -11,11 +11,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { signIn } from "@/lib/auth";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { signIn } from "@/lib/auth";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -35,7 +35,7 @@ export default function LoginPage() {
     if (result.success) {
       router.push("/");
     } else {
-      setError(result.error);
+      setError(result.error || "로그인에 실패했습니다.");
     }
 
     setLoading(false);

@@ -20,11 +20,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { signUp } from "@/lib/auth";
 import { Calendar, Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { signUp } from "@/lib/auth";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -80,7 +80,7 @@ export default function SignupPage() {
     if (result.success) {
       router.push("/");
     } else {
-      setError(result.error);
+      setError(result.error!);
     }
 
     setLoading(false);
