@@ -75,14 +75,6 @@ export function Header() {
                     <span>{userProfile?.nickname || user.displayName || user.email}</span>
                   </div>
                 </Link>
-                <Button
-                  variant="outline"
-                  onClick={handleLogout}
-                  className="border-border text-foreground hover:bg-accent"
-                >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  로그아웃
-                </Button>
               </>
             ) : (
               <Link href="/auth/login">
@@ -145,17 +137,6 @@ export function Header() {
                           <span>{userProfile?.nickname || user.displayName || user.email}</span>
                         </div>
                       </Link>
-                    </div>
-                    <div className="mb-3">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleLogout}
-                        className="w-full border-border text-foreground hover:bg-accent"
-                      >
-                        <LogOut className="w-4 h-4 mr-2" />
-                        로그아웃
-                      </Button>
                     </div>
                   </>
                 ) : (

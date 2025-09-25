@@ -10,12 +10,12 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Camera, Edit, Save, Trash2, User, X } from "lucide-react";
+import { Camera, Edit, LogOut, Save, Trash2, User, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { uploadProfileImage, updateUserNickname, deleteUserAccount } from "@/lib/auth";
+import { uploadProfileImage, updateUserNickname, deleteUserAccount, logOut } from "@/lib/auth";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -33,6 +33,7 @@ export default function ProfilePage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [deleting, setDeleting] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -165,6 +166,24 @@ export default function ProfilePage() {
       setError("회원탈퇴 처리 중 오류가 발생했습니다.");
     } finally {
       setDeleting(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    setError("");
+
+    try {
+      const result = await logOut();
+      if (result.success) {
+        router.push("/");
+      } else {
+        setError(result.error || "로그아웃 중 오류가 발생했습니다.");
+      }
+    } catch (error) {
+      setError("로그아웃 중 오류가 발생했습니다.");
+    } finally {
+      setLoggingOut(false);
     }
   };
 
@@ -361,23 +380,38 @@ export default function ProfilePage() {
               )}
             </div>
 
-            {/* Delete Account Section */}
+            {/* Account Management Section */}
             {!showDeleteConfirm ? (
               <div className="pt-6 border-t border-border">
                 <div className="space-y-3">
                   <h3 className="text-sm font-medium text-foreground">계정 관리</h3>
-                  <p className="text-xs text-muted-foreground">
-                    계정을 삭제하면 모든 데이터가 영구적으로 삭제되며 복구할 수 없습니다.
-                  </p>
                   <Button
-                    onClick={handleDeleteAccount}
-                    variant="destructive"
-                    size="sm"
-                    className="w-full"
+                    onClick={handleLogout}
+                    disabled={loggingOut}
+                    variant="outline"
+                    className="w-full border-border text-foreground hover:bg-accent"
                   >
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    회원탈퇴
+                    {loggingOut ? (
+                      <div className="w-4 h-4 animate-spin rounded-full border-2 border-current border-t-transparent mr-2" />
+                    ) : (
+                      <LogOut className="w-4 h-4 mr-2" />
+                    )}
+                    {loggingOut ? "로그아웃 중..." : "로그아웃"}
                   </Button>
+                  <div className="pt-3">
+                    <p className="text-xs text-muted-foreground mb-3">
+                      계정을 삭제하면 모든 데이터가 영구적으로 삭제되며 복구할 수 없습니다.
+                    </p>
+                    <Button
+                      onClick={handleDeleteAccount}
+                      variant="destructive"
+                      size="sm"
+                      className="w-full"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      회원탈퇴
+                    </Button>
+                  </div>
                 </div>
               </div>
             ) : (
