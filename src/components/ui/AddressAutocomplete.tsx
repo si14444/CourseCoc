@@ -5,33 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 declare global {
   interface Window {
-    kakao: {
-      maps: {
-        services: {
-          Places: new () => {
-            keywordSearch: (
-              keyword: string,
-              callback: (
-                results: AddressSearchResult[],
-                status: string
-              ) => void,
-              options?: {
-                location?: { lat: number; lng: number };
-                radius?: number;
-                sort?: string;
-              }
-            ) => void;
-          };
-          Status: {
-            OK: string;
-          };
-          SortBy?: {
-            ACCURACY: string;
-          };
-        };
-        LatLng: new (lat: number, lng: number) => { lat: number; lng: number };
-      };
-    };
+    kakao: any;
   }
 }
 
@@ -68,7 +42,7 @@ export function AddressAutocomplete({
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // 카카오맵 검색 함수
   const searchAddress = useCallback(async (keyword: string) => {
@@ -213,9 +187,9 @@ export function AddressAutocomplete({
         {/* 검색/로딩 아이콘 */}
         <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
           {isLoading ? (
-            <div className="animate-spin rounded-full h-4 w-4 border-2 border-[var(--coral-pink)] border-t-transparent" />
+            <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary border-t-transparent" />
           ) : (
-            <Search className="h-4 w-4 text-[var(--text-secondary)]" />
+            <Search className="h-4 w-4 text-muted" />
           )}
         </div>
       </div>
@@ -224,7 +198,7 @@ export function AddressAutocomplete({
       {isOpen && (
         <div
           ref={dropdownRef}
-          className="absolute z-50 w-full mt-1 bg-white border border-[color:var(--color-border)] rounded-lg shadow-romantic max-h-64 overflow-y-auto"
+          className="absolute z-50 w-full mt-1 bg-card border border-border rounded-lg shadow-romantic max-h-64 overflow-y-auto"
         >
           {results.length > 0 ? (
             <div className="py-2">
@@ -232,26 +206,26 @@ export function AddressAutocomplete({
                 <button
                   key={`${result.x}-${result.y}-${index}`}
                   onClick={() => handleSelect(result)}
-                  className={`w-full px-4 py-3 text-left hover:bg-[var(--very-light-pink)] focus:bg-[var(--very-light-pink)] focus:outline-none transition-colors ${
-                    selectedIndex === index ? "bg-[var(--very-light-pink)]" : ""
+                  className={`w-full px-4 py-3 text-left hover:bg-accent focus:bg-accent focus:outline-none transition-colors ${
+                    selectedIndex === index ? "bg-accent" : ""
                   }`}
                 >
                   <div className="flex items-start space-x-3">
-                    <MapPin className="w-4 h-4 mt-1 text-[var(--coral-pink)] flex-shrink-0" />
+                    <MapPin className="w-4 h-4 mt-1 text-primary flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       {/* 장소명 */}
-                      <div className="font-medium text-[var(--text-primary)] truncate">
+                      <div className="font-medium text-foreground truncate">
                         {result.place_name}
                       </div>
 
                       {/* 도로명 주소 (우선) 또는 지번 주소 */}
-                      <div className="text-sm text-[var(--text-secondary)] truncate mt-0.5">
+                      <div className="text-sm text-muted-foreground truncate mt-0.5">
                         {result.road_address_name || result.address_name}
                       </div>
 
                       {/* 카테고리 정보가 있는 경우 */}
                       {result.category_name && (
-                        <div className="text-xs text-[var(--coral-pink)] mt-0.5 truncate">
+                        <div className="text-xs text-primary mt-0.5 truncate">
                           {result.category_name.split(" > ").pop()}
                         </div>
                       )}
@@ -261,7 +235,7 @@ export function AddressAutocomplete({
               ))}
             </div>
           ) : !isLoading && value.trim() ? (
-            <div className="px-4 py-8 text-center text-[var(--text-secondary)]">
+            <div className="px-4 py-8 text-center text-muted-foreground">
               <MapPin className="w-8 h-8 mx-auto mb-2 opacity-30" />
               <p className="text-sm">검색 결과가 없습니다</p>
               <p className="text-xs mt-1">다른 키워드로 검색해보세요</p>
