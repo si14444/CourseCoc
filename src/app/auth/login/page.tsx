@@ -11,10 +11,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Eye, EyeOff, Heart, Lock, Mail } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export function LoginPage() {
+export default function LoginPage() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,53 +34,35 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--warm-white)] flex items-center justify-center p-4">
-      {/* Background Hearts */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-6 h-6 text-[var(--coral-pink)] opacity-10 animate-pulse">
-          ❤️
-        </div>
-        <div
-          className="absolute top-3/4 right-1/3 w-4 h-4 text-[var(--light-pink)] opacity-15 animate-pulse"
-          style={{ animationDelay: "2s" }}
-        >
-          💖
-        </div>
-        <div
-          className="absolute top-1/2 right-1/4 w-3 h-3 text-[var(--coral-pink)] opacity-8 animate-pulse"
-          style={{ animationDelay: "4s" }}
-        >
-          💕
-        </div>
-        <div
-          className="absolute top-1/3 right-1/2 w-5 h-5 text-[var(--light-pink)] opacity-12 animate-pulse"
-          style={{ animationDelay: "1s" }}
-        >
-          💗
-        </div>
-      </div>
-
-      <div className="w-full max-w-md space-y-6 relative z-10">
+    <div className="min-h-screen bg-gradient-to-br from-muted to-background flex items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-6">
         {/* Logo and Brand */}
-        <div className="text-center space-y-4">
-          <div className="flex justify-center items-center space-x-2 mb-2">
-            <Heart className="w-8 h-8 text-[var(--coral-pink)] fill-current" />
-            <h1 className="text-3xl text-[var(--coral-pink)] tracking-tight">
-              CourseCoc
-            </h1>
-          </div>
-          <p className="text-[var(--text-secondary)]">
+        <div className="text-center space-y-4 flex flex-col items-center">
+          <button
+            onClick={() => router.push("/")}
+            className="flex flex-col justify-center items-center mb-2 hover:opacity-80 transition-opacity text-center"
+          >
+            <Image
+              src="/logo.png"
+              alt="CourseCoc Logo"
+              width={64}
+              height={64}
+              className="rounded-xl"
+            />
+            <h1 className="text-3xl text-primary tracking-tight">CourseCoc</h1>
+          </button>
+          <p className="text-muted-foreground">
             사랑스러운 데이트 코스를 함께 만들어요
           </p>
         </div>
 
         {/* Login Form */}
-        <Card className="backdrop-blur-sm bg-white/80 border-[var(--border)] shadow-lg shadow-[var(--pink-shadow)] hover:shadow-xl hover:shadow-[var(--pink-shadow-hover)] transition-all duration-300 ease-in-out">
+        <Card className="backdrop-blur-sm bg-card/80 shadow-romantic hover:shadow-romantic transition-all duration-300 ease-in-out">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-center text-[var(--text-primary)]">
+            <CardTitle className="text-2xl text-center text-card-foreground">
               로그인
             </CardTitle>
-            <CardDescription className="text-center text-[var(--text-secondary)]">
+            <CardDescription className="text-center text-muted-foreground">
               계정에 로그인하여 특별한 데이트 코스를 탐험해보세요
             </CardDescription>
           </CardHeader>
@@ -87,14 +72,15 @@ export function LoginPage() {
               <div className="space-y-2">
                 <Label htmlFor="email">이메일</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[var(--text-secondary)]" />
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
                   <Input
                     id="email"
                     type="email"
                     placeholder="이메일을 입력하세요"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 bg-[var(--input-background)] border-[var(--border)] focus:border-[var(--coral-pink)] focus:ring-[var(--coral-pink)] transition-all duration-200"
+                    className="!pl-10 !pr-3"
+                    style={{ paddingLeft: "2.5rem", paddingRight: "0.75rem" }}
                     required
                   />
                 </div>
@@ -104,20 +90,21 @@ export function LoginPage() {
               <div className="space-y-2">
                 <Label htmlFor="password">비밀번호</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[var(--text-secondary)]" />
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="비밀번호를 입력하세요"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 pr-10 bg-[var(--input-background)] border-[var(--border)] focus:border-[var(--coral-pink)] focus:ring-[var(--coral-pink)] transition-all duration-200"
+                    className="!pl-10 !pr-12"
+                    style={{ paddingLeft: "2.5rem", paddingRight: "3rem" }}
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[var(--text-secondary)] hover:text-[var(--coral-pink)] transition-colors duration-200"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors duration-200 z-10"
                   >
                     {showPassword ? (
                       <EyeOff className="w-4 h-4" />
@@ -132,7 +119,8 @@ export function LoginPage() {
               <div className="text-right">
                 <button
                   type="button"
-                  className="text-sm text-[var(--coral-pink)] hover:text-[var(--coral-pink)]/80 transition-colors duration-200"
+                  onClick={() => router.push("/auth/forgotPassword")}
+                  className="text-sm text-primary hover:text-primary/80 transition-colors duration-200"
                 >
                   비밀번호를 잊으셨나요?
                 </button>
@@ -141,7 +129,7 @@ export function LoginPage() {
               {/* Login Button */}
               <Button
                 type="submit"
-                className="w-full bg-[var(--coral-pink)] hover:bg-[var(--coral-pink)]/90 text-white py-3 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-[1.02] shadow-md hover:shadow-lg"
+                className="w-full py-3 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-[1.02] shadow-md hover:shadow-lg"
               >
                 로그인
               </Button>
@@ -149,9 +137,9 @@ export function LoginPage() {
 
             {/* Divider */}
             <div className="relative">
-              <Separator className="bg-[var(--border)]" />
+              <Separator />
               <div className="absolute inset-0 flex justify-center">
-                <span className="bg-white px-2 text-sm text-[var(--text-secondary)]">
+                <span className="bg-card px-2 text-sm text-muted-foreground">
                   또는
                 </span>
               </div>
@@ -163,7 +151,7 @@ export function LoginPage() {
               <Button
                 type="button"
                 variant="outline"
-                className="w-full border-[var(--border)] hover:bg-[var(--very-light-pink)] transition-all duration-300 ease-in-out transform hover:scale-[1.02]"
+                className="w-full hover:bg-accent transition-all duration-300 ease-in-out transform hover:scale-[1.02]"
                 onClick={() => handleSocialLogin("google")}
               >
                 <div className="flex items-center justify-center space-x-3">
@@ -209,12 +197,12 @@ export function LoginPage() {
             </div>
 
             {/* Sign Up Link */}
-            <div className="text-center pt-4 border-t border-[var(--border)]">
-              <p className="text-sm text-[var(--text-secondary)]">
+            <div className="text-center pt-4 border-t border-border">
+              <p className="text-sm text-muted-foreground">
                 계정이 없으신가요?{" "}
                 <button
-                  onClick={() => window.location.reload()} // 임시로 새로고침, 실제로는 라우팅 처리
-                  className="text-[var(--coral-pink)] hover:text-[var(--coral-pink)]/80 transition-colors duration-200"
+                  onClick={() => (window.location.href = "/auth/signup")}
+                  className="text-primary hover:text-primary/80 transition-colors duration-200"
                 >
                   회원가입
                 </button>
@@ -224,13 +212,10 @@ export function LoginPage() {
         </Card>
 
         {/* Terms */}
-        <p className="text-xs text-center text-[var(--text-secondary)] px-4">
+        <p className="text-xs text-center text-muted-foreground px-4">
           로그인하면{" "}
-          <button className="text-[var(--coral-pink)] hover:underline">
-            이용약관
-          </button>{" "}
-          및{" "}
-          <button className="text-[var(--coral-pink)] hover:underline">
+          <button className="text-primary hover:underline">이용약관</button> 및{" "}
+          <button className="text-primary hover:underline">
             개인정보보호정책
           </button>
           에 동의하는 것으로 간주됩니다.

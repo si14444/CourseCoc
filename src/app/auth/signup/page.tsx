@@ -20,10 +20,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Calendar, Eye, EyeOff, Heart, Lock, Mail, User } from "lucide-react";
+import { Calendar, Eye, EyeOff, Lock, Mail, User } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export function SignupPage() {
+export default function SignupPage() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -72,59 +75,33 @@ export function SignupPage() {
   const birthYears = Array.from({ length: 60 }, (_, i) => currentYear - 15 - i);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--warm-white)] flex items-center justify-center p-4">
-      {/* Background Hearts */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-6 h-6 text-[var(--coral-pink)] opacity-10 animate-pulse">
-          ❤️
-        </div>
-        <div
-          className="absolute top-3/4 right-1/3 w-4 h-4 text-[var(--light-pink)] opacity-15 animate-pulse"
-          style={{ animationDelay: "2s" }}
-        >
-          💖
-        </div>
-        <div
-          className="absolute top-1/2 right-1/4 w-3 h-3 text-[var(--coral-pink)] opacity-8 animate-pulse"
-          style={{ animationDelay: "4s" }}
-        >
-          💕
-        </div>
-        <div
-          className="absolute top-1/3 right-1/2 w-5 h-5 text-[var(--light-pink)] opacity-12 animate-pulse"
-          style={{ animationDelay: "1s" }}
-        >
-          💗
-        </div>
-        <div
-          className="absolute top-1/6 left-1/2 w-4 h-4 text-[var(--coral-pink)] opacity-9 animate-pulse"
-          style={{ animationDelay: "3s" }}
-        >
-          💞
-        </div>
-      </div>
-
-      <div className="w-full max-w-md space-y-6 relative z-10">
+    <div className="min-h-screen bg-gradient-to-br from-muted to-background flex items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-6">
         {/* Logo and Brand */}
-        <div className="text-center space-y-4">
-          <div className="flex justify-center items-center space-x-2 mb-2">
-            <Heart className="w-8 h-8 text-[var(--coral-pink)] fill-current" />
-            <h1 className="text-3xl text-[var(--coral-pink)] tracking-tight">
-              CourseCoc
-            </h1>
-          </div>
-          <p className="text-[var(--text-secondary)]">
-            새로운 사랑의 시작, 함께 해요
-          </p>
+        <div className="text-center space-y-4 flex flex-col items-center">
+          <button
+            onClick={() => router.push("/")}
+            className="flex flex-col justify-center items-center mb-2 hover:opacity-80 transition-opacity text-center"
+          >
+            <Image
+              src="/logo.png"
+              alt="CourseCoc Logo"
+              width={64}
+              height={64}
+              className="rounded-xl"
+            />
+            <h1 className="text-3xl text-primary tracking-tight">CourseCoc</h1>
+          </button>
+          <p className="text-muted-foreground">새로운 사랑의 시작, 함께 해요</p>
         </div>
 
         {/* Signup Form */}
-        <Card className="backdrop-blur-sm bg-white/80 border-[var(--border)] shadow-lg shadow-[var(--pink-shadow)] hover:shadow-xl hover:shadow-[var(--pink-shadow-hover)] transition-all duration-300 ease-in-out">
+        <Card className="backdrop-blur-sm bg-card/80 shadow-romantic hover:shadow-romantic transition-all duration-300 ease-in-out">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-center text-[var(--text-primary)]">
+            <CardTitle className="text-2xl text-center text-card-foreground">
               회원가입
             </CardTitle>
-            <CardDescription className="text-center text-[var(--text-secondary)]">
+            <CardDescription className="text-center text-muted-foreground">
               특별한 데이트 코스를 만들고 공유하세요
             </CardDescription>
           </CardHeader>
@@ -134,14 +111,15 @@ export function SignupPage() {
               <div className="space-y-2">
                 <Label htmlFor="email">이메일 *</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[var(--text-secondary)]" />
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
                   <Input
                     id="email"
                     type="email"
                     placeholder="이메일을 입력하세요"
                     value={formData.email}
                     onChange={(e) => handleInputChange("email", e.target.value)}
-                    className="pl-10 bg-[var(--input-background)] border-[var(--border)] focus:border-[var(--coral-pink)] focus:ring-[var(--coral-pink)] transition-all duration-200"
+                    className="!pl-10 !pr-3"
+                    style={{ paddingLeft: "2.5rem", paddingRight: "0.75rem" }}
                     required
                   />
                 </div>
@@ -151,7 +129,7 @@ export function SignupPage() {
               <div className="space-y-2">
                 <Label htmlFor="nickname">닉네임 *</Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[var(--text-secondary)]" />
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
                   <Input
                     id="nickname"
                     type="text"
@@ -160,7 +138,8 @@ export function SignupPage() {
                     onChange={(e) =>
                       handleInputChange("nickname", e.target.value)
                     }
-                    className="pl-10 bg-[var(--input-background)] border-[var(--border)] focus:border-[var(--coral-pink)] focus:ring-[var(--coral-pink)] transition-all duration-200"
+                    className="!pl-10 !pr-3"
+                    style={{ paddingLeft: "2.5rem", paddingRight: "0.75rem" }}
                     required
                   />
                 </div>
@@ -170,7 +149,7 @@ export function SignupPage() {
               <div className="space-y-2">
                 <Label htmlFor="password">비밀번호 *</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[var(--text-secondary)]" />
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
@@ -179,13 +158,14 @@ export function SignupPage() {
                     onChange={(e) =>
                       handleInputChange("password", e.target.value)
                     }
-                    className="pl-10 pr-10 bg-[var(--input-background)] border-[var(--border)] focus:border-[var(--coral-pink)] focus:ring-[var(--coral-pink)] transition-all duration-200"
+                    className="!pl-10 !pr-12"
+                    style={{ paddingLeft: "2.5rem", paddingRight: "3rem" }}
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[var(--text-secondary)] hover:text-[var(--coral-pink)] transition-colors duration-200"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors duration-200 z-10"
                   >
                     {showPassword ? (
                       <EyeOff className="w-4 h-4" />
@@ -200,7 +180,7 @@ export function SignupPage() {
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword">비밀번호 확인 *</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[var(--text-secondary)]" />
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
                   <Input
                     id="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
@@ -209,13 +189,14 @@ export function SignupPage() {
                     onChange={(e) =>
                       handleInputChange("confirmPassword", e.target.value)
                     }
-                    className="pl-10 pr-10 bg-[var(--input-background)] border-[var(--border)] focus:border-[var(--coral-pink)] focus:ring-[var(--coral-pink)] transition-all duration-200"
+                    className="!pl-10 !pr-12"
+                    style={{ paddingLeft: "2.5rem", paddingRight: "3rem" }}
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[var(--text-secondary)] hover:text-[var(--coral-pink)] transition-colors duration-200"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors duration-200 z-10"
                   >
                     {showConfirmPassword ? (
                       <EyeOff className="w-4 h-4" />
@@ -231,14 +212,14 @@ export function SignupPage() {
                 <div className="space-y-2">
                   <Label htmlFor="birthYear">출생년도</Label>
                   <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[var(--text-secondary)] z-10" />
+                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
                     <Select
                       value={formData.birthYear}
                       onValueChange={(value) =>
                         handleInputChange("birthYear", value)
                       }
                     >
-                      <SelectTrigger className="pl-10 bg-[var(--input-background)] border-[var(--border)] focus:border-[var(--coral-pink)] focus:ring-[var(--coral-pink)]">
+                      <SelectTrigger className="pl-16">
                         <SelectValue placeholder="연도 선택" />
                       </SelectTrigger>
                       <SelectContent>
@@ -265,7 +246,7 @@ export function SignupPage() {
                       <RadioGroupItem
                         value="male"
                         id="male"
-                        className="border-[var(--coral-pink)] text-[var(--coral-pink)]"
+                        className="border-primary text-primary"
                       />
                       <Label htmlFor="male" className="text-sm">
                         남성
@@ -275,7 +256,7 @@ export function SignupPage() {
                       <RadioGroupItem
                         value="female"
                         id="female"
-                        className="border-[var(--coral-pink)] text-[var(--coral-pink)]"
+                        className="border-primary text-primary"
                       />
                       <Label htmlFor="female" className="text-sm">
                         여성
@@ -294,11 +275,11 @@ export function SignupPage() {
                     onCheckedChange={(checked) =>
                       handleInputChange("agreeTerms", checked)
                     }
-                    className="border-[var(--coral-pink)] data-[state=checked]:bg-[var(--coral-pink)] data-[state=checked]:text-white mt-1"
+                    className="border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground mt-1"
                   />
                   <Label htmlFor="agreeTerms" className="text-sm leading-5">
-                    <span className="text-[var(--coral-pink)]">[필수]</span>{" "}
-                    이용약관에 동의합니다
+                    <span className="text-primary">[필수]</span> 이용약관에
+                    동의합니다
                   </Label>
                 </div>
 
@@ -309,10 +290,10 @@ export function SignupPage() {
                     onCheckedChange={(checked) =>
                       handleInputChange("agreePrivacy", checked)
                     }
-                    className="border-[var(--coral-pink)] data-[state=checked]:bg-[var(--coral-pink)] data-[state=checked]:text-white mt-1"
+                    className="border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground mt-1"
                   />
                   <Label htmlFor="agreePrivacy" className="text-sm leading-5">
-                    <span className="text-[var(--coral-pink)]">[필수]</span>{" "}
+                    <span className="text-primary">[필수]</span>{" "}
                     개인정보보호정책에 동의합니다
                   </Label>
                 </div>
@@ -324,11 +305,11 @@ export function SignupPage() {
                     onCheckedChange={(checked) =>
                       handleInputChange("agreeMarketing", checked)
                     }
-                    className="border-[var(--coral-pink)] data-[state=checked]:bg-[var(--coral-pink)] data-[state=checked]:text-white mt-1"
+                    className="border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground mt-1"
                   />
                   <Label htmlFor="agreeMarketing" className="text-sm leading-5">
-                    <span className="text-[var(--text-secondary)]">[선택]</span>{" "}
-                    마케팅 정보 수신에 동의합니다
+                    <span className="text-muted-foreground">[선택]</span> 마케팅
+                    정보 수신에 동의합니다
                   </Label>
                 </div>
               </div>
@@ -336,7 +317,7 @@ export function SignupPage() {
               {/* Signup Button */}
               <Button
                 type="submit"
-                className="w-full bg-[var(--coral-pink)] hover:bg-[var(--coral-pink)]/90 text-white py-3 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-[1.02] shadow-md hover:shadow-lg"
+                className="w-full py-3 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-[1.02] shadow-md hover:shadow-lg"
               >
                 회원가입
               </Button>
@@ -344,9 +325,9 @@ export function SignupPage() {
 
             {/* Divider */}
             <div className="relative">
-              <Separator className="bg-[var(--border)]" />
+              <Separator />
               <div className="absolute inset-0 flex justify-center">
-                <span className="bg-white px-2 text-sm text-[var(--text-secondary)]">
+                <span className="bg-card px-2 text-sm text-muted-foreground">
                   또는
                 </span>
               </div>
@@ -358,7 +339,7 @@ export function SignupPage() {
               <Button
                 type="button"
                 variant="outline"
-                className="w-full border-[var(--border)] hover:bg-[var(--very-light-pink)] transition-all duration-300 ease-in-out transform hover:scale-[1.02]"
+                className="w-full hover:bg-accent transition-all duration-300 ease-in-out transform hover:scale-[1.02]"
                 onClick={() => handleSocialSignup("google")}
               >
                 <div className="flex items-center justify-center space-x-3">
@@ -404,12 +385,12 @@ export function SignupPage() {
             </div>
 
             {/* Login Link */}
-            <div className="text-center pt-4 border-t border-[var(--border)]">
-              <p className="text-sm text-[var(--text-secondary)]">
+            <div className="text-center pt-4 border-t border-border">
+              <p className="text-sm text-muted-foreground">
                 이미 계정이 있으신가요?{" "}
                 <button
-                  onClick={() => window.location.reload()} // 임시로 새로고침, 실제로는 라우팅 처리
-                  className="text-[var(--coral-pink)] hover:text-[var(--coral-pink)]/80 transition-colors duration-200"
+                  onClick={() => (window.location.href = "/auth/login")}
+                  className="text-primary hover:text-primary/80 transition-colors duration-200"
                 >
                   로그인
                 </button>

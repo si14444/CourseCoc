@@ -120,8 +120,9 @@
   input[type="password"],
   textarea,
   select {
-    @apply w-full px-3 py-2 bg-input border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent outline-none transition-colors;
-    background-color: var(--very-light-pink);
+    @apply w-full py-2 bg-input border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent outline-none transition-colors;
+    padding-left: 0.75rem; /* 기본 padding-left, 컴포넌트에서 오버라이드 가능 */
+    padding-right: 0.75rem; /* 기본 padding-right, 컴포넌트에서 오버라이드 가능 */
   }
 }
 
