@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
 import { MapPin, Search } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 declare global {
   interface Window {
@@ -11,7 +11,10 @@ declare global {
           Places: new () => {
             keywordSearch: (
               keyword: string,
-              callback: (results: AddressSearchResult[], status: string) => void,
+              callback: (
+                results: AddressSearchResult[],
+                status: string
+              ) => void,
               options?: {
                 location?: { lat: number; lng: number };
                 radius?: number;
@@ -57,7 +60,7 @@ export function AddressAutocomplete({
   onSelect,
   placeholder = "주소 또는 장소명을 입력하세요",
   className = "",
-  disabled = false
+  disabled = false,
 }: AddressAutocompleteProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [results, setResults] = useState<AddressSearchResult[]>([]);
@@ -77,21 +80,25 @@ export function AddressAutocomplete({
     setIsLoading(true);
     const places = new window.kakao.maps.services.Places();
 
-    places.keywordSearch(keyword, (data: AddressSearchResult[], status: string) => {
-      setIsLoading(false);
+    places.keywordSearch(
+      keyword,
+      (data: AddressSearchResult[], status: string) => {
+        setIsLoading(false);
 
-      if (status === window.kakao.maps.services.Status.OK) {
-        // 결과를 최대 5개로 제한하고 관련도 높은 순으로 정렬
-        setResults(data.slice(0, 5));
-      } else {
-        setResults([]);
+        if (status === window.kakao.maps.services.Status.OK) {
+          // 결과를 최대 5개로 제한하고 관련도 높은 순으로 정렬
+          setResults(data.slice(0, 5));
+        } else {
+          setResults([]);
+        }
+      },
+      {
+        // 검색 옵션
+        location: new window.kakao.maps.LatLng(37.5665, 126.978), // 서울 중심
+        radius: 20000, // 반경 20km
+        sort: window.kakao.maps.services.SortBy?.ACCURACY,
       }
-    }, {
-      // 검색 옵션
-      location: new window.kakao.maps.LatLng(37.5665, 126.9780), // 서울 중심
-      radius: 20000, // 반경 20km
-      sort: window.kakao.maps.services.SortBy?.ACCURACY
-    });
+    );
   }, []);
 
   // 입력값 변경 시 자동완성 검색
@@ -132,21 +139,23 @@ export function AddressAutocomplete({
     if (!isOpen || results.length === 0) return;
 
     switch (e.key) {
-      case 'ArrowDown':
+      case "ArrowDown":
         e.preventDefault();
-        setSelectedIndex(prev => (prev < results.length - 1 ? prev + 1 : prev));
+        setSelectedIndex((prev) =>
+          prev < results.length - 1 ? prev + 1 : prev
+        );
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         e.preventDefault();
-        setSelectedIndex(prev => (prev > 0 ? prev - 1 : prev));
+        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
         break;
-      case 'Enter':
+      case "Enter":
         e.preventDefault();
         if (selectedIndex >= 0 && selectedIndex < results.length) {
           handleSelect(results[selectedIndex]);
         }
         break;
-      case 'Escape':
+      case "Escape":
         e.preventDefault();
         setIsOpen(false);
         setSelectedIndex(-1);
@@ -168,8 +177,8 @@ export function AddressAutocomplete({
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   // 컴포넌트 언마운트 시 타이머 정리
@@ -224,7 +233,7 @@ export function AddressAutocomplete({
                   key={`${result.x}-${result.y}-${index}`}
                   onClick={() => handleSelect(result)}
                   className={`w-full px-4 py-3 text-left hover:bg-[var(--very-light-pink)] focus:bg-[var(--very-light-pink)] focus:outline-none transition-colors ${
-                    selectedIndex === index ? 'bg-[var(--very-light-pink)]' : ''
+                    selectedIndex === index ? "bg-[var(--very-light-pink)]" : ""
                   }`}
                 >
                   <div className="flex items-start space-x-3">
@@ -243,7 +252,7 @@ export function AddressAutocomplete({
                       {/* 카테고리 정보가 있는 경우 */}
                       {result.category_name && (
                         <div className="text-xs text-[var(--coral-pink)] mt-0.5 truncate">
-                          {result.category_name.split(' > ').pop()}
+                          {result.category_name.split(" > ").pop()}
                         </div>
                       )}
                     </div>
