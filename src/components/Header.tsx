@@ -11,7 +11,7 @@ import { logOut } from "@/lib/auth";
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const { user, loading } = useAuth();
+  const { user, userProfile, loading } = useAuth();
 
   const handleLogout = async () => {
     await logOut();
@@ -61,10 +61,20 @@ export function Header() {
           <div className="hidden md:flex items-center space-x-3">
             {user ? (
               <>
-                <span className="text-sm text-muted-foreground">
-                  <User className="w-4 h-4 inline mr-1" />
-                  {user.email}
-                </span>
+                <Link href="/profile">
+                  <div className="flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+                    {userProfile?.profileImageUrl ? (
+                      <img
+                        src={userProfile.profileImageUrl}
+                        alt="Profile"
+                        className="w-6 h-6 rounded-full object-cover"
+                      />
+                    ) : (
+                      <User className="w-4 h-4" />
+                    )}
+                    <span>{userProfile?.nickname || user.displayName || user.email}</span>
+                  </div>
+                </Link>
                 <Button
                   variant="outline"
                   onClick={handleLogout}
@@ -121,10 +131,20 @@ export function Header() {
                 {user ? (
                   <>
                     <div className="mb-3">
-                      <span className="text-sm text-muted-foreground flex items-center">
-                        <User className="w-4 h-4 mr-1" />
-                        {user.email}
-                      </span>
+                      <Link href="/profile">
+                        <div className="flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+                          {userProfile?.profileImageUrl ? (
+                            <img
+                              src={userProfile.profileImageUrl}
+                              alt="Profile"
+                              className="w-6 h-6 rounded-full object-cover"
+                            />
+                          ) : (
+                            <User className="w-4 h-4" />
+                          )}
+                          <span>{userProfile?.nickname || user.displayName || user.email}</span>
+                        </div>
+                      </Link>
                     </div>
                     <div className="mb-3">
                       <Button

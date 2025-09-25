@@ -3,15 +3,20 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import { getUserProfile, UserProfile } from '@/lib/auth';
 
 interface AuthContextType {
   user: User | null;
+  userProfile: UserProfile | null;
   loading: boolean;
+  refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
+  userProfile: null,
   loading: true,
+  refreshProfile: async () => {},
 });
 
 export const useAuth = () => {
@@ -28,11 +33,32 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const refreshProfile = async () => {
+    if (user) {
+      const result = await getUserProfile(user.uid);
+      if (result.success) {
+        setUserProfile(result.profile);
+      }
+    }
+  };
+
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
+
+      if (user) {
+        // Load user profile from Firestore
+        const result = await getUserProfile(user.uid);
+        if (result.success) {
+          setUserProfile(result.profile);
+        }
+      } else {
+        setUserProfile(null);
+      }
+
       setLoading(false);
     });
 
@@ -41,7 +67,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const value = {
     user,
+    userProfile,
     loading,
+    refreshProfile,
   };
 
   return (
