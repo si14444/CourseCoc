@@ -94,7 +94,6 @@ export const getPublishedCourses = async (): Promise<Course[]> => {
     const snapshot = await getDocs(q);
     const courses = snapshot.docs.map(convertFirestoreDocToCourse);
 
-    console.log(`${courses.length}개의 발행된 코스를 가져왔습니다.`);
     return courses;
   } catch (error) {
     console.error('코스 목록을 가져오는 중 오류 발생:', error);
@@ -105,12 +104,10 @@ export const getPublishedCourses = async (): Promise<Course[]> => {
 // 특정 코스 가져오기 (상세 페이지용)
 export const getCourseById = async (courseId: string): Promise<Course | null> => {
   try {
-    console.log('코스 ID로 데이터 가져오기:', courseId);
     const docRef = doc(db, 'courses', courseId);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-      console.log('코스 데이터 발견:', docSnap.data());
       const course = convertFirestoreDocToCourse(docSnap as QueryDocumentSnapshot<DocumentData>);
 
       // 조회수 증가 기능 임시 제거 (권한 문제로 인해)
@@ -123,10 +120,8 @@ export const getCourseById = async (courseId: string): Promise<Course | null> =>
       //   console.warn('조회수 증가 실패 (권한 문제):', viewsError);
       // }
 
-      console.log('변환된 코스 데이터:', course);
       return course;
     } else {
-      console.log('해당 코스를 찾을 수 없습니다. ID:', courseId);
       return null;
     }
   } catch (error) {

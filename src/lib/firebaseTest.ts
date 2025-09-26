@@ -13,7 +13,6 @@ export const testFirebaseConnection = async () => {
     };
 
     const docRef = await addDoc(collection(db, "test"), testDoc);
-    console.log("테스트 문서가 추가되었습니다. ID:", docRef.id);
     return { success: true, docId: docRef.id };
   } catch (error) {
     console.error("Firebase 연결 테스트 실패:", error);

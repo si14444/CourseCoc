@@ -88,7 +88,6 @@ export default function SignupPage() {
 
   const handleSocialSignup = (provider: "google" | "kakao") => {
     // Handle social signup logic here
-    console.log(`${provider} signup attempt`);
   };
 
   const currentYear = new Date().getFullYear();

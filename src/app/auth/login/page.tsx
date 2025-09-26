@@ -43,7 +43,6 @@ export default function LoginPage() {
 
   const handleSocialLogin = (provider: "google" | "kakao") => {
     // Handle social login logic here
-    console.log(`${provider} login attempt`);
   };
 
   return (

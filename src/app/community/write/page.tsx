@@ -189,7 +189,6 @@ export default function WritePage() {
 
     script.onload = () => {
       window.kakao.maps.load(() => {
-        console.log('Kakao Maps API 로드 완료 (services 포함)');
         setIsMapLoaded(true);
       });
     };
@@ -401,7 +400,6 @@ export default function WritePage() {
       setIsPublishing(true);
     }
 
-    console.log('게시글 저장 시작...');
 
     try {
       // 이미지 업로드 처리
@@ -411,7 +409,6 @@ export default function WritePage() {
           const timestamp = Date.now();
           const heroImagePath = `course-images/hero-${timestamp}.jpg`;
           heroImageUrl = await uploadImageToStorage(courseData.heroImage, heroImagePath);
-          console.log('대표 이미지 업로드 완료:', heroImageUrl);
         } catch (error) {
           console.warn('대표 이미지 업로드 실패:', error);
           // 이미지 업로드 실패해도 게시글 저장은 계속 진행
@@ -463,7 +460,6 @@ export default function WritePage() {
               const locationImagePath = `course-images/location-${timestamp}-${index}.jpg`;
               const locationImageUrl = await uploadImageToStorage(location.image, locationImagePath);
               cleanLocation.image = locationImageUrl;
-              console.log(`장소 ${index + 1} 이미지 업로드 완료:`, locationImageUrl);
             } catch (error) {
               console.warn(`장소 ${index + 1} 이미지 업로드 실패:`, error);
               // 이미지 업로드 실패해도 장소 정보는 저장
@@ -488,10 +484,7 @@ export default function WritePage() {
 
       courseDoc.locations = processedLocations;
 
-      console.log("저장할 데이터:", JSON.stringify(courseDoc, null, 2));
-
       const docRef = await addDoc(collection(db, "courses"), courseDoc);
-      console.log("코스가 저장되었습니다. ID:", docRef.id);
 
       if (isDraft) {
         alert("임시저장이 완료되었습니다!");

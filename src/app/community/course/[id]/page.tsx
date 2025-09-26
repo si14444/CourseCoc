@@ -110,8 +110,6 @@ export default function CourseDetailPage() {
   // Firebase에서 코스 데이터 가져오기
   useEffect(() => {
     const fetchCourse = async () => {
-      console.log('상세페이지 - 코스 ID:', courseId);
-
       try {
         setLoading(true);
         setError(null);
@@ -120,15 +118,11 @@ export default function CourseDetailPage() {
           throw new Error('잘못된 코스 ID입니다.');
         }
 
-        console.log('Firebase에서 코스 데이터 요청 시작...');
         const courseData = await getCourseById(courseId);
-        console.log('Firebase 응답 데이터:', courseData);
 
         if (courseData) {
-          console.log('코스 데이터 설정 완료:', courseData);
           setCourse(courseData);
         } else {
-          console.log('코스 데이터가 null/undefined');
           setError("해당 코스를 찾을 수 없습니다.");
         }
       } catch (err: any) {
@@ -270,7 +264,6 @@ export default function CourseDetailPage() {
             <div className="space-y-3">
               <button
                 onClick={() => {
-                  console.log('새로고침 시도');
                   window.location.reload();
                 }}
                 className="block w-full px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
