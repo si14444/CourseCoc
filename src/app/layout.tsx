@@ -19,12 +19,16 @@ export const metadata: Metadata = {
     "사랑하는 사람과 함께할 특별한 데이트 코스를 만들고 공유해보세요. 코스콕에서 로맨틱한 추억을 만드세요.",
   keywords: ["데이트", "코스", "연인", "로맨틱", "데이트코스", "커플"],
   authors: [{ name: "CourseCoc Team" }],
-  viewport: "width=device-width, initial-scale=1",
   icons: {
     icon: "/favicon.ico",
     apple: "/logo.png",
     shortcut: "/favicon.ico",
   },
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({

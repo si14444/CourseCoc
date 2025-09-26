@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { db } from "../../../lib/firebase";
 import { Header } from "../../../components/Header";
 import {
   Camera,
@@ -160,6 +162,8 @@ export default function WritePage() {
 
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
   const heroImageInputRef = useRef<HTMLInputElement>(null);
   const locationImageInputRefs = useRef<{
     [key: string]: HTMLInputElement | null;
@@ -324,6 +328,128 @@ export default function WritePage() {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  // Firebase 저장 함수들
+  const saveCourse = async (isDraft: boolean = true) => {
+    // 기본 유효성 검사
+    if (!courseData.title || !courseData.description) {
+      alert("제목과 설명은 필수 항목입니다.");
+      return;
+    }
+
+    if (courseData.locations.length === 0) {
+      alert("최소 1개 이상의 장소를 추가해주세요.");
+      return;
+    }
+
+    if (!courseData.content.trim()) {
+      alert("상세 내용을 작성해주세요.");
+      return;
+    }
+
+    if (isDraft) {
+      setIsSaving(true);
+    } else {
+      setIsPublishing(true);
+    }
+
+    try {
+      // Firebase는 undefined 값을 허용하지 않으므로 필터링
+      const courseDoc: any = {
+        title: courseData.title,
+        description: courseData.description,
+        tags: courseData.tags,
+        duration: courseData.duration || "",
+        budget: courseData.budget || "",
+        season: courseData.season || "",
+        locations: courseData.locations,
+        content: courseData.content,
+        isDraft: isDraft,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        likes: 0,
+        views: 0,
+        bookmarks: 0,
+        // TODO: 로그인 시스템이 구현되면 작성자 정보 추가
+        // authorId: currentUser?.uid,
+        // authorName: currentUser?.displayName
+      };
+
+      // heroImage가 있을 때만 추가
+      if (courseData.heroImage) {
+        courseDoc.heroImage = courseData.heroImage;
+      }
+
+      // locations 데이터에서 undefined 값 제거
+      courseDoc.locations = courseData.locations.map((location) => {
+        const cleanLocation: any = {
+          id: location.id,
+          name: location.name || "",
+          address: location.address || "",
+          time: location.time || "",
+          description: location.description || "",
+          detail: location.detail || "",
+        };
+
+        // 선택적 필드들은 값이 있을 때만 추가
+        if (location.image) {
+          cleanLocation.image = location.image;
+        }
+        if (location.position) {
+          cleanLocation.position = location.position;
+        }
+
+        return cleanLocation;
+      });
+
+      const docRef = await addDoc(collection(db, "courses"), courseDoc);
+      console.log("코스가 저장되었습니다. ID:", docRef.id);
+
+      if (isDraft) {
+        alert("임시저장이 완료되었습니다!");
+      } else {
+        alert("게시글이 성공적으로 발행되었습니다!");
+        // TODO: 성공 후 커뮤니티 페이지로 리다이렉트
+        // router.push('/community');
+      }
+    } catch (error: any) {
+      console.error("저장 중 오류가 발생했습니다:", error);
+
+      // Firebase 권한 에러인 경우 특별 처리
+      if (error.code === 'permission-denied' || error.message?.includes('permission')) {
+        alert(`권한 오류가 발생했습니다.
+
+관리자에게 문의하여 Firebase 보안 규칙을 확인해주세요.
+
+기술적 세부사항:
+- 오류 코드: ${error.code || 'permission-denied'}
+- 오류 메시지: ${error.message || 'Missing or insufficient permissions'}`);
+      } else if (error.code === 'unavailable') {
+        alert("네트워크 오류입니다. 인터넷 연결을 확인하고 다시 시도해주세요.");
+      } else if (error.code === 'invalid-argument') {
+        alert("입력된 데이터에 문제가 있습니다. 모든 필드를 다시 확인해주세요.");
+      } else {
+        alert(`저장 중 오류가 발생했습니다.
+
+오류 정보:
+- 코드: ${error.code || '알 수 없음'}
+- 메시지: ${error.message || '알 수 없는 오류'}
+
+다시 시도해주시거나 관리자에게 문의해주세요.`);
+      }
+    } finally {
+      setIsSaving(false);
+      setIsPublishing(false);
+    }
+  };
+
+  const handleSaveDraft = () => {
+    saveCourse(true);
+  };
+
+  const handlePublish = () => {
+    saveCourse(false);
   };
 
   return (
@@ -1136,13 +1262,21 @@ export default function WritePage() {
                         이전 단계
                       </Button>
                       <div className="space-x-4">
-                        <Button variant="outline">
+                        <Button
+                          variant="outline"
+                          onClick={handleSaveDraft}
+                          disabled={isSaving || isPublishing}
+                        >
                           <Save className="w-4 h-4 mr-2" />
-                          임시저장
+                          {isSaving ? "저장중..." : "임시저장"}
                         </Button>
-                        <Button className="btn-primary">
+                        <Button
+                          className="btn-primary"
+                          onClick={handlePublish}
+                          disabled={isSaving || isPublishing}
+                        >
                           <Send className="w-4 h-4 mr-2" />
-                          게시하기
+                          {isPublishing ? "발행중..." : "게시하기"}
                         </Button>
                       </div>
                     </div>
