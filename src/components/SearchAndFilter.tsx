@@ -1,27 +1,60 @@
 "use client";
 
 import { Clock, Filter, Heart, MapPin, Search } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 
-export function SearchAndFilter() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [activeFilters, setActiveFilters] = useState<string[]>([]);
+interface SearchAndFilterProps {
+  onSearch?: (searchTerm: string) => void;
+  onTagFilter?: (tags: string[]) => void;
+  initialSearch?: string;
+  initialTags?: string[];
+}
+
+export function SearchAndFilter({
+  onSearch,
+  onTagFilter,
+  initialSearch = "",
+  initialTags = []
+}: SearchAndFilterProps) {
+  const [searchQuery, setSearchQuery] = useState(initialSearch);
+  const [activeFilters, setActiveFilters] = useState<string[]>(initialTags);
 
   const filterOptions = [
-    { id: "romantic", label: "로맨틱", icon: Heart },
-    { id: "outdoor", label: "야외", icon: MapPin },
-    { id: "quick", label: "빠른 데이트", icon: Clock },
+    { id: "로맨틱", label: "로맨틱", icon: Heart },
+    { id: "액티브", label: "액티브", icon: MapPin },
+    { id: "문화", label: "문화", icon: Clock },
+    { id: "자연", label: "자연", icon: MapPin },
+    { id: "카페", label: "카페", icon: Heart },
+    { id: "맛집", label: "맛집", icon: Heart },
+    { id: "야경", label: "야경", icon: MapPin },
+    { id: "데이트", label: "데이트", icon: Heart },
   ];
 
   const toggleFilter = (filterId: string) => {
-    setActiveFilters((prev) =>
-      prev.includes(filterId)
-        ? prev.filter((id) => id !== filterId)
-        : [...prev, filterId]
-    );
+    const newFilters = activeFilters.includes(filterId)
+      ? activeFilters.filter((id) => id !== filterId)
+      : [...activeFilters, filterId];
+
+    setActiveFilters(newFilters);
+    onTagFilter?.(newFilters);
+  };
+
+  // 검색어 변경 시 부모 컴포넌트에 알림
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      onSearch?.(searchQuery);
+    }, 300);
+
+    return () => clearTimeout(debounceTimer);
+  }, [searchQuery, onSearch]);
+
+  // 모든 필터 제거
+  const clearAllFilters = () => {
+    setActiveFilters([]);
+    onTagFilter?.([]);
   };
 
   return (
@@ -101,7 +134,7 @@ export function SearchAndFilter() {
             );
           })}
           <button
-            onClick={() => setActiveFilters([])}
+            onClick={clearAllFilters}
             className="text-[var(--coral-pink)] hover:underline"
           >
             전체 삭제

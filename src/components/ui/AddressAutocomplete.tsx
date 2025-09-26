@@ -46,33 +46,48 @@ export function AddressAutocomplete({
 
   // 카카오맵 검색 함수
   const searchAddress = useCallback(async (keyword: string) => {
-    if (!window.kakao || !keyword.trim()) {
+    if (!keyword.trim()) {
+      setResults([]);
+      return;
+    }
+
+    // Kakao Maps API와 services 라이브러리 로드 확인
+    if (!window.kakao || !window.kakao.maps || !window.kakao.maps.services) {
+      console.warn('Kakao Maps API 또는 services 라이브러리가 로드되지 않았습니다.');
       setResults([]);
       return;
     }
 
     setIsLoading(true);
-    const places = new window.kakao.maps.services.Places();
 
-    places.keywordSearch(
-      keyword,
-      (data: AddressSearchResult[], status: string) => {
-        setIsLoading(false);
+    try {
+      const places = new window.kakao.maps.services.Places();
 
-        if (status === window.kakao.maps.services.Status.OK) {
-          // 결과를 최대 5개로 제한하고 관련도 높은 순으로 정렬
-          setResults(data.slice(0, 5));
-        } else {
-          setResults([]);
+      places.keywordSearch(
+        keyword,
+        (data: AddressSearchResult[], status: string) => {
+          setIsLoading(false);
+
+          if (status === window.kakao.maps.services.Status.OK) {
+            // 결과를 최대 5개로 제한하고 관련도 높은 순으로 정렬
+            setResults(data.slice(0, 5));
+          } else {
+            console.log('장소 검색 실패:', status);
+            setResults([]);
+          }
+        },
+        {
+          // 검색 옵션
+          location: new window.kakao.maps.LatLng(37.5665, 126.978), // 서울 중심
+          radius: 20000, // 반경 20km
+          sort: window.kakao.maps.services.SortBy?.ACCURACY,
         }
-      },
-      {
-        // 검색 옵션
-        location: new window.kakao.maps.LatLng(37.5665, 126.978), // 서울 중심
-        radius: 20000, // 반경 20km
-        sort: window.kakao.maps.services.SortBy?.ACCURACY,
-      }
-    );
+      );
+    } catch (error) {
+      console.error('주소 검색 중 오류 발생:', error);
+      setIsLoading(false);
+      setResults([]);
+    }
   }, []);
 
   // 입력값 변경 시 자동완성 검색

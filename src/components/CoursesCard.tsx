@@ -7,7 +7,7 @@ import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 
 interface CourseCardProps {
-  id?: number;
+  id: string | number;
   title: string;
   description: string;
   placeCount: number;
@@ -18,7 +18,7 @@ interface CourseCardProps {
 }
 
 export function CourseCard({
-  id = 1,
+  id,
   title,
   description,
   placeCount,
@@ -37,16 +37,25 @@ export function CourseCard({
         onMouseLeave={() => setIsHovered(false)}
       >
       {/* Image Header */}
-      {imageUrl && (
-        <div className="h-48 bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] relative overflow-hidden">
+      <div className="h-48 bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] relative overflow-hidden">
+        {imageUrl ? (
           <img
             src={imageUrl}
             alt={title}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-        </div>
-      )}
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <div className="text-center">
+              <div className="w-16 h-16 rounded-full bg-[var(--coral-pink)]/20 flex items-center justify-center mx-auto mb-3">
+                <span className="text-2xl">💕</span>
+              </div>
+              <p className="text-sm text-[var(--coral-pink)] font-medium">로맨틱 데이트 코스</p>
+            </div>
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+      </div>
 
       <CardContent className="p-6">
         {/* Title and Description */}

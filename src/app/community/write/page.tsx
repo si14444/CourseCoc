@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { db } from "../../../lib/firebase";
+import { ref, uploadString, getDownloadURL } from "firebase/storage";
+import { db, storage } from "../../../lib/firebase";
 import { Header } from "../../../components/Header";
 import {
   Camera,
@@ -169,23 +170,36 @@ export default function WritePage() {
     [key: string]: HTMLInputElement | null;
   }>({});
 
-  // 카카오맵 API 로드
+  // 카카오맵 API 로드 (services 라이브러리 포함)
   useEffect(() => {
+    // 이미 로드된 스크립트가 있는지 확인
+    const existingScript = document.querySelector('script[src*="dapi.kakao.com"]');
+    if (existingScript) {
+      if (window.kakao && window.kakao.maps) {
+        setIsMapLoaded(true);
+      }
+      return;
+    }
+
     const script = document.createElement("script");
     script.async = true;
+    // services 라이브러리 추가 (Places API 사용을 위해 필수)
     script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAPS_API_KEY}&autoload=false&libraries=services`;
     document.head.appendChild(script);
 
     script.onload = () => {
       window.kakao.maps.load(() => {
+        console.log('Kakao Maps API 로드 완료 (services 포함)');
         setIsMapLoaded(true);
       });
     };
 
+    script.onerror = () => {
+      console.error('Kakao Maps API 로드 실패');
+    };
+
     return () => {
-      if (document.head.contains(script)) {
-        document.head.removeChild(script);
-      }
+      // 컴포넌트 언마운트 시에는 스크립트를 제거하지 않음 (다른 컴포넌트에서 사용할 수 있음)
     };
   }, []);
 
@@ -330,21 +344,54 @@ export default function WritePage() {
     }
   };
 
+  // 이미지 Firebase Storage 업로드 함수
+  const uploadImageToStorage = async (base64Image: string, path: string): Promise<string> => {
+    try {
+      const imageRef = ref(storage, path);
+      await uploadString(imageRef, base64Image, 'data_url');
+      const downloadURL = await getDownloadURL(imageRef);
+      return downloadURL;
+    } catch (error) {
+      console.error('이미지 업로드 실패:', error);
+      throw new Error('이미지 업로드에 실패했습니다.');
+    }
+  };
+
   // Firebase 저장 함수들
   const saveCourse = async (isDraft: boolean = true) => {
     // 기본 유효성 검사
-    if (!courseData.title || !courseData.description) {
+    if (!courseData.title?.trim() || !courseData.description?.trim()) {
       alert("제목과 설명은 필수 항목입니다.");
       return;
     }
 
-    if (courseData.locations.length === 0) {
+    if (!courseData.locations || courseData.locations.length === 0) {
       alert("최소 1개 이상의 장소를 추가해주세요.");
       return;
     }
 
-    if (!courseData.content.trim()) {
+    if (!courseData.content?.trim()) {
       alert("상세 내용을 작성해주세요.");
+      return;
+    }
+
+    // 장소별 필수 정보 검증
+    for (let i = 0; i < courseData.locations.length; i++) {
+      const location = courseData.locations[i];
+      if (!location.name?.trim()) {
+        alert(`${i + 1}번째 장소의 이름을 입력해주세요.`);
+        return;
+      }
+      if (!location.address?.trim()) {
+        alert(`${i + 1}번째 장소의 주소를 입력해주세요.`);
+        return;
+      }
+    }
+
+    // 태그 검증 및 정리
+    const validTags = courseData.tags?.filter(tag => tag && tag.trim() !== "") || [];
+    if (validTags.length === 0) {
+      alert("최소 1개의 태그를 선택해주세요.");
       return;
     }
 
@@ -354,17 +401,33 @@ export default function WritePage() {
       setIsPublishing(true);
     }
 
+    console.log('게시글 저장 시작...');
+
     try {
+      // 이미지 업로드 처리
+      let heroImageUrl = '';
+      if (courseData.heroImage?.trim()) {
+        try {
+          const timestamp = Date.now();
+          const heroImagePath = `course-images/hero-${timestamp}.jpg`;
+          heroImageUrl = await uploadImageToStorage(courseData.heroImage, heroImagePath);
+          console.log('대표 이미지 업로드 완료:', heroImageUrl);
+        } catch (error) {
+          console.warn('대표 이미지 업로드 실패:', error);
+          // 이미지 업로드 실패해도 게시글 저장은 계속 진행
+        }
+      }
+
       // Firebase는 undefined 값을 허용하지 않으므로 필터링
       const courseDoc: any = {
-        title: courseData.title,
-        description: courseData.description,
-        tags: courseData.tags,
-        duration: courseData.duration || "",
-        budget: courseData.budget || "",
-        season: courseData.season || "",
-        locations: courseData.locations,
-        content: courseData.content,
+        title: courseData.title.trim(),
+        description: courseData.description.trim(),
+        tags: validTags,
+        duration: courseData.duration?.trim() || "",
+        budget: courseData.budget?.trim() || "",
+        season: courseData.season?.trim() || "",
+        locations: [],
+        content: courseData.content.trim(),
         isDraft: isDraft,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
@@ -376,32 +439,56 @@ export default function WritePage() {
         // authorName: currentUser?.displayName
       };
 
-      // heroImage가 있을 때만 추가
-      if (courseData.heroImage) {
-        courseDoc.heroImage = courseData.heroImage;
+      // heroImage URL이 있을 때만 추가
+      if (heroImageUrl) {
+        courseDoc.heroImage = heroImageUrl;
       }
 
-      // locations 데이터에서 undefined 값 제거
-      courseDoc.locations = courseData.locations.map((location) => {
-        const cleanLocation: any = {
-          id: location.id,
-          name: location.name || "",
-          address: location.address || "",
-          time: location.time || "",
-          description: location.description || "",
-          detail: location.detail || "",
-        };
+      // locations 데이터 처리 - 이미지 업로드 포함
+      const processedLocations = await Promise.all(
+        courseData.locations.map(async (location, index) => {
+          const cleanLocation: any = {
+            id: location.id || `loc-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            name: location.name.trim(),
+            address: location.address.trim(),
+            time: location.time?.trim() || "",
+            description: location.description?.trim() || "",
+            detail: location.detail?.trim() || "",
+          };
 
-        // 선택적 필드들은 값이 있을 때만 추가
-        if (location.image) {
-          cleanLocation.image = location.image;
-        }
-        if (location.position) {
-          cleanLocation.position = location.position;
-        }
+          // 이미지 업로드 처리
+          if (location.image?.trim()) {
+            try {
+              const timestamp = Date.now();
+              const locationImagePath = `course-images/location-${timestamp}-${index}.jpg`;
+              const locationImageUrl = await uploadImageToStorage(location.image, locationImagePath);
+              cleanLocation.image = locationImageUrl;
+              console.log(`장소 ${index + 1} 이미지 업로드 완료:`, locationImageUrl);
+            } catch (error) {
+              console.warn(`장소 ${index + 1} 이미지 업로드 실패:`, error);
+              // 이미지 업로드 실패해도 장소 정보는 저장
+            }
+          }
 
-        return cleanLocation;
-      });
+          // 위치 정보 처리
+          if (location.position &&
+              typeof location.position.lat === 'number' &&
+              typeof location.position.lng === 'number' &&
+              !isNaN(location.position.lat) &&
+              !isNaN(location.position.lng)) {
+            cleanLocation.position = {
+              lat: location.position.lat,
+              lng: location.position.lng
+            };
+          }
+
+          return cleanLocation;
+        })
+      );
+
+      courseDoc.locations = processedLocations;
+
+      console.log("저장할 데이터:", JSON.stringify(courseDoc, null, 2));
 
       const docRef = await addDoc(collection(db, "courses"), courseDoc);
       console.log("코스가 저장되었습니다. ID:", docRef.id);
@@ -413,28 +500,33 @@ export default function WritePage() {
         // TODO: 성공 후 커뮤니티 페이지로 리다이렉트
         // router.push('/community');
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("저장 중 오류가 발생했습니다:", error);
+      console.error("에러 상세:", {
+        code: (error as any)?.code,
+        message: (error as any)?.message,
+        stack: (error as any)?.stack
+      });
 
       // Firebase 권한 에러인 경우 특별 처리
-      if (error.code === 'permission-denied' || error.message?.includes('permission')) {
+      if ((error as any)?.code === 'permission-denied' || (error as any)?.message?.includes('permission')) {
         alert(`권한 오류가 발생했습니다.
 
 관리자에게 문의하여 Firebase 보안 규칙을 확인해주세요.
 
 기술적 세부사항:
-- 오류 코드: ${error.code || 'permission-denied'}
+- 오류 코드: ${(error as any)?.code || 'permission-denied'}
 - 오류 메시지: ${error.message || 'Missing or insufficient permissions'}`);
-      } else if (error.code === 'unavailable') {
+      } else if ((error as any)?.code === 'unavailable') {
         alert("네트워크 오류입니다. 인터넷 연결을 확인하고 다시 시도해주세요.");
-      } else if (error.code === 'invalid-argument') {
+      } else if ((error as any)?.code === 'invalid-argument') {
         alert("입력된 데이터에 문제가 있습니다. 모든 필드를 다시 확인해주세요.");
       } else {
         alert(`저장 중 오류가 발생했습니다.
 
 오류 정보:
-- 코드: ${error.code || '알 수 없음'}
-- 메시지: ${error.message || '알 수 없는 오류'}
+- 코드: ${(error as any)?.code || '알 수 없음'}
+- 메시지: ${(error as any)?.message || '알 수 없는 오류'}
 
 다시 시도해주시거나 관리자에게 문의해주세요.`);
       }
