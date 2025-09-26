@@ -15,6 +15,7 @@ import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { logOut } from "@/lib/auth";
+import { CONTAINER_CLASSES } from "@/utils/layouts";
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -26,22 +27,22 @@ export function Header() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-white/90 border-b border-pink-200 shadow-sm">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+      <div className={CONTAINER_CLASSES}>
+        <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center space-x-1 sm:space-x-2">
             <div className="relative">
               <img
                 src="/logo.png"
                 alt="CourseCoc Logo"
-                className="w-8 h-8 object-contain"
+                className="w-6 h-6 sm:w-8 sm:h-8 object-contain"
               />
             </div>
-            <div className="flex items-center space-x-2">
-              <span className="text-xl font-bold text-gray-900">CourseCoc</span>
+            <div className="flex items-center space-x-1 sm:space-x-2">
+              <span className="text-lg sm:text-xl font-bold text-gray-900">CourseCoc</span>
               <Badge
                 variant="secondary"
-                className="bg-pink-100 text-pink-600 border-pink-300 text-xs"
+                className="bg-pink-100 text-pink-600 border-pink-300 text-xs hidden sm:inline-flex"
               >
                 Beta
               </Badge>
@@ -65,6 +66,18 @@ export function Header() {
               <span>내 코스</span>
             </Link>
           </nav>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden p-2 text-gray-600 hover:text-pink-500 transition-colors"
+          >
+            {isMobileMenuOpen ? (
+              <X className="w-5 h-5" />
+            ) : (
+              <Menu className="w-5 h-5" />
+            )}
+          </button>
 
           {/* Auth & CTA Buttons */}
           <div className="hidden md:flex items-center space-x-3">
@@ -105,41 +118,31 @@ export function Header() {
               </Button>
             </Link>
           </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2 text-gray-600 hover:text-pink-500 transition-colors duration-200"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
-          </button>
         </div>
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="md:hidden py-4 border-t border-pink-200">
-            <div className="flex flex-col space-y-4">
+          <div className="md:hidden py-3 sm:py-4 border-t border-pink-200 bg-white/95 backdrop-blur-sm">
+            <div className="flex flex-col space-y-3 sm:space-y-4">
               <Link
                 href="/courses"
-                className="flex items-center space-x-2 text-gray-600 hover:text-pink-500 font-medium py-2"
+                className="flex items-center space-x-2 text-gray-600 hover:text-pink-500 font-medium py-2 px-2 rounded-lg hover:bg-pink-50 transition-all"
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 <BookOpen className="w-5 h-5" />
                 <span>내 코스</span>
               </Link>
               <Link
                 href="/community"
-                className="flex items-center space-x-2 text-gray-600 hover:text-pink-500 font-medium py-2"
+                className="flex items-center space-x-2 text-gray-600 hover:text-pink-500 font-medium py-2 px-2 rounded-lg hover:bg-pink-50 transition-all"
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 <Users className="w-5 h-5" />
                 <span>커뮤니티</span>
               </Link>
 
               {/* 구분선 */}
-              <div className="border-t border-pink-200 pt-4">
+              <div className="border-t border-pink-200 pt-3 sm:pt-4">
                 {user ? (
                   <>
                     <div className="mb-3">
@@ -177,10 +180,10 @@ export function Header() {
                     </Link>
                   </div>
                 )}
-                <Link href="/community/write">
+                <Link href="/community/write" onClick={() => setIsMobileMenuOpen(false)}>
                   <Button
                     size="sm"
-                    className="w-full bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-lg transition-all duration-300"
+                    className="w-full bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-lg transition-all duration-300 text-sm"
                   >
                     <Plus className="w-4 h-4 mr-2" />
                     코스 만들기

@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { MOBILE_PADDING, MOBILE_SPACING } from "@/utils/layouts";
 
 interface SearchAndFilterProps {
   onSearch?: (searchTerm: string) => void;
@@ -58,26 +59,28 @@ export function SearchAndFilter({
   };
 
   return (
-    <div className="mb-8">
+    <div className={`mb-6 sm:mb-8 ${MOBILE_PADDING}`}>
       {/* Search and Filter Bar */}
-      <div className="flex flex-col md:flex-row gap-4 mb-4">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-3 sm:mb-4">
         {/* Search Input */}
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[var(--text-secondary)]" />
+        <div className="relative flex-1 min-w-0">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-[var(--text-secondary)]" />
           <Input
             placeholder="코스 검색..."
+            autoComplete="off"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 rounded-xl border-[var(--border)] focus:border-[var(--coral-pink)] focus:ring-2 focus:ring-[var(--coral-pink)]/20 bg-white transition-all duration-200"
+            className="pl-9 sm:pl-10 pr-4 py-2.5 sm:py-3 text-sm sm:text-base rounded-lg sm:rounded-xl border-[var(--border)] focus:border-[var(--coral-pink)] focus:ring-2 focus:ring-[var(--coral-pink)]/20 bg-white transition-all duration-200"
           />
         </div>
 
         {/* Filter Button */}
         <Button
           variant="outline"
-          className="border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--coral-pink)] hover:text-[var(--coral-pink)] hover:bg-[var(--very-light-pink)] transition-all duration-200 rounded-xl"
+          size="sm"
+          className="border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--coral-pink)] hover:text-[var(--coral-pink)] hover:bg-[var(--very-light-pink)] transition-all duration-200 rounded-lg sm:rounded-xl px-4 py-2.5 sm:py-3 text-sm sm:text-base whitespace-nowrap"
         >
-          <Filter className="w-4 h-4 mr-2" />
+          <Filter className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
           필터
           {activeFilters.length > 0 && (
             <Badge
@@ -91,7 +94,7 @@ export function SearchAndFilter({
       </div>
 
       {/* Quick Filter Tags */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1.5 sm:gap-2">
         {filterOptions.map((filter) => {
           const Icon = filter.icon;
           const isActive = activeFilters.includes(filter.id);
@@ -102,13 +105,13 @@ export function SearchAndFilter({
               variant="outline"
               size="sm"
               onClick={() => toggleFilter(filter.id)}
-              className={`rounded-full transition-all duration-200 ${
+              className={`rounded-full transition-all duration-200 text-xs sm:text-sm px-2.5 sm:px-3 py-1.5 sm:py-2 h-auto ${
                 isActive
                   ? "bg-[var(--coral-pink)] text-white border-[var(--coral-pink)] shadow-md"
                   : "border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--coral-pink)] hover:text-[var(--coral-pink)] hover:bg-[var(--very-light-pink)]"
               }`}
             >
-              <Icon className="w-4 h-4 mr-1" />
+              <Icon className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
               {filter.label}
             </Button>
           );
@@ -117,8 +120,9 @@ export function SearchAndFilter({
 
       {/* Active Filters Display */}
       {activeFilters.length > 0 && (
-        <div className="mt-3 flex items-center gap-2 text-sm text-[var(--text-secondary)]">
-          <span>활성 필터:</span>
+        <div className="mt-2 sm:mt-3 flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-[var(--text-secondary)]">
+          <span className="hidden sm:inline">활성 필터:</span>
+          <span className="sm:hidden">필터:</span>
           {activeFilters.map((filterId) => {
             const filter = filterOptions.find((f) => f.id === filterId);
             if (!filter) return null;
@@ -127,7 +131,7 @@ export function SearchAndFilter({
               <Badge
                 key={filterId}
                 variant="secondary"
-                className="bg-[var(--light-pink)] text-[var(--coral-pink)] border-[var(--coral-pink)]/30"
+                className="bg-[var(--light-pink)] text-[var(--coral-pink)] border-[var(--coral-pink)]/30 text-xs px-2 py-0.5"
               >
                 {filter.label}
               </Badge>
