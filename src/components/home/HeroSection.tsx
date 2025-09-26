@@ -39,7 +39,7 @@ export function HeroSection() {
         />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div className="relative max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
         {/* Beta Badge */}
         <div className="mb-6">
           <Badge
@@ -61,7 +61,7 @@ export function HeroSection() {
         </h1>
 
         {/* Subtitle */}
-        <p className="text-lg md:text-xl text-[var(--text-secondary)] max-w-3xl mx-auto mb-8 leading-relaxed">
+        <p className="text-lg md:text-xl text-[var(--text-secondary)] max-w-4xl mx-auto mb-8 leading-relaxed">
           아름다운 이야기를 담은 로맨틱한 경험을 디자인해보세요. 모든 순간,
           모든 발걸음이 사랑으로 만들어집니다. 평범한 데이트를
           특별한 추억으로 바꿔보세요.
@@ -89,7 +89,7 @@ export function HeroSection() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
           <div className="text-center">
             <div className="text-3xl font-bold text-[var(--coral-pink)] mb-2">
               1,200+

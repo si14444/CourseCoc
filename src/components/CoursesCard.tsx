@@ -32,12 +32,12 @@ export function CourseCard({
   return (
     <Link href={`/community/course/${id}`}>
       <Card
-        className="bg-white rounded-2xl shadow-[0_4px_20px_var(--pink-shadow)] hover:shadow-[0_8px_30px_var(--pink-shadow-hover)] transition-all duration-300 transform hover:-translate-y-1 overflow-hidden group cursor-pointer"
+        className="bg-white rounded-2xl shadow-[0_4px_20px_var(--pink-shadow)] hover:shadow-[0_8px_30px_var(--pink-shadow-hover)] transition-all duration-300 transform hover:-translate-y-1 overflow-hidden group cursor-pointer min-w-[320px]"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
       {/* Image Header */}
-      <div className="h-48 bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] relative overflow-hidden">
+      <div className="h-52 bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] relative overflow-hidden">
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -57,7 +57,7 @@ export function CourseCard({
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
       </div>
 
-      <CardContent className="p-6">
+      <CardContent className="p-7">
         {/* Title and Description */}
         <div className="mb-4">
           <h3 className="font-bold text-[var(--text-primary)] mb-2 line-clamp-1">
@@ -108,29 +108,6 @@ export function CourseCard({
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div
-          className={`flex space-x-2 transition-all duration-300 ${
-            isHovered ? "opacity-100" : "opacity-0"
-          }`}
-        >
-          <Button
-            size="sm"
-            variant="outline"
-            className="border-[var(--coral-pink)] text-[var(--coral-pink)] hover:bg-[var(--coral-pink)] hover:text-white transition-all duration-200"
-          >
-            <Edit className="w-4 h-4 mr-1" />
-            수정
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className="border-[var(--coral-pink)] text-[var(--coral-pink)] hover:bg-[var(--coral-pink)] hover:text-white transition-all duration-200"
-          >
-            <Palette className="w-4 h-4 mr-1" />
-            3D 뷰
-          </Button>
-        </div>
       </CardContent>
     </Card>
     </Link>

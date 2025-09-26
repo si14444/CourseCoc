@@ -59,20 +59,20 @@ export function PopularCoursesSection() {
 
   return (
     <section className="py-20 bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)]/30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-primary)] mb-4">
             인기 데이트 코스
           </h2>
-          <p className="text-lg text-[var(--text-secondary)] max-w-2xl mx-auto mb-8">
+          <p className="text-lg text-[var(--text-secondary)] max-w-4xl mx-auto mb-8">
             우리 커뮤니티에서 만들어진 가장 사랑받는 데이트 코스들을 발견해보세요.
             영감을 얻고 나만의 로맨틱한 여정을 만들어보세요.
           </p>
         </div>
 
         {/* Courses Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-8 mb-12">
           {popularCourses.map((course) => (
             <CourseCard
               key={course.id}

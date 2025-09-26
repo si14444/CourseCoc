@@ -55,13 +55,13 @@ export function FeaturesSection() {
 
   return (
     <section className="py-20 bg-[var(--background)]">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-primary)] mb-4">
             완벽한 데이트를 위한 모든 것
           </h2>
-          <p className="text-lg text-[var(--text-secondary)] max-w-2xl mx-auto">
+          <p className="text-lg text-[var(--text-secondary)] max-w-4xl mx-auto">
             CourseCoc은 지속적인 추억을 만드는 로맨틱한 경험을 계획하고, 시각화하며,
             공유하는 데 필요한 모든 도구를 제공합니다.
           </p>

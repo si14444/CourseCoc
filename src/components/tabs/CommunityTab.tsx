@@ -4,7 +4,7 @@ import { Users } from 'lucide-react'
 
 export default function CommunityTab() {
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-4 sm:py-6">
       <div className="text-center py-20">
         <div className="w-24 h-24 mx-auto mb-6 bg-accent rounded-full flex items-center justify-center">
           <Users className="w-12 h-12 text-primary opacity-50" />

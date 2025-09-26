@@ -244,7 +244,7 @@ export default function CourseDetailPage() {
       <div className="min-h-screen bg-white">
         <Header />
         <div className="pt-16 flex items-center justify-center min-h-[60vh]">
-          <div className="text-center max-w-2xl mx-auto px-4">
+          <div className="text-center max-w-4xl mx-auto px-4">
             <div className="text-6xl mb-4">😞</div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">게시글을 불러올 수 없습니다</h1>
             <p className="text-gray-600 mb-4">{error || "요청하신 게시글이 존재하지 않습니다."}</p>
@@ -337,8 +337,8 @@ export default function CourseDetailPage() {
             </h1>
             <p className={`drop-shadow-md ${
               course.heroImage || course.locations?.[0]?.image
-                ? 'text-xl md:text-2xl max-w-4xl'
-                : 'text-lg max-w-2xl'
+                ? 'text-xl md:text-2xl max-w-5xl'
+                : 'text-lg max-w-4xl'
             } ${
               course.heroImage || course.locations?.[0]?.image
                 ? 'opacity-90'
@@ -350,7 +350,7 @@ export default function CourseDetailPage() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 py-12">
+      <div className="max-w-[1600px] mx-auto px-6 py-12">
         {/* Course Info */}
         <div className="flex flex-wrap gap-6 mb-8 text-sm text-gray-600">
           {course.duration && (

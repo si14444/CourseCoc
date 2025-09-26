@@ -24,7 +24,7 @@ export default function CoursesTab({ onCreateCourse, onEditCourse }: CoursesTabP
   const { courses } = useCourseStore()
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-4 sm:py-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
         <div>
           <h2 className="text-xl sm:text-2xl font-bold text-primary mb-2">내가 만든 코스</h2>
@@ -65,7 +65,7 @@ export default function CoursesTab({ onCreateCourse, onEditCourse }: CoursesTabP
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {courses
             .filter(course => 
               course.title.toLowerCase().includes(searchQuery.toLowerCase())

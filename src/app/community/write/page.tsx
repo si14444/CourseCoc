@@ -569,11 +569,11 @@ export default function WritePage() {
       <div className="pt-16">
         {/* Hero Section */}
         <div className="bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] py-16">
-          <div className="max-w-4xl mx-auto px-6 text-center">
+          <div className="max-w-5xl mx-auto px-6 text-center">
             <h1 className="text-4xl font-bold text-[var(--text-primary)] mb-4">
               새로운 데이트 코스 작성하기
             </h1>
-            <p className="text-lg text-[var(--text-secondary)] max-w-2xl mx-auto">
+            <p className="text-lg text-[var(--text-secondary)] max-w-4xl mx-auto">
               특별한 추억이 될 로맨틱한 코스를 공유해보세요
             </p>
 
@@ -684,7 +684,7 @@ export default function WritePage() {
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 py-12">
+        <div className="max-w-[1600px] mx-auto px-6 py-12">
           <div
             className={`grid ${
               step === 4 ? "grid-cols-1" : "lg:grid-cols-3"
@@ -1158,7 +1158,7 @@ export default function WritePage() {
                             <h1 className="text-4xl font-bold mb-4">
                               {courseData.title || "코스 제목"}
                             </h1>
-                            <p className="text-lg opacity-90 max-w-2xl">
+                            <p className="text-lg opacity-90 max-w-4xl">
                               {courseData.description || "코스 설명"}
                             </p>
                           </div>

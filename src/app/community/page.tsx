@@ -74,21 +74,6 @@ export default function Community() {
     setSelectedTags(tags);
   };
 
-  // 새로고침 핸들러
-  const handleRefresh = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const publishedCourses = await getPublishedCourses();
-      setCourses(publishedCourses);
-      setFilteredCourses(publishedCourses);
-    } catch (err: any) {
-      console.error("코스 데이터 새로고침 실패:", err);
-      setError(err.message || "데이터를 새로고침하는 중 오류가 발생했습니다.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div
@@ -99,24 +84,17 @@ export default function Community() {
 
       {/* Main Content */}
       <main className="pt-20 pb-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           {/* Welcome Section */}
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
               완벽한 데이트 코스 만들기
             </h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 max-w-4xl mx-auto">
               아름다운 이야기를 담은 로맨틱한 경험을 디자인해보세요. 모든 순간,
               모든 발걸음이 사랑으로 만들어집니다.
             </p>
 
-            {/* 통계 정보 */}
-            {!loading && !error && (
-              <div className="flex justify-center space-x-8 mt-6 text-sm text-gray-500">
-                <span>{courses.length}개의 코스</span>
-                <span>실시간 업데이트</span>
-              </div>
-            )}
           </div>
 
           <SearchAndFilter
@@ -124,16 +102,6 @@ export default function Community() {
             onTagFilter={handleTagFilter}
           />
 
-          {/* 새로고침 버튼 */}
-          <div className="mb-6 flex justify-center">
-            <button
-              onClick={handleRefresh}
-              disabled={loading}
-              className="text-sm text-[var(--coral-pink)] hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? "로딩 중..." : "새로고침"}
-            </button>
-          </div>
 
           {/* 로딩 상태 */}
           {loading && (
@@ -146,17 +114,11 @@ export default function Community() {
           {/* 에러 상태 */}
           {error && (
             <div className="text-center py-12">
-              <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
+              <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-2xl mx-auto">
                 <h3 className="text-lg font-semibold text-red-800 mb-2">
                   오류가 발생했습니다
                 </h3>
                 <p className="text-red-600 mb-4">{error}</p>
-                <button
-                  onClick={handleRefresh}
-                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
-                >
-                  다시 시도
-                </button>
               </div>
             </div>
           )}
@@ -193,7 +155,7 @@ export default function Community() {
                   </div>
                 )
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
                   {filteredCourses.map((course) => (
                     <CourseCard
                       key={course.id}
