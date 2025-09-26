@@ -41,6 +41,30 @@ interface Location {
   };
 }
 
+interface FirebaseError extends Error {
+  code?: string;
+  message: string;
+  stack?: string;
+}
+
+interface CourseDocument {
+  title: string;
+  description: string;
+  tags: string[];
+  duration: string;
+  budget: string;
+  season: string;
+  locations: Location[];
+  content: string;
+  isDraft: boolean;
+  createdAt: ReturnType<typeof serverTimestamp>;
+  updatedAt: ReturnType<typeof serverTimestamp>;
+  likes: number;
+  views: number;
+  bookmarks: number;
+  heroImage?: string;
+}
+
 interface CourseData {
   title: string;
   description: string;
@@ -416,7 +440,7 @@ export default function WritePage() {
       }
 
       // Firebase는 undefined 값을 허용하지 않으므로 필터링
-      const courseDoc: any = {
+      const courseDoc: CourseDocument = {
         title: courseData.title.trim(),
         description: courseData.description.trim(),
         tags: validTags,
@@ -444,7 +468,7 @@ export default function WritePage() {
       // locations 데이터 처리 - 이미지 업로드 포함
       const processedLocations = await Promise.all(
         courseData.locations.map(async (location, index) => {
-          const cleanLocation: any = {
+          const cleanLocation: Location = {
             id: location.id || `loc-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             name: location.name.trim(),
             address: location.address.trim(),
@@ -484,7 +508,7 @@ export default function WritePage() {
 
       courseDoc.locations = processedLocations;
 
-      const docRef = await addDoc(collection(db, "courses"), courseDoc);
+      await addDoc(collection(db, "courses"), courseDoc);
 
       if (isDraft) {
         alert("임시저장이 완료되었습니다!");
@@ -494,32 +518,33 @@ export default function WritePage() {
         // router.push('/community');
       }
     } catch (error) {
+      const firebaseError = error as FirebaseError;
       console.error("저장 중 오류가 발생했습니다:", error);
       console.error("에러 상세:", {
-        code: (error as any)?.code,
-        message: (error as any)?.message,
-        stack: (error as any)?.stack
+        code: firebaseError?.code,
+        message: firebaseError?.message,
+        stack: firebaseError?.stack
       });
 
       // Firebase 권한 에러인 경우 특별 처리
-      if ((error as any)?.code === 'permission-denied' || (error as any)?.message?.includes('permission')) {
+      if (firebaseError?.code === 'permission-denied' || firebaseError?.message?.includes('permission')) {
         alert(`권한 오류가 발생했습니다.
 
 관리자에게 문의하여 Firebase 보안 규칙을 확인해주세요.
 
 기술적 세부사항:
-- 오류 코드: ${(error as any)?.code || 'permission-denied'}
-- 오류 메시지: ${error.message || 'Missing or insufficient permissions'}`);
-      } else if ((error as any)?.code === 'unavailable') {
+- 오류 코드: ${firebaseError?.code || 'permission-denied'}
+- 오류 메시지: ${firebaseError?.message || 'Missing or insufficient permissions'}`);
+      } else if (firebaseError?.code === 'unavailable') {
         alert("네트워크 오류입니다. 인터넷 연결을 확인하고 다시 시도해주세요.");
-      } else if ((error as any)?.code === 'invalid-argument') {
+      } else if (firebaseError?.code === 'invalid-argument') {
         alert("입력된 데이터에 문제가 있습니다. 모든 필드를 다시 확인해주세요.");
       } else {
         alert(`저장 중 오류가 발생했습니다.
 
 오류 정보:
-- 코드: ${(error as any)?.code || '알 수 없음'}
-- 메시지: ${(error as any)?.message || '알 수 없는 오류'}
+- 코드: ${firebaseError?.code || '알 수 없음'}
+- 메시지: ${firebaseError?.message || '알 수 없는 오류'}
 
 다시 시도해주시거나 관리자에게 문의해주세요.`);
       }
