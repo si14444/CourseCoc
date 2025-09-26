@@ -7,10 +7,9 @@ import {
   Users,
   X,
   LogIn,
-  LogOut,
   User,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
@@ -19,16 +18,11 @@ import { logOut } from "@/lib/auth";
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  const { user, userProfile, loading } = useAuth();
+  const { user, userProfile } = useAuth();
 
   const handleLogout = async () => {
     await logOut();
   };
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-white/90 border-b border-pink-200 shadow-sm">

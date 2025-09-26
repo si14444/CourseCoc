@@ -2,6 +2,7 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { CourseCard } from "../CoursesCard";
 import { Button } from "../ui/button";
+import { CONTAINER_CLASSES, COURSE_GRID_CLASSES } from "@/utils/layouts";
 
 export function PopularCoursesSection() {
   // Sample popular courses
@@ -59,7 +60,7 @@ export function PopularCoursesSection() {
 
   return (
     <section className="py-20 bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)]/30">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className={CONTAINER_CLASSES}>
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-primary)] mb-4">
@@ -72,7 +73,7 @@ export function PopularCoursesSection() {
         </div>
 
         {/* Courses Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-8 mb-12">
+        <div className={`${COURSE_GRID_CLASSES} mb-12`}>
           {popularCourses.map((course) => (
             <CourseCard
               key={course.id}

@@ -1,10 +1,9 @@
 "use client";
 
-import { Edit, Eye, Heart, MapPin, Palette } from "lucide-react";
-import { useState } from "react";
+import { Eye, Heart, MapPin } from "lucide-react";
 import Link from "next/link";
-import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
+import { COURSE_CARD_CLASSES, ICON_TEXT_CLASSES, META_TEXT_CLASSES } from "@/utils/layouts";
 
 interface CourseCardProps {
   id: string | number;
@@ -27,14 +26,11 @@ export function CourseCard({
   steps,
   imageUrl,
 }: CourseCardProps) {
-  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <Link href={`/community/course/${id}`}>
       <Card
-        className="bg-white rounded-2xl shadow-[0_4px_20px_var(--pink-shadow)] hover:shadow-[0_8px_30px_var(--pink-shadow-hover)] transition-all duration-300 transform hover:-translate-y-1 overflow-hidden group cursor-pointer min-w-[320px]"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        className={COURSE_CARD_CLASSES}
       >
       {/* Image Header */}
       <div className="h-52 bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] relative overflow-hidden">
@@ -69,16 +65,16 @@ export function CourseCard({
         </div>
 
         {/* Meta Information */}
-        <div className="flex items-center space-x-4 mb-4 text-sm text-[var(--text-secondary)]">
-          <div className="flex items-center space-x-1">
+        <div className={`flex items-center space-x-4 mb-4 ${META_TEXT_CLASSES}`}>
+          <div className={ICON_TEXT_CLASSES}>
             <MapPin className="w-4 h-4 text-[var(--coral-pink)]" />
             <span>{placeCount}개 장소</span>
           </div>
-          <div className="flex items-center space-x-1">
+          <div className={ICON_TEXT_CLASSES}>
             <Heart className="w-4 h-4 text-[var(--coral-pink)]" />
             <span>{likes}</span>
           </div>
-          <div className="flex items-center space-x-1">
+          <div className={ICON_TEXT_CLASSES}>
             <Eye className="w-4 h-4 text-[var(--coral-pink)]" />
             <span>{views}</span>
           </div>
