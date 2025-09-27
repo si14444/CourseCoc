@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { ref, uploadString, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../../../lib/firebase";
@@ -177,6 +178,7 @@ function PreviewMap({ locations }: { locations: Location[] }) {
 
 export default function WritePage() {
   const { user } = useAuth();
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [courseData, setCourseData] = useState<CourseData>({
     title: "",
@@ -518,8 +520,10 @@ export default function WritePage() {
         alert("임시저장이 완료되었습니다!");
       } else {
         alert("게시글이 성공적으로 발행되었습니다!");
-        // TODO: 성공 후 커뮤니티 페이지로 리다이렉트
-        // router.push('/community');
+        // 발행 성공 후 커뮤니티 페이지로 리다이렉트
+        setTimeout(() => {
+          router.push('/community');
+        }, 1000); // 1초 후 이동 (사용자가 성공 메시지를 볼 수 있도록)
       }
     } catch (error) {
       const firebaseError = error as FirebaseError;

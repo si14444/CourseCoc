@@ -168,6 +168,9 @@ export default function Community() {
                       views={course.views}
                       steps={course.steps || course.locations?.map(loc => loc.name).filter(Boolean) || []}
                       imageUrl={course.imageUrl || course.heroImage}
+                      tags={course.tags}
+                      heroImage={course.heroImage}
+                      locationImages={course.locations?.map(loc => loc.image).filter(Boolean) || []}
                     />
                   ))}
                 </div>

@@ -7,6 +7,7 @@ import { EmptyState } from "../../components/EmptyState";
 import { CourseCard } from "../../components/CoursesCard";
 import { useAuth } from "../../contexts/AuthContext";
 import { getUserCourses, Course } from "../../lib/firebaseCourses";
+import { getCourseImageUrl, handleImageError } from "../../utils/defaultImages";
 import {
   Plus,
   Calendar,
@@ -345,12 +346,28 @@ export default function MyCoursesPage() {
                 <div key={course.id} className="relative group">
                   <Card className="shadow-romantic hover:shadow-[0_8px_30px_var(--pink-shadow-hover)] transition-all duration-300 overflow-hidden">
                     {/* 이미지 */}
-                    <div className="relative h-48 overflow-hidden">
-                      <img
-                        src={course.imageUrl}
-                        alt={course.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
+                    <div className="relative h-48 overflow-hidden bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)]">
+                      {(course.heroImage || course.imageUrl || (course.locations?.some(loc => loc.image))) ? (
+                        <img
+                          src={getCourseImageUrl(
+                            course.heroImage || course.imageUrl,
+                            course.locations?.map(loc => loc.image).filter(Boolean),
+                            course.tags
+                          )}
+                          alt={course.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          onError={(e) => handleImageError(e, course.tags)}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <div className="text-center">
+                            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-[var(--coral-pink)]/20 flex items-center justify-center mx-auto mb-2 sm:mb-3">
+                              <span className="text-lg sm:text-2xl">💕</span>
+                            </div>
+                            <p className="text-xs sm:text-sm text-[var(--coral-pink)] font-medium">로맨틱 데이트 코스</p>
+                          </div>
+                        </div>
+                      )}
                       <div className="absolute top-4 left-4">
                         {getStatusBadge(course.status)}
                       </div>

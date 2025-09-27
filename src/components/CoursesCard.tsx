@@ -4,6 +4,7 @@ import { Eye, Heart, MapPin } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent } from "./ui/card";
 import { COURSE_CARD_CLASSES, ICON_TEXT_CLASSES, META_TEXT_CLASSES } from "@/utils/layouts";
+import { getCourseImageUrl, handleImageError } from "@/utils/defaultImages";
 
 interface CourseCardProps {
   id: string | number;
@@ -14,6 +15,9 @@ interface CourseCardProps {
   views: number;
   steps: string[];
   imageUrl?: string;
+  tags?: string[];
+  heroImage?: string;
+  locationImages?: string[];
 }
 
 export function CourseCard({
@@ -25,6 +29,9 @@ export function CourseCard({
   views,
   steps,
   imageUrl,
+  tags = [],
+  heroImage,
+  locationImages = [],
 }: CourseCardProps) {
 
   return (
@@ -34,11 +41,12 @@ export function CourseCard({
       >
       {/* Image Header */}
       <div className="h-40 sm:h-48 lg:h-52 bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] relative overflow-hidden">
-        {imageUrl ? (
+        {(heroImage || imageUrl || (locationImages && locationImages.length > 0)) ? (
           <img
-            src={imageUrl}
+            src={getCourseImageUrl(heroImage || imageUrl, locationImages, tags)}
             alt={title}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            onError={(e) => handleImageError(e, tags)}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
