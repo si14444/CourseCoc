@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { ref, uploadString, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../../../lib/firebase";
 import { useAuth } from "../../../contexts/AuthContext";
+import { getCourseById, updateCourse } from "../../../lib/firebaseCourses";
 import { Header } from "../../../components/Header";
 import {
   Camera,
@@ -178,6 +179,8 @@ function PreviewMap({ locations }: { locations: Location[] }) {
 export default function WritePage() {
   const { user } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get('edit');
   const [step, setStep] = useState(1);
   const [courseData, setCourseData] = useState<CourseData>({
     title: "",
@@ -193,6 +196,7 @@ export default function WritePage() {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
+  const [isLoadingCourse, setIsLoadingCourse] = useState(false);
   const heroImageInputRef = useRef<HTMLInputElement>(null);
   const locationImageInputRefs = useRef<{
     [key: string]: HTMLInputElement | null;
@@ -229,6 +233,43 @@ export default function WritePage() {
       // 컴포넌트 언마운트 시에는 스크립트를 제거하지 않음 (다른 컴포넌트에서 사용할 수 있음)
     };
   }, []);
+
+  // 편집 모드에서 기존 코스 데이터 로드
+  useEffect(() => {
+    const loadCourseForEdit = async () => {
+      if (editId && user) {
+        try {
+          setIsLoadingCourse(true);
+          const course = await getCourseById(editId);
+
+          if (course && course.authorId === user.uid) {
+            setCourseData({
+              title: course.title,
+              description: course.description,
+              tags: course.tags,
+              duration: course.duration,
+              budget: course.budget,
+              season: course.season,
+              heroImage: course.heroImage,
+              locations: course.locations,
+              content: course.content,
+            });
+          } else {
+            alert("수정 권한이 없거나 존재하지 않는 코스입니다.");
+            router.push("/courses");
+          }
+        } catch (error) {
+          console.error("코스 로드 중 오류:", error);
+          alert("코스를 불러오는 중 오류가 발생했습니다.");
+          router.push("/courses");
+        } finally {
+          setIsLoadingCourse(false);
+        }
+      }
+    };
+
+    loadCourseForEdit();
+  }, [editId, user, router]);
 
   const addLocation = () => {
     const newLocation: Location = {
@@ -508,13 +549,23 @@ export default function WritePage() {
 
       courseDoc.locations = processedLocations;
 
-      await addDoc(collection(db, "courses"), courseDoc);
-
-      alert("게시글이 성공적으로 발행되었습니다!");
-      // 발행 성공 후 커뮤니티 페이지로 리다이렉트
-      setTimeout(() => {
-        router.push('/community');
-      }, 1000); // 1초 후 이동 (사용자가 성공 메시지를 볼 수 있도록)
+      if (editId) {
+        // 편집 모드: 기존 코스 업데이트
+        await updateCourse(editId, courseDoc);
+        alert("코스가 성공적으로 수정되었습니다!");
+        // 수정 성공 후 내 코스 페이지로 리다이렉트
+        setTimeout(() => {
+          router.push('/courses');
+        }, 1000);
+      } else {
+        // 새 코스 생성
+        await addDoc(collection(db, "courses"), courseDoc);
+        alert("게시글이 성공적으로 발행되었습니다!");
+        // 발행 성공 후 커뮤니티 페이지로 리다이렉트
+        setTimeout(() => {
+          router.push('/community');
+        }, 1000); // 1초 후 이동 (사용자가 성공 메시지를 볼 수 있도록)
+      }
     } catch (error) {
       const firebaseError = error as FirebaseError;
       console.error("저장 중 오류가 발생했습니다:", error);
@@ -564,11 +615,19 @@ export default function WritePage() {
         <div className="bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] py-16">
           <div className="max-w-5xl mx-auto px-6 text-center">
             <h1 className="text-4xl font-bold text-[var(--text-primary)] mb-4">
-              새로운 데이트 코스 작성하기
+              {editId ? "데이트 코스 수정하기" : "새로운 데이트 코스 작성하기"}
             </h1>
             <p className="text-lg text-[var(--text-secondary)] max-w-4xl mx-auto">
               특별한 추억이 될 로맨틱한 코스를 공유해보세요
             </p>
+
+            {/* 코스 로딩 상태 표시 */}
+            {isLoadingCourse && (
+              <div className="mt-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--coral-pink)] mx-auto mb-2"></div>
+                <p className="text-[var(--text-secondary)]">코스 정보를 불러오는 중...</p>
+              </div>
+            )}
 
             {/* 진행 단계 표시기 - 개선된 버전 */}
             <div className="flex justify-center items-center mt-10 space-x-4">
@@ -1367,7 +1426,10 @@ export default function WritePage() {
                           disabled={isPublishing}
                         >
                           <Send className="w-4 h-4 mr-2" />
-                          {isPublishing ? "발행중..." : "게시하기"}
+                          {isPublishing
+                            ? (editId ? "수정중..." : "발행중...")
+                            : (editId ? "수정완료" : "게시하기")
+                          }
                         </Button>
                       </div>
                     </div>

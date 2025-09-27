@@ -6,7 +6,7 @@ import { SearchAndFilter } from "../../components/SearchAndFilter";
 import { EmptyState } from "../../components/EmptyState";
 import { CourseCard } from "../../components/CoursesCard";
 import { useAuth } from "../../contexts/AuthContext";
-import { getUserCourses, Course } from "../../lib/firebaseCourses";
+import { getUserCourses, Course, deleteCourse } from "../../lib/firebaseCourses";
 import { getCourseImageUrl, handleImageError } from "../../utils/defaultImages";
 import {
   Plus,
@@ -70,10 +70,39 @@ export default function MyCoursesPage() {
   // 모든 코스 표시 (필터링 없음)
   const filteredCourses = courses;
 
-  const handleDeleteCourse = (courseId: string) => {
-    if (confirm("정말로 이 코스를 삭제하시겠습니까?")) {
-      setCourses(prev => prev.filter(course => course.id !== courseId));
-      // TODO: Firebase에서 삭제하는 함수 추가
+  const handleDeleteCourse = async (courseId: string) => {
+    if (confirm("정말로 이 코스를 삭제하시겠습니까?\n삭제된 코스는 복구할 수 없습니다.")) {
+      try {
+        // 사용자 인증 상태 재확인
+        if (!user) {
+          alert("로그인 상태를 확인할 수 없습니다. 다시 로그인해주세요.");
+          return;
+        }
+
+        setLoading(true);
+
+        // 삭제할 코스가 현재 사용자의 코스인지 미리 확인
+        const courseToDelete = courses.find(course => course.id === courseId);
+        if (courseToDelete && courseToDelete.authorId !== user.uid) {
+          alert("본인이 작성한 코스만 삭제할 수 있습니다.");
+          return;
+        }
+
+        // 사용자 ID와 함께 삭제 요청
+        await deleteCourse(courseId, user.uid);
+
+        // 성공 시 UI에서 제거
+        setCourses(prev => prev.filter(course => course.id !== courseId));
+        alert("코스가 성공적으로 삭제되었습니다.");
+      } catch (err: any) {
+        console.error("코스 삭제 실패:", err);
+
+        // 더 자세한 에러 메시지 제공
+        const errorMessage = err.message || '알 수 없는 오류가 발생했습니다.';
+        alert(`코스 삭제 실패: ${errorMessage}`);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -255,7 +284,7 @@ export default function MyCoursesPage() {
             <div className="text-center py-16">
               <BookOpen className="w-16 h-16 mx-auto mb-4 text-gray-400" />
               <h3 className="text-lg font-medium text-[var(--text-primary)] mb-2">
-                {activeTab === "all" ? "아직 만든 코스가 없습니다" : `${activeTab} 상태의 코스가 없습니다`}
+                아직 만든 코스가 없습니다
               </h3>
               <p className="text-[var(--text-secondary)] mb-6">
                 첫 번째 로맨틱한 데이트 코스를 만들어보세요!
@@ -278,7 +307,7 @@ export default function MyCoursesPage() {
                         <img
                           src={getCourseImageUrl(
                             course.heroImage || course.imageUrl,
-                            course.locations?.map(loc => loc.image).filter(Boolean),
+                            course.locations?.map(loc => loc.image).filter((img): img is string => Boolean(img)),
                             course.tags
                           )}
                           alt={course.title}

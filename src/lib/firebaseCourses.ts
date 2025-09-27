@@ -9,10 +9,12 @@ import {
   where,
   updateDoc,
   increment,
+  deleteDoc,
+  serverTimestamp,
   QueryDocumentSnapshot,
   DocumentData
 } from 'firebase/firestore';
-import { db } from './firebase';
+import { db, auth } from './firebase';
 
 // Course 타입 정의 (기존과 호환)
 export interface Course {
@@ -253,6 +255,73 @@ export const getUserCoursesByStatus = async (userId: string, isDraft?: boolean):
     return courses;
   } catch (error) {
     console.error('사용자 코스 목록을 가져오는 중 오류 발생:', error);
+    throw error;
+  }
+};
+
+// 코스 삭제
+export const deleteCourse = async (courseId: string, userId?: string): Promise<void> => {
+  try {
+    // 인증된 사용자인지 확인
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+      throw new Error('로그인이 필요합니다.');
+    }
+
+    // 전달받은 userId와 현재 사용자가 일치하는지 확인
+    const verifiedUserId = userId || currentUser.uid;
+    if (currentUser.uid !== verifiedUserId) {
+      throw new Error('권한이 없습니다.');
+    }
+
+    const docRef = doc(db, 'courses', courseId);
+
+    // 삭제하기 전에 문서가 존재하고 작성자가 맞는지 확인
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) {
+      throw new Error('삭제하려는 코스를 찾을 수 없습니다.');
+    }
+
+    const courseData = docSnap.data();
+    if (courseData.authorId !== verifiedUserId) {
+      throw new Error('본인이 작성한 코스만 삭제할 수 있습니다.');
+    }
+
+    // 삭제 실행
+    await deleteDoc(docRef);
+    console.log(`코스 ${courseId} 삭제 성공`);
+  } catch (error: any) {
+    console.error('코스 삭제 중 오류 발생:', error);
+
+    // Firebase 에러 메시지를 사용자 친화적으로 변환
+    if (error.code === 'permission-denied') {
+      throw new Error('코스를 삭제할 권한이 없습니다. 본인이 작성한 코스인지 확인해주세요.');
+    } else if (error.code === 'not-found') {
+      throw new Error('삭제하려는 코스를 찾을 수 없습니다.');
+    } else if (error.code === 'unauthenticated') {
+      throw new Error('로그인 상태를 확인할 수 없습니다. 다시 로그인해주세요.');
+    }
+
+    throw error;
+  }
+};
+
+// 코스 업데이트 (전체 문서 업데이트)
+export const updateCourse = async (courseId: string, courseData: Partial<Course>): Promise<void> => {
+  try {
+    const docRef = doc(db, 'courses', courseId);
+    const updateData = {
+      ...courseData,
+      updatedAt: serverTimestamp()
+    };
+
+    // 수정 시 제거해야 할 필드들
+    delete (updateData as any).id;
+    delete (updateData as any).createdAt; // 생성일은 수정하지 않음
+
+    await updateDoc(docRef, updateData);
+  } catch (error) {
+    console.error('코스 업데이트 중 오류 발생:', error);
     throw error;
   }
 };
