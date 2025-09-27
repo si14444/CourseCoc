@@ -38,6 +38,27 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Prevent extension interference during hydration
+              if (typeof window !== 'undefined') {
+                const observer = new MutationObserver(() => {
+                  // Remove extension-added attributes that cause hydration mismatches
+                  document.querySelectorAll('[data-wxt-integrated]').forEach(el => {
+                    el.removeAttribute('data-wxt-integrated');
+                  });
+                });
+                observer.observe(document.documentElement, {
+                  attributes: true,
+                  subtree: true
+                });
+              }
+            `,
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning

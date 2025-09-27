@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
+import { CONTAINER_CLASSES } from "@/utils/layouts";
 import Link from "next/link";
 
 // 내 코스 샘플 데이터
@@ -123,7 +124,7 @@ export default function MyCoursesPage() {
       <Header />
 
       <main className="pt-20 pb-8">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className={CONTAINER_CLASSES}>
           {/* 페이지 헤더 */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
             <div>

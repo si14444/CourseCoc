@@ -78,7 +78,7 @@ export default function Community() {
 
   return (
     <div
-      className="min-h-screen bg-white flex justify-center"
+      className="min-h-screen bg-white"
       suppressHydrationWarning
     >
       <Header />
