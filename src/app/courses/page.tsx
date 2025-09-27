@@ -31,7 +31,6 @@ export default function MyCoursesPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState("all"); // all, published, draft, private
   const [showStats, setShowStats] = useState(true);
 
   // Firebase에서 사용자 코스 데이터 가져오기
@@ -68,11 +67,8 @@ export default function MyCoursesPage() {
     avgRating: 4.8 // 평점 시스템이 구현되면 실제 계산으로 변경
   };
 
-  // 탭에 따른 코스 필터링
-  const filteredCourses = courses.filter(course => {
-    if (activeTab === "all") return true;
-    return course.status === activeTab;
-  });
+  // 모든 코스 표시 (필터링 없음)
+  const filteredCourses = courses;
 
   const handleDeleteCourse = (courseId: string) => {
     if (confirm("정말로 이 코스를 삭제하시겠습니까?")) {
@@ -81,30 +77,6 @@ export default function MyCoursesPage() {
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "published":
-        return (
-          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-            게시됨
-          </span>
-        );
-      case "draft":
-        return (
-          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-            임시저장
-          </span>
-        );
-      case "private":
-        return (
-          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-            비공개
-          </span>
-        );
-      default:
-        return null;
-    }
-  };
 
   const formatDate = (timestamp: any) => {
     if (!timestamp) return "";
@@ -255,51 +227,6 @@ export default function MyCoursesPage() {
             </div>
           )}
 
-          {/* 탭 네비게이션 */}
-          <div className="border-b border-[var(--color-border)] mb-6">
-            <nav className="flex space-x-8">
-              <button
-                onClick={() => setActiveTab("all")}
-                className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-                  activeTab === "all"
-                    ? "border-[var(--coral-pink)] text-[var(--coral-pink)]"
-                    : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-gray-300"
-                }`}
-              >
-                전체 ({courses.length})
-              </button>
-              <button
-                onClick={() => setActiveTab("published")}
-                className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-                  activeTab === "published"
-                    ? "border-[var(--coral-pink)] text-[var(--coral-pink)]"
-                    : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-gray-300"
-                }`}
-              >
-                게시됨 ({courses.filter(c => c.status === "published").length})
-              </button>
-              <button
-                onClick={() => setActiveTab("draft")}
-                className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-                  activeTab === "draft"
-                    ? "border-[var(--coral-pink)] text-[var(--coral-pink)]"
-                    : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-gray-300"
-                }`}
-              >
-                임시저장 ({courses.filter(c => c.status === "draft").length})
-              </button>
-              <button
-                onClick={() => setActiveTab("private")}
-                className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-                  activeTab === "private"
-                    ? "border-[var(--coral-pink)] text-[var(--coral-pink)]"
-                    : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-gray-300"
-                }`}
-              >
-                비공개 ({courses.filter(c => c.status === "private").length})
-              </button>
-            </nav>
-          </div>
 
           {/* 에러 상태 */}
           {error && (
@@ -368,9 +295,6 @@ export default function MyCoursesPage() {
                           </div>
                         </div>
                       )}
-                      <div className="absolute top-4 left-4">
-                        {getStatusBadge(course.status)}
-                      </div>
 
                       {/* 관리 버튼들 */}
                       <div className="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
