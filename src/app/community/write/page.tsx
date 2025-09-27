@@ -17,7 +17,6 @@ import {
   X,
   GripVertical,
   Eye,
-  Save,
   Send,
   Heart,
   Bookmark,
@@ -193,7 +192,6 @@ export default function WritePage() {
 
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const heroImageInputRef = useRef<HTMLInputElement>(null);
   const locationImageInputRefs = useRef<{
@@ -387,7 +385,7 @@ export default function WritePage() {
   };
 
   // Firebase 저장 함수들
-  const saveCourse = async (isDraft: boolean = true) => {
+  const saveCourse = async () => {
     // 기본 유효성 검사
     if (!courseData.title?.trim() || !courseData.description?.trim()) {
       alert("제목과 설명은 필수 항목입니다.");
@@ -424,11 +422,7 @@ export default function WritePage() {
       return;
     }
 
-    if (isDraft) {
-      setIsSaving(true);
-    } else {
-      setIsPublishing(true);
-    }
+    setIsPublishing(true);
 
 
     try {
@@ -455,7 +449,7 @@ export default function WritePage() {
         season: courseData.season?.trim() || "",
         locations: [],
         content: courseData.content.trim(),
-        isDraft: isDraft,
+        isDraft: false,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         likes: 0,
@@ -516,15 +510,11 @@ export default function WritePage() {
 
       await addDoc(collection(db, "courses"), courseDoc);
 
-      if (isDraft) {
-        alert("임시저장이 완료되었습니다!");
-      } else {
-        alert("게시글이 성공적으로 발행되었습니다!");
-        // 발행 성공 후 커뮤니티 페이지로 리다이렉트
-        setTimeout(() => {
-          router.push('/community');
-        }, 1000); // 1초 후 이동 (사용자가 성공 메시지를 볼 수 있도록)
-      }
+      alert("게시글이 성공적으로 발행되었습니다!");
+      // 발행 성공 후 커뮤니티 페이지로 리다이렉트
+      setTimeout(() => {
+        router.push('/community');
+      }, 1000); // 1초 후 이동 (사용자가 성공 메시지를 볼 수 있도록)
     } catch (error) {
       const firebaseError = error as FirebaseError;
       console.error("저장 중 오류가 발생했습니다:", error);
@@ -557,17 +547,12 @@ export default function WritePage() {
 다시 시도해주시거나 관리자에게 문의해주세요.`);
       }
     } finally {
-      setIsSaving(false);
       setIsPublishing(false);
     }
   };
 
-  const handleSaveDraft = () => {
-    saveCourse(true);
-  };
-
   const handlePublish = () => {
-    saveCourse(false);
+    saveCourse();
   };
 
   return (
@@ -1110,11 +1095,7 @@ export default function WritePage() {
                         onChange={(content) =>
                           setCourseData((prev) => ({ ...prev, content }))
                         }
-                        placeholder="데이트 코스에 대한 상세한 이야기를 들려주세요.
-
-어떤 기분이었는지, 무엇이 특별했는지, 연인과 함께한 순간들을 자유롭게 표현해보세요.
-
-이미지를 추가하고 텍스트를 꾸며서 더욱 생생한 이야기를 만들어보세요! ✨"
+                        placeholder="코스에 대한 내용을 자유롭게 작성해보세요."
                         className="w-full"
                       />
                     </div>
@@ -1381,17 +1362,9 @@ export default function WritePage() {
                       </Button>
                       <div className="space-x-4">
                         <Button
-                          variant="outline"
-                          onClick={handleSaveDraft}
-                          disabled={isSaving || isPublishing}
-                        >
-                          <Save className="w-4 h-4 mr-2" />
-                          {isSaving ? "저장중..." : "임시저장"}
-                        </Button>
-                        <Button
                           className="btn-primary"
                           onClick={handlePublish}
-                          disabled={isSaving || isPublishing}
+                          disabled={isPublishing}
                         >
                           <Send className="w-4 h-4 mr-2" />
                           {isPublishing ? "발행중..." : "게시하기"}

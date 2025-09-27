@@ -75,7 +75,7 @@ export function getCourseImageUrl(
  */
 export function handleImageError(
   event: React.SyntheticEvent<HTMLImageElement>,
-  tags: string[] = []
+  _tags: string[] = []
 ): void {
   const imgElement = event.currentTarget;
   // 이미지를 숨김 (부모 컨테이너의 핑크 하트 배너가 보이도록)
