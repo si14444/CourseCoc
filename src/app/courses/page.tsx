@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "../../components/Header";
 import { SearchAndFilter } from "../../components/SearchAndFilter";
 import { EmptyState } from "../../components/EmptyState";
 import { CourseCard } from "../../components/CoursesCard";
+import { useAuth } from "../../contexts/AuthContext";
+import { getUserCourses, Course } from "../../lib/firebaseCourses";
 import {
   Plus,
   Calendar,
@@ -23,64 +25,47 @@ import { Card, CardContent } from "../../components/ui/card";
 import { CONTAINER_CLASSES } from "@/utils/layouts";
 import Link from "next/link";
 
-// 내 코스 샘플 데이터
-const myCourses = [
-  {
-    id: 1,
-    title: "도심 속 로맨틱 이브닝",
-    description: "친밀한 디너 스팟과 아름다운 도시 야경을 즐기는 완벽한 데이트 코스",
-    placeCount: 5,
-    likes: 124,
-    views: 856,
-    steps: ["선셋 카페", "미술관", "저녁식사", "야경 산책", "디저트 바"],
-    imageUrl: "https://images.unsplash.com/photo-1621596016740-c831e613dc49?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-    status: "published", // published, draft, private
-    createdAt: "2024-01-15",
-    updatedAt: "2024-01-20",
-    isBookmarked: false
-  },
-  {
-    id: 2,
-    title: "자연 속 힐링 데이트",
-    description: "바쁜 일상을 벗어나 자연 속에서 여유로운 시간을 보내는 코스",
-    placeCount: 4,
-    likes: 67,
-    views: 423,
-    steps: ["공원 산책", "피크닉", "호수 전망", "일몰 감상"],
-    imageUrl: "https://images.unsplash.com/photo-1724216605131-c8b0d4974458?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-    status: "draft",
-    createdAt: "2024-01-10",
-    updatedAt: "2024-01-12",
-    isBookmarked: true
-  },
-  {
-    id: 3,
-    title: "문화 체험 데이트",
-    description: "예술과 문화를 함께 즐기는 지적인 데이트 코스",
-    placeCount: 6,
-    likes: 89,
-    views: 634,
-    steps: ["박물관", "갤러리", "카페", "서점", "와인바", "콘서트홀"],
-    imageUrl: "https://images.unsplash.com/photo-1696238378039-821fc376ebd4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-    status: "private",
-    createdAt: "2024-01-08",
-    updatedAt: "2024-01-18",
-    isBookmarked: false
-  }
-];
-
-// 통계 데이터
-const stats = {
-  totalCourses: 3,
-  totalViews: 1913,
-  totalLikes: 280,
-  avgRating: 4.8
-};
-
 export default function MyCoursesPage() {
-  const [courses, setCourses] = useState(myCourses);
+  const { user, loading: authLoading } = useAuth();
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("all"); // all, published, draft, private
   const [showStats, setShowStats] = useState(true);
+
+  // Firebase에서 사용자 코스 데이터 가져오기
+  useEffect(() => {
+    const fetchUserCourses = async () => {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        setError(null);
+        const userCourses = await getUserCourses(user.uid);
+        setCourses(userCourses);
+      } catch (err: any) {
+        console.error("사용자 코스 데이터 로딩 실패:", err);
+        setError(err.message || "코스 데이터를 불러오는 중 오류가 발생했습니다.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (!authLoading) {
+      fetchUserCourses();
+    }
+  }, [user, authLoading]);
+
+  // 통계 계산
+  const stats = {
+    totalCourses: courses.length,
+    totalViews: courses.reduce((sum, course) => sum + (course.views || 0), 0),
+    totalLikes: courses.reduce((sum, course) => sum + (course.likes || 0), 0),
+    avgRating: 4.8 // 평점 시스템이 구현되면 실제 계산으로 변경
+  };
 
   // 탭에 따른 코스 필터링
   const filteredCourses = courses.filter(course => {
@@ -88,9 +73,10 @@ export default function MyCoursesPage() {
     return course.status === activeTab;
   });
 
-  const handleDeleteCourse = (courseId: number) => {
+  const handleDeleteCourse = (courseId: string) => {
     if (confirm("정말로 이 코스를 삭제하시겠습니까?")) {
       setCourses(prev => prev.filter(course => course.id !== courseId));
+      // TODO: Firebase에서 삭제하는 함수 추가
     }
   };
 
@@ -118,6 +104,68 @@ export default function MyCoursesPage() {
         return null;
     }
   };
+
+  const formatDate = (timestamp: any) => {
+    if (!timestamp) return "";
+    try {
+      // Firebase Timestamp 객체인 경우
+      if (timestamp.toDate) {
+        return timestamp.toDate().toLocaleDateString('ko-KR');
+      }
+      // Date 객체인 경우
+      if (timestamp instanceof Date) {
+        return timestamp.toLocaleDateString('ko-KR');
+      }
+      // 문자열인 경우
+      return new Date(timestamp).toLocaleDateString('ko-KR');
+    } catch (error) {
+      return "";
+    }
+  };
+
+  // 로딩 상태 (인증 로딩 중이거나 데이터 로딩 중)
+  if (authLoading || loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header />
+        <main className="pt-20 pb-8">
+          <div className={CONTAINER_CLASSES}>
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--primary-color)] mx-auto mb-4"></div>
+              <p className="text-[var(--text-secondary)]">코스 데이터를 불러오는 중...</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // 로그인하지 않은 사용자
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header />
+        <main className="pt-20 pb-8">
+          <div className={CONTAINER_CLASSES}>
+            <div className="text-center py-16">
+              <BookOpen className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+              <h3 className="text-lg font-medium text-[var(--text-primary)] mb-2">
+                로그인이 필요합니다
+              </h3>
+              <p className="text-[var(--text-secondary)] mb-6">
+                내 코스를 보려면 먼저 로그인해주세요.
+              </p>
+              <Link href="/auth/login">
+                <Button className="btn-primary">
+                  로그인하기
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -252,11 +300,30 @@ export default function MyCoursesPage() {
             </nav>
           </div>
 
+          {/* 에러 상태 */}
+          {error && (
+            <div className="text-center py-12 mb-8">
+              <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-2xl mx-auto">
+                <h3 className="text-lg font-semibold text-red-800 mb-2">
+                  오류가 발생했습니다
+                </h3>
+                <p className="text-red-600 mb-4">{error}</p>
+                <Button
+                  onClick={() => window.location.reload()}
+                  className="text-red-800 border-red-300 hover:bg-red-50"
+                  variant="outline"
+                >
+                  다시 시도
+                </Button>
+              </div>
+            </div>
+          )}
+
           {/* 검색 및 필터 */}
           <SearchAndFilter />
 
           {/* 코스 목록 */}
-          {filteredCourses.length === 0 ? (
+          {!error && filteredCourses.length === 0 ? (
             <div className="text-center py-16">
               <BookOpen className="w-16 h-16 mx-auto mb-4 text-gray-400" />
               <h3 className="text-lg font-medium text-[var(--text-primary)] mb-2">
@@ -335,7 +402,7 @@ export default function MyCoursesPage() {
                       <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
                         <div className="flex items-center space-x-1">
                           <Clock className="w-3 h-3" />
-                          <span>업데이트: {course.updatedAt}</span>
+                          <span>업데이트: {formatDate(course.updatedAt)}</span>
                         </div>
                         <Link href={`/community/course/${course.id}`}>
                           <Button variant="outline" size="sm" className="text-xs">

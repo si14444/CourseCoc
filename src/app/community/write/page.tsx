@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { ref, uploadString, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../../../lib/firebase";
+import { useAuth } from "../../../contexts/AuthContext";
 import { Header } from "../../../components/Header";
 import {
   Camera,
@@ -63,6 +64,8 @@ interface CourseDocument {
   views: number;
   bookmarks: number;
   heroImage?: string;
+  authorId: string;
+  authorName?: string;
 }
 
 interface CourseData {
@@ -173,6 +176,7 @@ function PreviewMap({ locations }: { locations: Location[] }) {
 }
 
 export default function WritePage() {
+  const { user } = useAuth();
   const [step, setStep] = useState(1);
   const [courseData, setCourseData] = useState<CourseData>({
     title: "",
@@ -455,9 +459,9 @@ export default function WritePage() {
         likes: 0,
         views: 0,
         bookmarks: 0,
-        // TODO: 로그인 시스템이 구현되면 작성자 정보 추가
-        // authorId: currentUser?.uid,
-        // authorName: currentUser?.displayName
+        // 작성자 정보 추가
+        authorId: user?.uid || '',
+        authorName: user?.displayName || user?.email || ''
       };
 
       // heroImage URL이 있을 때만 추가

@@ -44,6 +44,40 @@ export function AddressAutocomplete({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // API 로드 상태 확인
+  const [isApiReady, setIsApiReady] = useState(false);
+  const [apiError, setApiError] = useState(false);
+
+  // Kakao Maps API 로드 확인 및 대기
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    let attempts = 0;
+    const maxAttempts = 50; // 최대 5초 대기 (100ms * 50)
+
+    const checkApiReady = () => {
+      if (window.kakao && window.kakao.maps && window.kakao.maps.services) {
+        setIsApiReady(true);
+        return;
+      }
+
+      attempts++;
+      if (attempts < maxAttempts) {
+        timeoutId = setTimeout(checkApiReady, 100);
+      } else {
+        console.warn('Kakao Maps API 로드 시간 초과');
+        setApiError(true);
+      }
+    };
+
+    checkApiReady();
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, []);
+
   // 카카오맵 검색 함수
   const searchAddress = useCallback(async (keyword: string) => {
     if (!keyword.trim()) {
@@ -51,9 +85,9 @@ export function AddressAutocomplete({
       return;
     }
 
-    // Kakao Maps API와 services 라이브러리 로드 확인
-    if (!window.kakao || !window.kakao.maps || !window.kakao.maps.services) {
-      console.warn('Kakao Maps API 또는 services 라이브러리가 로드되지 않았습니다.');
+    // API 준비 상태 확인
+    if (!isApiReady || !window.kakao || !window.kakao.maps || !window.kakao.maps.services) {
+      console.warn('Kakao Maps API가 아직 로드되지 않았습니다. 잠시 후 다시 시도해주세요.');
       setResults([]);
       return;
     }
@@ -88,7 +122,7 @@ export function AddressAutocomplete({
       setIsLoading(false);
       setResults([]);
     }
-  }, []);
+  }, [isApiReady]);
 
   // 입력값 변경 시 자동완성 검색
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -194,15 +228,25 @@ export function AddressAutocomplete({
               setIsOpen(true);
             }
           }}
-          placeholder={placeholder}
-          disabled={disabled}
-          className={`w-full pr-10 ${className}`}
+          placeholder={
+            apiError
+              ? "지도 서비스를 사용할 수 없습니다"
+              : isApiReady
+                ? placeholder
+                : "지도 API 로딩 중..."
+          }
+          disabled={disabled || !isApiReady || apiError}
+          className={`w-full pr-10 ${className} ${!isApiReady || apiError ? 'opacity-50' : ''}`}
         />
 
         {/* 검색/로딩 아이콘 */}
         <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-          {isLoading ? (
+          {!isApiReady && !apiError ? (
+            <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-300 border-t-transparent" />
+          ) : isLoading ? (
             <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary border-t-transparent" />
+          ) : apiError ? (
+            <Search className="h-4 w-4 text-red-400" />
           ) : (
             <Search className="h-4 w-4 text-muted" />
           )}

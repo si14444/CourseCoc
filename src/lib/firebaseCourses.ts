@@ -32,10 +32,12 @@ export interface Course {
   likes: number;
   views: number;
   bookmarks: number;
+  authorId?: string; // 코스 작성자 ID
   // 디스플레이용 추가 필드들 (기존 샘플 데이터와 호환)
   placeCount?: number;
   steps?: string[];
   imageUrl?: string;
+  status?: 'published' | 'draft' | 'private'; // 디스플레이용 상태
 }
 
 export interface Location {
@@ -73,10 +75,12 @@ const convertFirestoreDocToCourse = (doc: QueryDocumentSnapshot<DocumentData>): 
     likes: data.likes || 0,
     views: data.views || 0,
     bookmarks: data.bookmarks || 0,
+    authorId: data.authorId,
     // 디스플레이용 필드들 변환
     placeCount: data.locations?.length || 0,
     steps: data.locations?.map((loc: Location) => loc.name).filter(Boolean) || [],
-    imageUrl: data.heroImage || data.locations?.find((loc: Location) => loc.image)?.image
+    imageUrl: data.heroImage || data.locations?.find((loc: Location) => loc.image)?.image,
+    status: data.isDraft ? 'draft' : 'published' // Firebase isDraft을 status로 변환
   };
 };
 
@@ -172,6 +176,83 @@ export const updateCourseBookmarks = async (courseId: string, increment_value: n
     });
   } catch (error) {
     console.error('북마크 업데이트 중 오류 발생:', error);
+    throw error;
+  }
+};
+
+// 사용자의 코스 가져오기 (내 코스 페이지용)
+export const getUserCourses = async (userId: string): Promise<Course[]> => {
+  try {
+    const coursesRef = collection(db, 'courses');
+    const q = query(
+      coursesRef,
+      where('authorId', '==', userId),
+      limit(100) // 인덱스 문제로 orderBy 임시 제거
+    );
+
+    const snapshot = await getDocs(q);
+    const courses = snapshot.docs.map(convertFirestoreDocToCourse);
+
+    // 클라이언트에서 정렬 (임시 해결책)
+    courses.sort((a, b) => {
+      if (!a.updatedAt || !b.updatedAt) return 0;
+
+      try {
+        const dateA = a.updatedAt.toDate ? a.updatedAt.toDate() : new Date(a.updatedAt);
+        const dateB = b.updatedAt.toDate ? b.updatedAt.toDate() : new Date(b.updatedAt);
+        return dateB.getTime() - dateA.getTime(); // 최신순
+      } catch {
+        return 0;
+      }
+    });
+
+    return courses;
+  } catch (error) {
+    console.error('사용자 코스 목록을 가져오는 중 오류 발생:', error);
+    throw error;
+  }
+};
+
+// 사용자의 특정 상태별 코스 가져오기
+export const getUserCoursesByStatus = async (userId: string, isDraft?: boolean): Promise<Course[]> => {
+  try {
+    const coursesRef = collection(db, 'courses');
+    let q;
+
+    if (isDraft !== undefined) {
+      q = query(
+        coursesRef,
+        where('authorId', '==', userId),
+        where('isDraft', '==', isDraft),
+        limit(100) // 인덱스 문제로 orderBy 임시 제거
+      );
+    } else {
+      q = query(
+        coursesRef,
+        where('authorId', '==', userId),
+        limit(100) // 인덱스 문제로 orderBy 임시 제거
+      );
+    }
+
+    const snapshot = await getDocs(q);
+    const courses = snapshot.docs.map(convertFirestoreDocToCourse);
+
+    // 클라이언트에서 정렬 (임시 해결책)
+    courses.sort((a, b) => {
+      if (!a.updatedAt || !b.updatedAt) return 0;
+
+      try {
+        const dateA = a.updatedAt.toDate ? a.updatedAt.toDate() : new Date(a.updatedAt);
+        const dateB = b.updatedAt.toDate ? b.updatedAt.toDate() : new Date(b.updatedAt);
+        return dateB.getTime() - dateA.getTime(); // 최신순
+      } catch {
+        return 0;
+      }
+    });
+
+    return courses;
+  } catch (error) {
+    console.error('사용자 코스 목록을 가져오는 중 오류 발생:', error);
     throw error;
   }
 };
