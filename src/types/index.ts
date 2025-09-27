@@ -15,6 +15,21 @@ export interface Place {
   updatedAt: Date
 }
 
+// Firebase Course에서 사용하는 Location 인터페이스
+export interface Location {
+  id: string;
+  name: string;
+  address: string;
+  time: string;
+  description: string;
+  detail: string;
+  image?: string;
+  position?: {
+    lat: number;
+    lng: number;
+  };
+}
+
 export interface Course {
   id: string
   title: string

@@ -106,7 +106,7 @@ export function AddressAutocomplete({
             // 결과를 최대 5개로 제한하고 관련도 높은 순으로 정렬
             setResults(data.slice(0, 5));
           } else {
-            console.log('장소 검색 실패:', status);
+            console.warn('장소 검색 실패:', status);
             setResults([]);
           }
         },

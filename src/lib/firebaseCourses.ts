@@ -15,6 +15,7 @@ import {
   DocumentData
 } from 'firebase/firestore';
 import { db, auth } from './firebase';
+import { Location } from '@/types';
 
 // Course 타입 정의 (기존과 호환)
 export interface Course {
@@ -29,8 +30,8 @@ export interface Course {
   locations: Location[];
   content: string;
   isDraft: boolean;
-  createdAt: any;
-  updatedAt: any;
+  createdAt: any; // Firebase Timestamp
+  updatedAt: any; // Firebase Timestamp
   likes: number;
   views: number;
   bookmarks: number;
@@ -42,19 +43,6 @@ export interface Course {
   status?: 'published' | 'draft' | 'private'; // 디스플레이용 상태
 }
 
-export interface Location {
-  id: string;
-  name: string;
-  address: string;
-  time: string;
-  description: string;
-  detail: string;
-  image?: string;
-  position?: {
-    lat: number;
-    lng: number;
-  };
-}
 
 // Firebase 문서를 Course 객체로 변환
 const convertFirestoreDocToCourse = (doc: QueryDocumentSnapshot<DocumentData>): Course => {
@@ -289,16 +277,16 @@ export const deleteCourse = async (courseId: string, userId?: string): Promise<v
 
     // 삭제 실행
     await deleteDoc(docRef);
-    console.log(`코스 ${courseId} 삭제 성공`);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('코스 삭제 중 오류 발생:', error);
+    const err = error as { code?: string; message?: string };
 
     // Firebase 에러 메시지를 사용자 친화적으로 변환
-    if (error.code === 'permission-denied') {
+    if (err.code === 'permission-denied') {
       throw new Error('코스를 삭제할 권한이 없습니다. 본인이 작성한 코스인지 확인해주세요.');
-    } else if (error.code === 'not-found') {
+    } else if (err.code === 'not-found') {
       throw new Error('삭제하려는 코스를 찾을 수 없습니다.');
-    } else if (error.code === 'unauthenticated') {
+    } else if (err.code === 'unauthenticated') {
       throw new Error('로그인 상태를 확인할 수 없습니다. 다시 로그인해주세요.');
     }
 

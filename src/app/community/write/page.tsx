@@ -28,20 +28,7 @@ import { Card, CardContent } from "../../../components/ui/card";
 import { AddressAutocomplete } from "../../../components/ui/AddressAutocomplete";
 import { RichTextEditor } from "../../../components/ui/RichTextEditor";
 import { Map, MapMarker, Polyline } from "react-kakao-maps-sdk";
-
-interface Location {
-  id: string;
-  name: string;
-  address: string;
-  time: string;
-  description: string;
-  detail: string;
-  image?: string;
-  position?: {
-    lat: number;
-    lng: number;
-  };
-}
+import { Location } from "@/types";
 
 interface FirebaseError extends Error {
   code?: string;
