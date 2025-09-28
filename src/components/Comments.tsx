@@ -193,6 +193,11 @@ export function Comments({ courseId }: CommentsProps) {
   };
 
   const formatDate = (date: Date) => {
+    // hydration 문제를 방지하기 위해 클라이언트에서만 상대 시간 계산
+    if (!isHydrated) {
+      return date.toLocaleDateString("ko-KR");
+    }
+
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60000);

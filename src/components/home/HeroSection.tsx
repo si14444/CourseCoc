@@ -14,8 +14,15 @@ export function HeroSection() {
     beta: true
   });
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
     const loadStats = async () => {
       try {
         const homeStats = await getHomeStats();
@@ -28,7 +35,7 @@ export function HeroSection() {
     };
 
     loadStats();
-  }, []);
+  }, [mounted]);
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-[var(--warm-white)] via-[var(--very-light-pink)] to-[var(--light-pink)] py-20 lg:py-32">
       {/* Background decorative elements */}
@@ -115,10 +122,10 @@ export function HeroSection() {
 
         {/* Real Stats or Launch Message */}
         <div className="max-w-4xl mx-auto">
-          {loading ? (
+          {!mounted || loading ? (
             <div className="text-center">
               <div className="text-lg text-[var(--text-secondary)]">
-                통계 로딩 중...
+                {!mounted ? "로딩 중..." : "통계 로딩 중..."}
               </div>
             </div>
           ) : stats.publishedCourses > 0 ? (

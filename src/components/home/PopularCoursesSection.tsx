@@ -11,8 +11,15 @@ import { getPublishedCourses, Course } from "@/lib/firebaseCourses";
 export function PopularCoursesSection() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
     const loadCourses = async () => {
       try {
         const publishedCourses = await getPublishedCourses();
@@ -29,7 +36,7 @@ export function PopularCoursesSection() {
     };
 
     loadCourses();
-  }, []);
+  }, [mounted]);
 
   return (
     <section className="py-20 bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)]/30">
@@ -48,10 +55,10 @@ export function PopularCoursesSection() {
         </div>
 
         {/* Courses Grid or Empty State */}
-        {loading ? (
+        {!mounted || loading ? (
           <div className="text-center py-12">
             <div className="text-lg text-[var(--text-secondary)]">
-              코스를 불러오고 있습니다...
+              {!mounted ? "로딩 중..." : "코스를 불러오고 있습니다..."}
             </div>
           </div>
         ) : courses.length > 0 ? (
