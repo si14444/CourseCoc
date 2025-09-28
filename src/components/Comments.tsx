@@ -17,7 +17,7 @@ interface CommentsProps {
 }
 
 export function Comments({ courseId }: CommentsProps) {
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const isHydrated = useHydration();
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -61,8 +61,8 @@ export function Comments({ courseId }: CommentsProps) {
 
     setSubmitting(true);
 
-    // 사용자 닉네임이 없으면 이메일에서 추출
-    const displayName = user.nickname || user.email?.split('@')[0] || "사용자";
+    // 사용자 닉네임을 userProfile에서 가져오기
+    const displayName = userProfile?.nickname || user.displayName || user.email?.split('@')[0] || "사용자";
 
     try {
       const result = await addComment(
@@ -70,7 +70,7 @@ export function Comments({ courseId }: CommentsProps) {
         user.uid,
         newComment,
         displayName,
-        user.profileImageUrl
+        userProfile?.profileImageUrl
       );
 
       if (result.success) {
@@ -102,8 +102,8 @@ export function Comments({ courseId }: CommentsProps) {
 
     setSubmitting(true);
 
-    // 사용자 닉네임이 없으면 이메일에서 추출
-    const displayName = user.nickname || user.email?.split('@')[0] || "사용자";
+    // 사용자 닉네임을 userProfile에서 가져오기
+    const displayName = userProfile?.nickname || user.displayName || user.email?.split('@')[0] || "사용자";
 
     try {
       const result = await addComment(
@@ -111,7 +111,7 @@ export function Comments({ courseId }: CommentsProps) {
         user.uid,
         replyContent,
         displayName,
-        user.profileImageUrl,
+        userProfile?.profileImageUrl,
         parentId
       );
 
@@ -240,16 +240,16 @@ export function Comments({ courseId }: CommentsProps) {
         <form onSubmit={handleSubmitComment} className="mb-6">
           <div className="flex space-x-3">
             <div className="flex-shrink-0">
-              {user.profileImageUrl ? (
+              {userProfile?.profileImageUrl ? (
                 <img
-                  src={user.profileImageUrl}
-                  alt={user.nickname || "프로필"}
+                  src={userProfile.profileImageUrl}
+                  alt={userProfile.nickname || "프로필"}
                   className="w-10 h-10 rounded-full object-cover"
                 />
               ) : (
                 <div className="w-10 h-10 bg-[var(--secondary-color)] rounded-full flex items-center justify-center">
                   <span className="text-[var(--primary-color)] font-medium">
-                    {(user.nickname || "U")[0].toUpperCase()}
+                    {(userProfile?.nickname || user.displayName || "U")[0].toUpperCase()}
                   </span>
                 </div>
               )}
@@ -435,16 +435,16 @@ export function Comments({ courseId }: CommentsProps) {
                     <form onSubmit={(e) => handleSubmitReply(e, comment.id)} className="mt-4 ml-8 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
                       <div className="flex space-x-3">
                         <div className="flex-shrink-0">
-                          {user.profileImageUrl ? (
+                          {userProfile?.profileImageUrl ? (
                             <img
-                              src={user.profileImageUrl}
-                              alt={user.nickname || "프로필"}
+                              src={userProfile.profileImageUrl}
+                              alt={userProfile.nickname || "프로필"}
                               className="w-8 h-8 rounded-full object-cover"
                             />
                           ) : (
-                            <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                              <span className="text-gray-600 font-medium text-sm">
-                                {(user.nickname || user.email?.split('@')[0] || "U")[0].toUpperCase()}
+                            <div className="w-8 h-8 bg-[var(--secondary-color)] rounded-full flex items-center justify-center">
+                              <span className="text-[var(--primary-color)] font-medium text-sm">
+                                {(userProfile?.nickname || user.displayName || user.email?.split('@')[0] || "U")[0].toUpperCase()}
                               </span>
                             </div>
                           )}
@@ -488,7 +488,7 @@ export function Comments({ courseId }: CommentsProps) {
                   {comment.replies && comment.replies.length > 0 && (
                     <div className="mt-4 ml-8 space-y-3">
                       {comment.replies.map((reply) => (
-                        <div key={reply.id} className="flex space-x-3 p-3 bg-pink-50 rounded-lg border border-pink-200">
+                        <div key={reply.id} className="flex space-x-3 p-3 bg-[var(--surface)] rounded-lg">
                           <div className="flex-shrink-0">
                             {reply.author.profileImageUrl ? (
                               <img
@@ -497,30 +497,89 @@ export function Comments({ courseId }: CommentsProps) {
                                 className="w-8 h-8 rounded-full object-cover"
                               />
                             ) : (
-                              <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                                <span className="text-gray-600 font-medium text-sm">
+                              <div className="w-8 h-8 bg-[var(--secondary-color)] rounded-full flex items-center justify-center">
+                                <span className="text-[var(--primary-color)] font-medium text-sm">
                                   {reply.author.nickname[0].toUpperCase()}
                                 </span>
                               </div>
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center space-x-2">
-                              <h5 className="font-medium text-gray-800 text-sm">
-                                {reply.author.nickname}
-                              </h5>
-                              <span className="text-xs text-gray-500">
-                                {formatDate(reply.createdAt)}
-                              </span>
-                              {reply.isEdited && (
-                                <span className="text-xs text-gray-500 bg-gray-200 px-1 py-0.5 rounded">
-                                  편집됨
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-2">
+                                <h5 className="font-medium text-[var(--text-primary)] text-sm">
+                                  {reply.author.nickname}
+                                </h5>
+                                <span className="text-xs text-[var(--text-secondary)]">
+                                  {formatDate(reply.createdAt)}
                                 </span>
+                                {reply.isEdited && (
+                                  <span className="text-xs text-[var(--text-muted)] bg-[var(--accent-color)] px-1 py-0.5 rounded">
+                                    편집됨
+                                  </span>
+                                )}
+                              </div>
+
+                              {user && user.uid === reply.authorId && (
+                                <div className="relative">
+                                  <button
+                                    onClick={() => setShowDropdown(showDropdown === reply.id ? null : reply.id)}
+                                    className="p-1 hover:bg-[var(--accent-color)] rounded transition-colors"
+                                  >
+                                    <MoreVertical className="w-3 h-3 text-[var(--text-secondary)]" />
+                                  </button>
+
+                                  {showDropdown === reply.id && (
+                                    <div className="absolute right-0 mt-1 w-32 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-lg z-10">
+                                      <button
+                                        onClick={() => startEditing(reply)}
+                                        className="w-full px-3 py-2 text-left text-sm hover:bg-[var(--accent-color)] flex items-center space-x-2"
+                                      >
+                                        <Edit3 className="w-3 h-3" />
+                                        <span>수정</span>
+                                      </button>
+                                      <button
+                                        onClick={() => handleDeleteComment(reply.id)}
+                                        className="w-full px-3 py-2 text-left text-sm hover:bg-[var(--accent-color)] flex items-center space-x-2 text-[var(--error)]"
+                                      >
+                                        <Trash2 className="w-3 h-3" />
+                                        <span>삭제</span>
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
                               )}
                             </div>
-                            <p className="mt-1 text-sm text-gray-700 whitespace-pre-wrap">
-                              {reply.content}
-                            </p>
+
+                            {editingId === reply.id ? (
+                              <div className="mt-2">
+                                <textarea
+                                  value={editContent}
+                                  onChange={(e) => setEditContent(e.target.value)}
+                                  className="w-full p-2 border border-[var(--border)] rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-sm"
+                                  rows={2}
+                                  maxLength={500}
+                                />
+                                <div className="flex justify-end space-x-2 mt-2">
+                                  <button
+                                    onClick={cancelEditing}
+                                    className="px-3 py-1 text-sm border border-[var(--border)] rounded hover:bg-[var(--accent-color)] transition-colors"
+                                  >
+                                    취소
+                                  </button>
+                                  <button
+                                    onClick={() => handleEditComment(reply.id)}
+                                    className="px-3 py-1 text-sm bg-[var(--primary-color)] text-white rounded hover:bg-[var(--primary-hover)] transition-colors"
+                                  >
+                                    저장
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <p className="mt-1 text-sm text-[var(--text-primary)] whitespace-pre-wrap">
+                                {reply.content}
+                              </p>
+                            )}
                           </div>
                         </div>
                       ))}
