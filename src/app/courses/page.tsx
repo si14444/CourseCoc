@@ -21,6 +21,7 @@ import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import { CONTAINER_CLASSES } from "@/utils/layouts";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function MyCoursesPage() {
   const { user, loading: authLoading } = useAuth();
@@ -303,13 +304,15 @@ export default function MyCoursesPage() {
                     {/* 이미지 */}
                     <div className="relative h-48 overflow-hidden bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)]">
                       {(course.heroImage || course.imageUrl || (course.locations?.some(loc => loc.image))) ? (
-                        <img
+                        <Image
                           src={getCourseImageUrl(
                             course.heroImage || course.imageUrl,
                             course.locations?.map(loc => loc.image).filter((img): img is string => Boolean(img)),
                             course.tags
                           )}
                           alt={course.title}
+                          width={400}
+                          height={192}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           onError={(e) => handleImageError(e)}
                         />

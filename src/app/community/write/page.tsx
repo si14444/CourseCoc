@@ -9,6 +9,7 @@ import { useAuth } from "../../../contexts/AuthContext";
 import { getCourseById, updateCourse } from "../../../lib/firebaseCourses";
 import { Header } from "../../../components/Header";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Camera,
   MapPin,
@@ -941,9 +942,11 @@ function WritePageContent() {
                       >
                         {courseData.heroImage ? (
                           <div className="relative">
-                            <img
+                            <Image
                               src={courseData.heroImage}
                               alt="대표 이미지"
+                              width={400}
+                              height={128}
                               className="w-full h-32 object-cover rounded-lg mx-auto"
                             />
                             <div className="absolute inset-0 bg-black bg-opacity-40 rounded-lg flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
@@ -1116,9 +1119,11 @@ function WritePageContent() {
                                 >
                                   {location.image ? (
                                     <div className="relative">
-                                      <img
+                                      <Image
                                         src={location.image}
                                         alt={`${location.name} 이미지`}
+                                        width={300}
+                                        height={96}
                                         className="w-full h-24 object-cover rounded-lg mx-auto"
                                       />
                                       <div className="absolute inset-0 bg-black bg-opacity-40 rounded-lg flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
@@ -1230,9 +1235,11 @@ function WritePageContent() {
                       {/* Hero Section - 상세 페이지와 동일 */}
                       <div className="relative h-96 overflow-hidden">
                         {courseData.heroImage ? (
-                          <img
+                          <Image
                             src={courseData.heroImage}
                             alt={courseData.title}
+                            width={800}
+                            height={384}
                             className="w-full h-full object-cover"
                           />
                         ) : (
@@ -1334,9 +1341,11 @@ function WritePageContent() {
                                 >
                                   <div className="relative">
                                     {location.image ? (
-                                      <img
+                                      <Image
                                         src={location.image}
                                         alt={location.name}
+                                        width={600}
+                                        height={256}
                                         className="w-full h-64 object-cover rounded-2xl"
                                       />
                                     ) : (
@@ -1497,9 +1506,11 @@ function WritePageContent() {
                           {/* 이미지 영역 */}
                           <div className="h-32 bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] relative overflow-hidden">
                             {courseData.heroImage ? (
-                              <img
+                              <Image
                                 src={courseData.heroImage}
                                 alt="코스 대표 이미지"
+                                width={300}
+                                height={128}
                                 className="w-full h-full object-cover"
                               />
                             ) : (
@@ -1624,9 +1635,11 @@ function WritePageContent() {
                           <div className="bg-white rounded-2xl shadow-[0_4px_20px_var(--pink-shadow)] overflow-hidden">
                             <div className="h-32 bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] relative overflow-hidden">
                               {courseData.heroImage ? (
-                                <img
+                                <Image
                                   src={courseData.heroImage}
                                   alt="코스 대표 이미지"
+                                  width={300}
+                                  height={128}
                                   className="w-full h-full object-cover"
                                 />
                               ) : (
