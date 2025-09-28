@@ -580,7 +580,7 @@ function WritePageContent() {
           user: user,
           userId: user?.uid,
           userEmail: user?.email,
-          courseDoc: courseDoc,
+          courseTitle: courseData.title,
           authState: !!user,
           timestamp: new Date().toISOString()
         });
