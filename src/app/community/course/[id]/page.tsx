@@ -6,6 +6,30 @@ import { Header } from "../../../../components/Header";
 import { Heart, MapPin, Clock, Users, Share2, Bookmark } from "lucide-react";
 import { Map, MapMarker, Polyline } from "react-kakao-maps-sdk";
 import { getCourseById, updateCourseLikes, updateCourseBookmarks, Course } from "../../../../lib/firebaseCourses";
+import dynamic from "next/dynamic";
+
+// Comments 컴포넌트를 동적으로 로드하여 하이드레이션 문제 해결
+const Comments = dynamic(() => import("../../../../components/Comments").then(mod => ({ default: mod.Comments })), {
+  ssr: false,
+  loading: () => (
+    <div className="mt-8 p-6 bg-[var(--surface)] rounded-lg">
+      <div className="animate-pulse">
+        <div className="h-6 bg-[var(--accent-color)] rounded w-24 mb-4"></div>
+        <div className="space-y-4">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="flex space-x-3">
+              <div className="w-10 h-10 bg-[var(--accent-color)] rounded-full"></div>
+              <div className="flex-1">
+                <div className="h-4 bg-[var(--accent-color)] rounded w-32 mb-2"></div>
+                <div className="h-4 bg-[var(--accent-color)] rounded w-full"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+});
 
 
 // Kakao Map Component
@@ -579,6 +603,9 @@ export default function CourseDetailPage() {
             </div>
           </div>
         )}
+
+        {/* Comments Section */}
+        <Comments courseId={course.id} />
       </div>
     </div>
   );

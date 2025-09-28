@@ -41,6 +41,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   const refreshProfile = async () => {
     if (user) {
@@ -52,6 +53,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
 
@@ -69,12 +76,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     });
 
     return unsubscribe;
-  }, []);
+  }, [mounted]);
 
   const value = {
     user,
     userProfile,
-    loading,
+    loading: loading || !mounted,
     refreshProfile,
   };
 

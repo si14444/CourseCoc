@@ -6,6 +6,7 @@ import { EmptyState } from "../../components/EmptyState";
 import { Header } from "../../components/Header";
 import { SearchAndFilter } from "../../components/SearchAndFilter";
 import { getPublishedCourses, Course } from "../../lib/firebaseCourses";
+import { getCourseCommentCount } from "../../lib/firebaseComments";
 import { CONTAINER_CLASSES, COURSE_GRID_CLASSES } from "@/utils/layouts";
 
 export default function Community() {
@@ -15,6 +16,7 @@ export default function Community() {
   const [filteredCourses, setFilteredCourses] = useState<Course[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
 
   // Firebase에서 코스 데이터 가져오기
   useEffect(() => {
@@ -25,6 +27,20 @@ export default function Community() {
         const publishedCourses = await getPublishedCourses();
         setCourses(publishedCourses);
         setFilteredCourses(publishedCourses);
+
+        // Fetch comment counts for all courses
+        const counts: Record<string, number> = {};
+        await Promise.all(
+          publishedCourses.map(async (course) => {
+            try {
+              counts[course.id] = await getCourseCommentCount(course.id);
+            } catch (error) {
+              console.error(`Error fetching comment count for course ${course.id}:`, error);
+              counts[course.id] = 0;
+            }
+          })
+        );
+        setCommentCounts(counts);
       } catch (err: unknown) {
         console.error("코스 데이터 로딩 실패:", err);
         setError(err instanceof Error ? err.message : "코스 데이터를 불러오는 중 오류가 발생했습니다.");
@@ -166,6 +182,7 @@ export default function Community() {
                       placeCount={course.placeCount || course.locations?.length || 0}
                       likes={course.likes}
                       views={course.views}
+                      commentCount={commentCounts[course.id] || 0}
                       steps={course.steps || course.locations?.map(loc => loc.name).filter(Boolean) || []}
                       imageUrl={course.imageUrl || course.heroImage}
                       tags={course.tags}

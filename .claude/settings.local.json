@@ -4,7 +4,9 @@
       "Bash(npm run build:*)",
       "Bash(npx tsc:*)",
       "Bash(npx eslint:*)",
-      "Bash(npm run lint:*)"
+      "Bash(npm run lint:*)",
+      "Read(//c/Users/si144/documents/CourseCocApp/**)",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []

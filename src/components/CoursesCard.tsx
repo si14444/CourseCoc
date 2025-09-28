@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, Heart, MapPin } from "lucide-react";
+import { Eye, Heart, MapPin, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent } from "./ui/card";
 import { COURSE_CARD_CLASSES, ICON_TEXT_CLASSES, META_TEXT_CLASSES } from "@/utils/layouts";
@@ -13,6 +13,7 @@ interface CourseCardProps {
   placeCount: number;
   likes: number;
   views: number;
+  commentCount?: number;
   steps: string[];
   imageUrl?: string;
   tags?: string[];
@@ -27,6 +28,7 @@ export function CourseCard({
   placeCount,
   likes,
   views,
+  commentCount = 0,
   steps,
   imageUrl,
   tags = [],
@@ -86,6 +88,10 @@ export function CourseCard({
           <div className={ICON_TEXT_CLASSES}>
             <Eye className="w-4 h-4 text-[var(--coral-pink)]" />
             <span>{views}</span>
+          </div>
+          <div className={ICON_TEXT_CLASSES}>
+            <MessageCircle className="w-4 h-4 text-[var(--coral-pink)]" />
+            <span>{commentCount}</span>
           </div>
         </div>
 
