@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -28,9 +29,11 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-1 sm:space-x-2">
             <div className="relative">
-              <img
+              <Image
                 src="/logo.png"
                 alt="CourseCoc Logo"
+                width={32}
+                height={32}
                 className="w-6 h-6 sm:w-8 sm:h-8 object-contain"
               />
             </div>
@@ -82,9 +85,11 @@ export function Header() {
                 <Link href="/profile">
                   <div className="flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
                     {userProfile?.profileImageUrl ? (
-                      <img
+                      <Image
                         src={userProfile.profileImageUrl}
                         alt="Profile"
+                        width={24}
+                        height={24}
                         className="w-6 h-6 rounded-full object-cover"
                       />
                     ) : (
@@ -145,9 +150,11 @@ export function Header() {
                       <Link href="/profile">
                         <div className="flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
                           {userProfile?.profileImageUrl ? (
-                            <img
+                            <Image
                               src={userProfile.profileImageUrl}
                               alt="Profile"
+                              width={24}
+                              height={24}
                               className="w-6 h-6 rounded-full object-cover"
                             />
                           ) : (

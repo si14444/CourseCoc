@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { MessageCircle, MoreVertical, Edit3, Trash2, Send, Reply } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { useHydration } from "../hooks/useHydration";
@@ -29,13 +30,7 @@ export function Comments({ courseId }: CommentsProps) {
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState("");
 
-  useEffect(() => {
-    if (isHydrated) {
-      loadComments();
-    }
-  }, [courseId, isHydrated]);
-
-  const loadComments = async () => {
+  const loadComments = useCallback(async () => {
     try {
       const commentsData = await getCourseComments(courseId);
       setComments(commentsData);
@@ -44,7 +39,13 @@ export function Comments({ courseId }: CommentsProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [courseId]);
+
+  useEffect(() => {
+    if (isHydrated) {
+      loadComments();
+    }
+  }, [courseId, isHydrated, loadComments]);
 
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -241,9 +242,11 @@ export function Comments({ courseId }: CommentsProps) {
           <div className="flex space-x-3">
             <div className="flex-shrink-0">
               {userProfile?.profileImageUrl ? (
-                <img
+                <Image
                   src={userProfile.profileImageUrl}
                   alt={userProfile.nickname || "프로필"}
+                  width={40}
+                  height={40}
                   className="w-10 h-10 rounded-full object-cover"
                 />
               ) : (
@@ -311,9 +314,11 @@ export function Comments({ courseId }: CommentsProps) {
               <div className="flex space-x-3">
                 <div className="flex-shrink-0">
                   {comment.author.profileImageUrl ? (
-                    <img
+                    <Image
                       src={comment.author.profileImageUrl}
                       alt={comment.author.nickname}
+                      width={40}
+                      height={40}
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   ) : (
@@ -436,9 +441,11 @@ export function Comments({ courseId }: CommentsProps) {
                       <div className="flex space-x-3">
                         <div className="flex-shrink-0">
                           {userProfile?.profileImageUrl ? (
-                            <img
+                            <Image
                               src={userProfile.profileImageUrl}
                               alt={userProfile.nickname || "프로필"}
+                              width={32}
+                              height={32}
                               className="w-8 h-8 rounded-full object-cover"
                             />
                           ) : (
@@ -491,9 +498,11 @@ export function Comments({ courseId }: CommentsProps) {
                         <div key={reply.id} className="flex space-x-3 p-3 bg-[var(--surface)] rounded-lg">
                           <div className="flex-shrink-0">
                             {reply.author.profileImageUrl ? (
-                              <img
+                              <Image
                                 src={reply.author.profileImageUrl}
                                 alt={reply.author.nickname}
+                                width={32}
+                                height={32}
                                 className="w-8 h-8 rounded-full object-cover"
                               />
                             ) : (

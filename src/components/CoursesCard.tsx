@@ -2,6 +2,7 @@
 
 import { Eye, Heart, MapPin, MessageCircle } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { Card, CardContent } from "./ui/card";
 import { COURSE_CARD_CLASSES, ICON_TEXT_CLASSES, META_TEXT_CLASSES } from "@/utils/layouts";
 import { getCourseImageUrl, handleImageError } from "@/utils/defaultImages";
@@ -44,10 +45,11 @@ export function CourseCard({
       {/* Image Header */}
       <div className="h-40 sm:h-48 lg:h-52 bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] relative overflow-hidden">
         {(heroImage || imageUrl || (locationImages && locationImages.length > 0)) ? (
-          <img
+          <Image
             src={getCourseImageUrl(heroImage || imageUrl, locationImages, tags)}
             alt={title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
             onError={(e) => handleImageError(e)}
           />
         ) : (

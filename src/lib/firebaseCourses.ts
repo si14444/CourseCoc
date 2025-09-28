@@ -189,10 +189,10 @@ export const getUserCourses = async (userId: string): Promise<Course[]> => {
 
       try {
         const dateA = (a.updatedAt && typeof a.updatedAt === 'object' && 'toDate' in a.updatedAt)
-          ? (a.updatedAt as any).toDate()
+          ? (a.updatedAt as { toDate: () => Date }).toDate()
           : new Date(a.updatedAt as string);
         const dateB = (b.updatedAt && typeof b.updatedAt === 'object' && 'toDate' in b.updatedAt)
-          ? (b.updatedAt as any).toDate()
+          ? (b.updatedAt as { toDate: () => Date }).toDate()
           : new Date(b.updatedAt as string);
         return dateB.getTime() - dateA.getTime(); // 최신순
       } catch {
@@ -237,10 +237,10 @@ export const getUserCoursesByStatus = async (userId: string, isDraft?: boolean):
 
       try {
         const dateA = (a.updatedAt && typeof a.updatedAt === 'object' && 'toDate' in a.updatedAt)
-          ? (a.updatedAt as any).toDate()
+          ? (a.updatedAt as { toDate: () => Date }).toDate()
           : new Date(a.updatedAt as string);
         const dateB = (b.updatedAt && typeof b.updatedAt === 'object' && 'toDate' in b.updatedAt)
-          ? (b.updatedAt as any).toDate()
+          ? (b.updatedAt as { toDate: () => Date }).toDate()
           : new Date(b.updatedAt as string);
         return dateB.getTime() - dateA.getTime(); // 최신순
       } catch {

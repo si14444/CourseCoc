@@ -108,7 +108,7 @@ export default function MyCoursesPage() {
     try {
       // Firebase Timestamp 객체인 경우
       if (timestamp && typeof timestamp === 'object' && 'toDate' in timestamp) {
-        return (timestamp as any).toDate().toLocaleDateString('ko-KR');
+        return (timestamp as { toDate: () => Date }).toDate().toLocaleDateString('ko-KR');
       }
       // Date 객체인 경우
       if (timestamp instanceof Date) {

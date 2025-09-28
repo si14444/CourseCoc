@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
 import { Header } from "../../../../components/Header";
 import { Heart, MapPin, Clock, Users, Share2, Bookmark } from "lucide-react";
 import { Map, MapMarker, Polyline } from "react-kakao-maps-sdk";
 import { getCourseById, updateCourseLikes, updateCourseBookmarks, Course } from "../../../../lib/firebaseCourses";
+import { Location } from "../../../../types";
 import dynamic from "next/dynamic";
 
 // Comments 컴포넌트를 동적으로 로드하여 하이드레이션 문제 해결
@@ -33,17 +35,7 @@ const Comments = dynamic(() => import("../../../../components/Comments").then(mo
 
 
 // Kakao Map Component
-interface Location {
-  id: string;
-  name: string;
-  position?: { lat: number; lng: number };
-  time?: string;
-  description?: string;
-}
-
 function CourseMap({ locations }: { locations: Location[] }) {
-  const [map, setMap] = useState<any>(null);
-
   // 좌표가 있는 위치만 필터링
   const validLocations = locations.filter(loc => loc.position && loc.position.lat && loc.position.lng);
 
@@ -72,7 +64,6 @@ function CourseMap({ locations }: { locations: Location[] }) {
         height: "100%",
       }}
       level={6}
-      onCreate={setMap}
     >
       {/* 위치 마커들 */}
       {validLocations.map((location, index) => (
@@ -160,7 +151,7 @@ export default function CourseDetailPage() {
           console.error("에러 메시지:", err.message);
         }
 
-        const errorCode = (err as any)?.code;
+        const errorCode = (err as { code?: string })?.code;
         if (errorCode === 'permission-denied') {
           setError("게시글을 볼 수 있는 권한이 없습니다. Firebase 보안 규칙을 확인해주세요.");
         } else if (errorCode === 'not-found') {
@@ -344,10 +335,12 @@ export default function CourseDetailPage() {
           : 'h-96'
       }`}>
         {course.heroImage || course.locations?.[0]?.image ? (
-          <img
-            src={course.heroImage || course.locations?.[0]?.image}
+          <Image
+            src={course.heroImage || course.locations?.[0]?.image || ''}
             alt={course.title}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
+            priority
           />
         ) : (
           // Fallback: 대표 이미지가 없을 때 아름다운 기본 배경
@@ -481,17 +474,20 @@ export default function CourseDetailPage() {
         {/* Course Steps */}
         <div className="space-y-16 mb-16">
           <h2 className="text-2xl font-bold mb-6">데이트 코스 순서</h2>
-          {course.locations.map((location: any, index: number) => (
+          {course.locations.map((location: Location, index: number) => (
             <div key={location.id || index} className="grid md:grid-cols-2 gap-8 items-center">
               {/* Image */}
               <div className={`${index % 2 === 1 ? 'md:order-2' : ''}`}>
                 <div className="relative">
                   {location.image ? (
-                    <img
-                      src={location.image}
-                      alt={location.name}
-                      className="w-full h-64 object-cover rounded-2xl"
-                    />
+                    <div className="relative w-full h-64">
+                      <Image
+                        src={location.image}
+                        alt={location.name}
+                        fill
+                        className="object-cover rounded-2xl"
+                      />
+                    </div>
                   ) : (
                     <div className="w-full h-64 bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] rounded-2xl flex items-center justify-center">
                       <MapPin className="w-12 h-12 text-[var(--coral-pink)]" />
