@@ -1,9 +1,34 @@
+"use client";
+
 import { ArrowRight, Heart, Plus, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
+import { useEffect, useState } from "react";
+import { getHomeStats, HomeStats } from "@/lib/homeStats";
 
 export function HeroSection() {
+  const [stats, setStats] = useState<HomeStats>({
+    totalCourses: 0,
+    publishedCourses: 0,
+    beta: true
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        const homeStats = await getHomeStats();
+        setStats(homeStats);
+      } catch (error) {
+        console.error('통계 로딩 실패:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadStats();
+  }, []);
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-[var(--warm-white)] via-[var(--very-light-pink)] to-[var(--light-pink)] py-20 lg:py-32">
       {/* Background decorative elements */}
@@ -88,33 +113,47 @@ export function HeroSection() {
           </Link>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-          <div className="text-center">
-            <div className="text-3xl font-bold text-[var(--coral-pink)] mb-2">
-              1,200+
+        {/* Real Stats or Launch Message */}
+        <div className="max-w-4xl mx-auto">
+          {loading ? (
+            <div className="text-center">
+              <div className="text-lg text-[var(--text-secondary)]">
+                통계 로딩 중...
+              </div>
             </div>
-            <div className="text-sm text-[var(--text-secondary)]">
-              생성된 데이트 코스
+          ) : stats.publishedCourses > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-[var(--coral-pink)] mb-2">
+                  {stats.publishedCourses}
+                </div>
+                <div className="text-sm text-[var(--text-secondary)]">
+                  발행된 데이트 코스
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-[var(--coral-pink)] mb-2">
+                  베타
+                </div>
+                <div className="text-sm text-[var(--text-secondary)]">
+                  새로운 시작
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-[var(--coral-pink)] mb-2">
-              25K+
+          ) : (
+            <div className="text-center bg-white/50 backdrop-blur-sm rounded-2xl p-8 border border-[var(--coral-pink)]/20">
+              <div className="text-2xl font-bold text-[var(--coral-pink)] mb-4">
+                🎉 곧 출시됩니다!
+              </div>
+              <p className="text-[var(--text-secondary)] mb-4">
+                우리와 함께 첫 번째 로맨틱한 데이트 코스를 만들어보세요.<br />
+                당신의 특별한 이야기가 이곳에서 시작됩니다.
+              </p>
+              <div className="text-sm text-[var(--text-tertiary)]">
+                베타 버전으로 무료 체험 중
+              </div>
             </div>
-            <div className="text-sm text-[var(--text-secondary)]">
-              행복한 커플
-            </div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-[var(--coral-pink)] mb-2">
-              500+
-            </div>
-            <div className="text-sm text-[var(--text-secondary)]">
-              서비스 제공 도시
-            </div>
-          </div>
-        </div>
+          )}</div>
       </div>
     </section>
   );

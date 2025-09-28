@@ -576,13 +576,30 @@ function WritePageContent() {
 
       // Firebase 권한 에러인 경우 특별 처리
       if (firebaseError?.code === 'permission-denied' || firebaseError?.message?.includes('permission')) {
+        console.error('권한 에러 디버깅 정보:', {
+          user: user,
+          userId: user?.uid,
+          userEmail: user?.email,
+          courseDoc: courseDoc,
+          authState: !!user,
+          timestamp: new Date().toISOString()
+        });
+
         alert(`권한 오류가 발생했습니다.
 
-관리자에게 문의하여 Firebase 보안 규칙을 확인해주세요.
+베타 테스트 중이므로 Firebase 보안 규칙이 제한적일 수 있습니다.
+
+해결 방법:
+1. 로그아웃 후 다시 로그인해보세요
+2. 브라우저를 새로고침해보세요
+3. 관리자에게 문의해주세요
 
 기술적 세부사항:
+- 사용자 ID: ${user?.uid || '없음'}
+- 사용자 이메일: ${user?.email || '없음'}
 - 오류 코드: ${firebaseError?.code || 'permission-denied'}
-- 오류 메시지: ${firebaseError?.message || 'Missing or insufficient permissions'}`);
+- 오류 메시지: ${firebaseError?.message || 'Missing or insufficient permissions'}
+- 시간: ${new Date().toLocaleString()}`);
       } else if (firebaseError?.code === 'unavailable') {
         alert("네트워크 오류입니다. 인터넷 연결을 확인하고 다시 시도해주세요.");
       } else if (firebaseError?.code === 'invalid-argument') {
