@@ -77,6 +77,11 @@ const convertFirestoreDocToCourse = (doc: QueryDocumentSnapshot<DocumentData>): 
 // 모든 발행된 코스 가져오기 (isDraft: false)
 export const getPublishedCourses = async (): Promise<Course[]> => {
   try {
+    if (!db) {
+      console.error('Firestore가 초기화되지 않았습니다.');
+      return [];
+    }
+
     const coursesRef = collection(db, 'courses');
     const q = query(
       coursesRef,
@@ -98,6 +103,11 @@ export const getPublishedCourses = async (): Promise<Course[]> => {
 // 특정 코스 가져오기 (상세 페이지용)
 export const getCourseById = async (courseId: string): Promise<Course | null> => {
   try {
+    if (!db) {
+      console.error('Firestore가 초기화되지 않았습니다.');
+      return null;
+    }
+
     const docRef = doc(db, 'courses', courseId);
     const docSnap = await getDoc(docRef);
 
@@ -127,6 +137,11 @@ export const getCourseById = async (courseId: string): Promise<Course | null> =>
 // 태그로 코스 검색
 export const getCoursesByTag = async (tag: string): Promise<Course[]> => {
   try {
+    if (!db) {
+      console.error('Firestore가 초기화되지 않았습니다.');
+      return [];
+    }
+
     const coursesRef = collection(db, 'courses');
     const q = query(
       coursesRef,
@@ -147,6 +162,11 @@ export const getCoursesByTag = async (tag: string): Promise<Course[]> => {
 // 좋아요 수 업데이트
 export const updateCourseLikes = async (courseId: string, increment_value: number = 1): Promise<void> => {
   try {
+    if (!db) {
+      console.error('Firestore가 초기화되지 않았습니다.');
+      return;
+    }
+
     const docRef = doc(db, 'courses', courseId);
     await updateDoc(docRef, {
       likes: increment(increment_value)
@@ -160,6 +180,11 @@ export const updateCourseLikes = async (courseId: string, increment_value: numbe
 // 북마크 수 업데이트
 export const updateCourseBookmarks = async (courseId: string, increment_value: number = 1): Promise<void> => {
   try {
+    if (!db) {
+      console.error('Firestore가 초기화되지 않았습니다.');
+      return;
+    }
+
     const docRef = doc(db, 'courses', courseId);
     await updateDoc(docRef, {
       bookmarks: increment(increment_value)
@@ -173,6 +198,11 @@ export const updateCourseBookmarks = async (courseId: string, increment_value: n
 // 사용자의 코스 가져오기 (내 코스 페이지용)
 export const getUserCourses = async (userId: string): Promise<Course[]> => {
   try {
+    if (!db) {
+      console.error('Firestore가 초기화되지 않았습니다.');
+      return [];
+    }
+
     const coursesRef = collection(db, 'courses');
     const q = query(
       coursesRef,
@@ -210,6 +240,11 @@ export const getUserCourses = async (userId: string): Promise<Course[]> => {
 // 사용자의 특정 상태별 코스 가져오기
 export const getUserCoursesByStatus = async (userId: string, isDraft?: boolean): Promise<Course[]> => {
   try {
+    if (!db) {
+      console.error('Firestore가 초기화되지 않았습니다.');
+      return [];
+    }
+
     const coursesRef = collection(db, 'courses');
     let q;
 
@@ -258,7 +293,16 @@ export const getUserCoursesByStatus = async (userId: string, isDraft?: boolean):
 // 코스 삭제
 export const deleteCourse = async (courseId: string, userId?: string): Promise<void> => {
   try {
+    if (!db) {
+      console.error('Firestore가 초기화되지 않았습니다.');
+      return;
+    }
+
     // 인증된 사용자인지 확인
+    if (!auth) {
+      throw new Error('Firebase Auth가 초기화되지 않았습니다.');
+    }
+
     const currentUser = auth.currentUser;
     if (!currentUser) {
       throw new Error('로그인이 필요합니다.');
@@ -305,6 +349,11 @@ export const deleteCourse = async (courseId: string, userId?: string): Promise<v
 // 코스 업데이트 (전체 문서 업데이트)
 export const updateCourse = async (courseId: string, courseData: Partial<Course>): Promise<void> => {
   try {
+    if (!db) {
+      console.error('Firestore가 초기화되지 않았습니다.');
+      return;
+    }
+
     const docRef = doc(db, 'courses', courseId);
     const updateData = {
       ...courseData,

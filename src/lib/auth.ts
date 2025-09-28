@@ -29,6 +29,10 @@ export interface UserProfile {
 
 export const signUp = async (userData: SignupData) => {
   try {
+    if (!auth || !db) {
+      return { success: false, error: 'Firebase가 초기화되지 않았습니다.' };
+    }
+
     const { email, password, nickname, birthYear, gender } = userData;
     const userCredential = await createUserWithEmailAndPassword(
       auth,
@@ -62,6 +66,10 @@ export const signUp = async (userData: SignupData) => {
 
 export const signIn = async (email: string, password: string) => {
   try {
+    if (!auth) {
+      return { success: false, error: 'Firebase Auth가 초기화되지 않았습니다.' };
+    }
+
     const userCredential = await signInWithEmailAndPassword(
       auth,
       email,
@@ -76,6 +84,10 @@ export const signIn = async (email: string, password: string) => {
 
 export const logOut = async () => {
   try {
+    if (!auth) {
+      return { success: false, error: 'Firebase Auth가 초기화되지 않았습니다.' };
+    }
+
     await signOut(auth);
     return { success: true };
   } catch (error) {
@@ -86,6 +98,10 @@ export const logOut = async () => {
 
 export const getUserProfile = async (uid: string) => {
   try {
+    if (!db) {
+      return { success: false, error: 'Firestore가 초기화되지 않았습니다.' };
+    }
+
     const userDoc = await getDoc(doc(db, "users", uid));
     if (userDoc.exists()) {
       return { success: true, profile: userDoc.data() as UserProfile };
@@ -100,6 +116,10 @@ export const getUserProfile = async (uid: string) => {
 
 export const uploadProfileImage = async (file: File, uid: string) => {
   try {
+    if (!storage || !db || !auth) {
+      return { success: false, error: 'Firebase가 초기화되지 않았습니다.' };
+    }
+
     const storageRef = ref(storage, `profile-images/${uid}`);
     const snapshot = await uploadBytes(storageRef, file);
     const downloadURL = await getDownloadURL(snapshot.ref);
@@ -127,6 +147,10 @@ export const uploadProfileImage = async (file: File, uid: string) => {
 
 export const updateUserNickname = async (uid: string, nickname: string) => {
   try {
+    if (!db || !auth) {
+      return { success: false, error: 'Firebase가 초기화되지 않았습니다.' };
+    }
+
     // Update user profile in Firestore
     await setDoc(doc(db, "users", uid), { nickname }, { merge: true });
 
@@ -146,6 +170,10 @@ export const updateUserNickname = async (uid: string, nickname: string) => {
 
 export const deleteUserAccount = async (uid: string) => {
   try {
+    if (!auth || !db) {
+      return { success: false, error: 'Firebase가 초기화되지 않았습니다.' };
+    }
+
     if (!auth.currentUser) {
       return { success: false, error: "로그인이 필요합니다." };
     }

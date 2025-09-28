@@ -43,6 +43,10 @@ export async function addComment(
   parentId?: string // for replies
 ): Promise<{ success: boolean; error?: string; data?: { id: string } }> {
   try {
+    if (!db) {
+      return { success: false, error: 'Firestore가 초기화되지 않았습니다.' };
+    }
+
     const newComment = {
       courseId,
       authorId,
@@ -83,6 +87,11 @@ export async function addComment(
 
 export async function getCourseComments(courseId: string): Promise<Comment[]> {
   try {
+    if (!db) {
+      console.error('Firestore가 초기화되지 않았습니다.');
+      return [];
+    }
+
     // 임시: 인덱스 이슈 해결을 위해 orderBy 제거 후 클라이언트에서 정렬
     const q = query(
       collection(db, 'comments'),
@@ -133,6 +142,10 @@ export async function updateComment(
   content: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    if (!db) {
+      return { success: false, error: 'Firestore가 초기화되지 않았습니다.' };
+    }
+
     const commentRef = doc(db, 'comments', commentId);
     const commentDoc = await getDoc(commentRef);
 
@@ -165,6 +178,10 @@ export async function deleteComment(
   authorId: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    if (!db) {
+      return { success: false, error: 'Firestore가 초기화되지 않았습니다.' };
+    }
+
     const commentRef = doc(db, 'comments', commentId);
     const commentDoc = await getDoc(commentRef);
 
@@ -193,6 +210,10 @@ export async function toggleLikeComment(
   isLiked: boolean
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    if (!db) {
+      return { success: false, error: 'Firestore가 초기화되지 않았습니다.' };
+    }
+
     const commentRef = doc(db, 'comments', commentId);
 
     await updateDoc(commentRef, {
@@ -212,6 +233,11 @@ export async function toggleLikeComment(
 // Get total comment count for a course (including replies)
 export async function getCourseCommentCount(courseId: string): Promise<number> {
   try {
+    if (!db) {
+      console.error('Firestore가 초기화되지 않았습니다.');
+      return 0;
+    }
+
     const q = query(
       collection(db, 'comments'),
       where('courseId', '==', courseId)

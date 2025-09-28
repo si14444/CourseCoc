@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { ref, uploadString, getDownloadURL } from "firebase/storage";
@@ -164,7 +164,7 @@ function PreviewMap({ locations }: { locations: Location[] }) {
   );
 }
 
-export default function WritePage() {
+function WritePageContent() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -402,6 +402,10 @@ export default function WritePage() {
 
   // 이미지 Firebase Storage 업로드 함수
   const uploadImageToStorage = async (base64Image: string, path: string): Promise<string> => {
+    if (!storage) {
+      throw new Error('Storage가 초기화되지 않았습니다.');
+    }
+
     try {
       const imageRef = ref(storage, path);
       await uploadString(imageRef, base64Image, 'data_url');
@@ -415,6 +419,12 @@ export default function WritePage() {
 
   // Firebase 저장 함수들
   const saveCourse = async () => {
+    // Firebase 초기화 확인
+    if (!db) {
+      alert("데이터베이스가 초기화되지 않았습니다.");
+      return;
+    }
+
     // 기본 유효성 검사
     if (!courseData.title?.trim() || !courseData.description?.trim()) {
       alert("제목과 설명은 필수 항목입니다.");
@@ -1695,5 +1705,13 @@ export default function WritePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function WritePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <WritePageContent />
+    </Suspense>
   );
 }

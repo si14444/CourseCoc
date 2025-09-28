@@ -57,7 +57,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, []);
 
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || !auth) return;
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
