@@ -115,7 +115,10 @@ export default function MyCoursesPage() {
         return timestamp.toLocaleDateString('ko-KR');
       }
       // 문자열인 경우
-      return new Date(timestamp).toLocaleDateString('ko-KR');
+      if (typeof timestamp === 'string' || typeof timestamp === 'number') {
+        return new Date(timestamp).toLocaleDateString('ko-KR');
+      }
+      return "";
     } catch {
       return "";
     }
@@ -308,7 +311,7 @@ export default function MyCoursesPage() {
                           )}
                           alt={course.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          onError={(e) => handleImageError(e, course.tags)}
+                          onError={(e) => handleImageError(e)}
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">

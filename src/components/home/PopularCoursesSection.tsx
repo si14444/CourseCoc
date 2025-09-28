@@ -77,6 +77,7 @@ export function PopularCoursesSection() {
           {popularCourses.map((course) => (
             <CourseCard
               key={course.id}
+              id={course.id.toString()}
               title={course.title}
               description={course.description}
               placeCount={course.placeCount}

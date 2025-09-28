@@ -1,3 +1,13 @@
+export interface AddressSearchResult {
+  place_name: string;
+  address_name: string;
+  road_address_name?: string;
+  x: string;
+  y: string;
+  place_url?: string;
+  category_name?: string;
+}
+
 declare global {
   interface Window {
     kakao: {
@@ -10,7 +20,7 @@ declare global {
           Places: new () => {
             keywordSearch: (
               keyword: string,
-              callback: (data: any[], status: string) => void
+              callback: (data: AddressSearchResult[], status: string) => void
             ) => void;
           };
           Status: {

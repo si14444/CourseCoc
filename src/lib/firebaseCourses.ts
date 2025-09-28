@@ -188,8 +188,12 @@ export const getUserCourses = async (userId: string): Promise<Course[]> => {
       if (!a.updatedAt || !b.updatedAt) return 0;
 
       try {
-        const dateA = a.updatedAt.toDate ? a.updatedAt.toDate() : new Date(a.updatedAt);
-        const dateB = b.updatedAt.toDate ? b.updatedAt.toDate() : new Date(b.updatedAt);
+        const dateA = (a.updatedAt && typeof a.updatedAt === 'object' && 'toDate' in a.updatedAt)
+          ? (a.updatedAt as any).toDate()
+          : new Date(a.updatedAt as string);
+        const dateB = (b.updatedAt && typeof b.updatedAt === 'object' && 'toDate' in b.updatedAt)
+          ? (b.updatedAt as any).toDate()
+          : new Date(b.updatedAt as string);
         return dateB.getTime() - dateA.getTime(); // 최신순
       } catch {
         return 0;
@@ -232,8 +236,12 @@ export const getUserCoursesByStatus = async (userId: string, isDraft?: boolean):
       if (!a.updatedAt || !b.updatedAt) return 0;
 
       try {
-        const dateA = a.updatedAt.toDate ? a.updatedAt.toDate() : new Date(a.updatedAt);
-        const dateB = b.updatedAt.toDate ? b.updatedAt.toDate() : new Date(b.updatedAt);
+        const dateA = (a.updatedAt && typeof a.updatedAt === 'object' && 'toDate' in a.updatedAt)
+          ? (a.updatedAt as any).toDate()
+          : new Date(a.updatedAt as string);
+        const dateB = (b.updatedAt && typeof b.updatedAt === 'object' && 'toDate' in b.updatedAt)
+          ? (b.updatedAt as any).toDate()
+          : new Date(b.updatedAt as string);
         return dateB.getTime() - dateA.getTime(); // 최신순
       } catch {
         return 0;

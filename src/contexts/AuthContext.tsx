@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     if (user) {
       const result = await getUserProfile(user.uid);
       if (result.success) {
-        setUserProfile(result.profile);
+        setUserProfile(result.profile || null);
       }
     }
   };
@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         // Load user profile from Firestore
         const result = await getUserProfile(user.uid);
         if (result.success) {
-          setUserProfile(result.profile);
+          setUserProfile(result.profile || null);
         }
       } else {
         setUserProfile(null);

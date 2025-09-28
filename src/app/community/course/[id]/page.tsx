@@ -7,24 +7,14 @@ import { Heart, MapPin, Clock, Users, Share2, Bookmark } from "lucide-react";
 import { Map, MapMarker, Polyline } from "react-kakao-maps-sdk";
 import { getCourseById, updateCourseLikes, updateCourseBookmarks, Course } from "../../../../lib/firebaseCourses";
 
-declare global {
-  interface Window {
-    kakao: {
-      maps: {
-        load: (callback: () => void) => void;
-        LatLng: new (lat: number, lng: number) => any;
-        Map: new (container: HTMLElement, options: any) => any;
-        Marker: new (options: any) => any;
-      };
-    };
-  }
-}
 
 // Kakao Map Component
 interface Location {
   id: string;
   name: string;
   position?: { lat: number; lng: number };
+  time?: string;
+  description?: string;
 }
 
 function CourseMap({ locations }: { locations: Location[] }) {
@@ -46,8 +36,8 @@ function CourseMap({ locations }: { locations: Location[] }) {
 
   // 지도 중심 좌표 계산 (모든 위치의 중점)
   const center = {
-    lat: validLocations.reduce((sum, loc) => sum + loc.position.lat, 0) / validLocations.length,
-    lng: validLocations.reduce((sum, loc) => sum + loc.position.lng, 0) / validLocations.length,
+    lat: validLocations.reduce((sum, loc) => sum + (loc.position?.lat || 0), 0) / validLocations.length,
+    lng: validLocations.reduce((sum, loc) => sum + (loc.position?.lng || 0), 0) / validLocations.length,
   };
 
   return (
@@ -62,22 +52,24 @@ function CourseMap({ locations }: { locations: Location[] }) {
     >
       {/* 위치 마커들 */}
       {validLocations.map((location, index) => (
-        <MapMarker
-          key={index}
-          position={location.position}
-          image={{
-            src: '/pin.png',
-            size: { width: 40, height: 40 },
-            options: { offset: { x: 20, y: 40 } }
-          }}
-          title={`${index + 1}. ${location.name}${location.time ? ` (${location.time})` : ''}`}
-        />
+        location.position && (
+          <MapMarker
+            key={index}
+            position={location.position}
+            image={{
+              src: '/pin.png',
+              size: { width: 40, height: 40 },
+              options: { offset: { x: 20, y: 40 } }
+            }}
+            title={`${index + 1}. ${location.name}${location.time ? ` (${location.time})` : ''}`}
+          />
+        )
       ))}
 
       {/* 경로 표시 (2개 이상의 위치가 있을 때만) */}
       {validLocations.length > 1 && (
         <Polyline
-          path={validLocations.map(location => location.position)}
+          path={validLocations.map(location => location.position).filter((pos): pos is { lat: number; lng: number } => Boolean(pos))}
           strokeWeight={5}
           strokeColor={"#ff6b6b"}
           strokeOpacity={0.9}
@@ -298,6 +290,19 @@ export default function CourseDetailPage() {
                 콘솔(F12)에서 더 자세한 에러 정보를 확인할 수 있습니다.
               </p>
             </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!course) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header />
+        <div className="pt-20 flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <p className="text-gray-600">코스를 찾을 수 없습니다.</p>
           </div>
         </div>
       </div>

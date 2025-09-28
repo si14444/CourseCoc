@@ -2,36 +2,7 @@
 
 import { MapPin, Search } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-
-declare global {
-  interface Window {
-    kakao: {
-      maps: {
-        services: {
-          Places: new () => {
-            keywordSearch: (
-              keyword: string,
-              callback: (data: AddressSearchResult[], status: string) => void
-            ) => void;
-          };
-          Status: {
-            OK: string;
-          };
-        };
-      };
-    };
-  }
-}
-
-interface AddressSearchResult {
-  place_name: string;
-  address_name: string;
-  road_address_name?: string;
-  x: string;
-  y: string;
-  place_url?: string;
-  category_name?: string;
-}
+import { AddressSearchResult } from "@/types/kakao";
 
 interface AddressAutocompleteProps {
   value: string;
@@ -123,12 +94,6 @@ export function AddressAutocomplete({
             console.warn('장소 검색 실패:', status);
             setResults([]);
           }
-        },
-        {
-          // 검색 옵션
-          location: new window.kakao.maps.LatLng(37.5665, 126.978), // 서울 중심
-          radius: 20000, // 반경 20km
-          sort: window.kakao.maps.services.SortBy?.ACCURACY,
         }
       );
     } catch (error) {

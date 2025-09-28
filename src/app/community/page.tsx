@@ -170,7 +170,7 @@ export default function Community() {
                       imageUrl={course.imageUrl || course.heroImage}
                       tags={course.tags}
                       heroImage={course.heroImage}
-                      locationImages={course.locations?.map(loc => loc.image).filter(Boolean) || []}
+                      locationImages={course.locations?.map(loc => loc.image).filter((img): img is string => Boolean(img)) || []}
                     />
                   ))}
                 </div>

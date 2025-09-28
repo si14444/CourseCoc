@@ -72,7 +72,7 @@ export default function ProfilePage() {
         await refreshProfile();
         setSuccess("프로필 이미지가 업데이트되었습니다.");
       } else {
-        setError(result.error);
+        setError(result.error || "오류가 발생했습니다.");
       }
     } catch {
       setError("이미지 업로드 중 오류가 발생했습니다.");
@@ -125,7 +125,7 @@ export default function ProfilePage() {
         setIsEditingNickname(false);
         setSuccess("닉네임이 업데이트되었습니다.");
       } else {
-        setError(result.error);
+        setError(result.error || "오류가 발생했습니다.");
       }
     } catch {
       setError("닉네임 업데이트 중 오류가 발생했습니다.");
@@ -160,7 +160,7 @@ export default function ProfilePage() {
       if (result.success) {
         router.push("/");
       } else {
-        setError(result.error);
+        setError(result.error || "오류가 발생했습니다.");
       }
     } catch {
       setError("회원탈퇴 처리 중 오류가 발생했습니다.");
