@@ -1,4 +1,5 @@
 import { Heart, Plus, Sparkles } from "lucide-react";
+import Link from "next/link";
 import { Button } from "../ui/button";
 
 export function CTASection() {
@@ -48,13 +49,15 @@ export function CTASection() {
 
         {/* CTA Button */}
         <div className="mb-12">
-          <Button
-            size="lg"
-            className="bg-white text-[var(--coral-pink)] hover:bg-white/90 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-105 px-12 py-6 text-lg font-semibold"
-          >
-            <Plus className="w-6 h-6 mr-3" />
-            지금 만들기 시작
-          </Button>
+          <Link href="/community/write">
+            <Button
+              size="lg"
+              className="bg-white text-[var(--coral-pink)] hover:bg-white/90 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-105 px-12 py-6 text-lg font-semibold"
+            >
+              <Plus className="w-6 h-6 mr-3" />
+              지금 만들기
+            </Button>
+          </Link>
         </div>
 
         {/* Trust indicators */}
