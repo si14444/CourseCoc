@@ -60,7 +60,31 @@ export const signUp = async (userData: SignupData) => {
     return { success: true, user: userCredential.user };
   } catch (error) {
     const authError = error as AuthError;
-    return { success: false, error: authError.message || 'An error occurred' };
+
+    // Firebase 에러 코드를 한글 메시지로 변환
+    let errorMessage = '회원가입에 실패했습니다.';
+
+    switch (authError.code) {
+      case 'auth/email-already-in-use':
+        errorMessage = '이미 사용 중인 이메일입니다.';
+        break;
+      case 'auth/invalid-email':
+        errorMessage = '유효하지 않은 이메일 형식입니다.';
+        break;
+      case 'auth/weak-password':
+        errorMessage = '비밀번호는 6자리 이상이어야 합니다.';
+        break;
+      case 'auth/operation-not-allowed':
+        errorMessage = '이메일 회원가입이 비활성화되어 있습니다.';
+        break;
+      case 'auth/network-request-failed':
+        errorMessage = '네트워크 연결을 확인해주세요.';
+        break;
+      default:
+        errorMessage = '회원가입에 실패했습니다. 다시 시도해주세요.';
+    }
+
+    return { success: false, error: errorMessage };
   }
 };
 
@@ -78,7 +102,37 @@ export const signIn = async (email: string, password: string) => {
     return { success: true, user: userCredential.user };
   } catch (error) {
     const authError = error as AuthError;
-    return { success: false, error: authError.message || 'An error occurred' };
+
+    // Firebase 에러 코드를 한글 메시지로 변환
+    let errorMessage = '로그인에 실패했습니다.';
+
+    switch (authError.code) {
+      case 'auth/user-not-found':
+        errorMessage = '등록되지 않은 이메일입니다.';
+        break;
+      case 'auth/wrong-password':
+        errorMessage = '비밀번호가 틀렸습니다.';
+        break;
+      case 'auth/invalid-email':
+        errorMessage = '유효하지 않은 이메일 형식입니다.';
+        break;
+      case 'auth/user-disabled':
+        errorMessage = '비활성화된 계정입니다.';
+        break;
+      case 'auth/too-many-requests':
+        errorMessage = '너무 많은 로그인 시도가 있었습니다. 잠시 후 다시 시도해주세요.';
+        break;
+      case 'auth/network-request-failed':
+        errorMessage = '네트워크 연결을 확인해주세요.';
+        break;
+      case 'auth/invalid-credential':
+        errorMessage = '이메일 또는 비밀번호가 올바르지 않습니다.';
+        break;
+      default:
+        errorMessage = '로그인에 실패했습니다. 다시 시도해주세요.';
+    }
+
+    return { success: false, error: errorMessage };
   }
 };
 
