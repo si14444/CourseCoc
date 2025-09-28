@@ -41,7 +41,7 @@ export default function LoginPage() {
     setLoading(false);
   };
 
-  const handleSocialLogin = (_provider: "google" | "kakao") => {
+  const handleSocialLogin = () => {
     // Handle social login logic here
   };
 

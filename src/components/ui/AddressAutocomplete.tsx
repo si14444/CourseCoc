@@ -5,7 +5,21 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 declare global {
   interface Window {
-    kakao: any;
+    kakao: {
+      maps: {
+        services: {
+          Places: new () => {
+            keywordSearch: (
+              keyword: string,
+              callback: (data: AddressSearchResult[], status: string) => void
+            ) => void;
+          };
+          Status: {
+            OK: string;
+          };
+        };
+      };
+    };
   }
 }
 

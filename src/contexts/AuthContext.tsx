@@ -1,9 +1,15 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User, onAuthStateChanged } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
-import { getUserProfile, UserProfile } from '@/lib/auth';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
+import { User, onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { getUserProfile, UserProfile } from "@/lib/auth";
 
 interface AuthContextType {
   user: User | null;
@@ -22,7 +28,7 @@ const AuthContext = createContext<AuthContextType>({
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
@@ -72,9 +78,5 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     refreshProfile,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

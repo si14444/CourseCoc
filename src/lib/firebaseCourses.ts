@@ -30,8 +30,8 @@ export interface Course {
   locations: Location[];
   content: string;
   isDraft: boolean;
-  createdAt: any; // Firebase Timestamp
-  updatedAt: any; // Firebase Timestamp
+  createdAt: unknown; // Firebase Timestamp
+  updatedAt: unknown; // Firebase Timestamp
   likes: number;
   views: number;
   bookmarks: number;
@@ -304,8 +304,8 @@ export const updateCourse = async (courseId: string, courseData: Partial<Course>
     };
 
     // 수정 시 제거해야 할 필드들
-    delete (updateData as any).id;
-    delete (updateData as any).createdAt; // 생성일은 수정하지 않음
+    delete (updateData as { id?: string }).id;
+    delete (updateData as { createdAt?: unknown }).createdAt; // 생성일은 수정하지 않음
 
     await updateDoc(docRef, updateData);
   } catch (error) {

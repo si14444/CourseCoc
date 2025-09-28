@@ -74,8 +74,7 @@ export function getCourseImageUrl(
  * 이미지 로드 실패 시 이미지를 숨기고 기본 핑크 하트 배너 표시
  */
 export function handleImageError(
-  event: React.SyntheticEvent<HTMLImageElement>,
-  _tags: string[] = []
+  event: React.SyntheticEvent<HTMLImageElement>
 ): void {
   const imgElement = event.currentTarget;
   // 이미지를 숨김 (부모 컨테이너의 핑크 하트 배너가 보이도록)

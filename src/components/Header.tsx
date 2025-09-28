@@ -14,16 +14,12 @@ import Link from "next/link";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { logOut } from "@/lib/auth";
 import { CONTAINER_CLASSES } from "@/utils/layouts";
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, userProfile } = useAuth();
 
-  const handleLogout = async () => {
-    await logOut();
-  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-white/90 border-b border-pink-200 shadow-sm">

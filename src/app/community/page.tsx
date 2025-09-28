@@ -25,9 +25,9 @@ export default function Community() {
         const publishedCourses = await getPublishedCourses();
         setCourses(publishedCourses);
         setFilteredCourses(publishedCourses);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("코스 데이터 로딩 실패:", err);
-        setError(err.message || "코스 데이터를 불러오는 중 오류가 발생했습니다.");
+        setError(err instanceof Error ? err.message : "코스 데이터를 불러오는 중 오류가 발생했습니다.");
       } finally {
         setLoading(false);
       }

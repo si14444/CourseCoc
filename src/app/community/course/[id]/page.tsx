@@ -9,12 +9,25 @@ import { getCourseById, updateCourseLikes, updateCourseBookmarks, Course } from 
 
 declare global {
   interface Window {
-    kakao: any;
+    kakao: {
+      maps: {
+        load: (callback: () => void) => void;
+        LatLng: new (lat: number, lng: number) => any;
+        Map: new (container: HTMLElement, options: any) => any;
+        Marker: new (options: any) => any;
+      };
+    };
   }
 }
 
 // Kakao Map Component
-function CourseMap({ locations }: { locations: any[] }) {
+interface Location {
+  id: string;
+  name: string;
+  position?: { lat: number; lng: number };
+}
+
+function CourseMap({ locations }: { locations: Location[] }) {
   const [map, setMap] = useState<any>(null);
 
   // 좌표가 있는 위치만 필터링
@@ -125,17 +138,19 @@ export default function CourseDetailPage() {
         } else {
           setError("해당 코스를 찾을 수 없습니다.");
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("코스 데이터 로딩 실패:", err);
-        console.error("에러 코드:", err.code);
-        console.error("에러 메시지:", err.message);
+        if (err instanceof Error) {
+          console.error("에러 메시지:", err.message);
+        }
 
-        if (err.code === 'permission-denied') {
+        const errorCode = (err as any)?.code;
+        if (errorCode === 'permission-denied') {
           setError("게시글을 볼 수 있는 권한이 없습니다. Firebase 보안 규칙을 확인해주세요.");
-        } else if (err.code === 'not-found') {
+        } else if (errorCode === 'not-found') {
           setError("요청하신 게시글이 존재하지 않습니다.");
         } else {
-          setError(`데이터 로딩 오류: ${err.message || '알 수 없는 오류'}`);
+          setError(`데이터 로딩 오류: ${err instanceof Error ? err.message : '알 수 없는 오류'}`);
         }
       } finally {
         setLoading(false);

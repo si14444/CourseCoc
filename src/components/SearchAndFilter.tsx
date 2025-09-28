@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { MOBILE_PADDING, MOBILE_SPACING } from "@/utils/layouts";
+import { MOBILE_PADDING } from "@/utils/layouts";
 
 interface SearchAndFilterProps {
   onSearch?: (searchTerm: string) => void;

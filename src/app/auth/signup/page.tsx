@@ -86,7 +86,7 @@ export default function SignupPage() {
     setLoading(false);
   };
 
-  const handleSocialSignup = (_provider: "google" | "kakao") => {
+  const handleSocialSignup = () => {
     // Handle social signup logic here
   };
 

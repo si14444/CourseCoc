@@ -3,21 +3,17 @@
 import { useState, useEffect } from "react";
 import { Header } from "../../components/Header";
 import { SearchAndFilter } from "../../components/SearchAndFilter";
-import { EmptyState } from "../../components/EmptyState";
-import { CourseCard } from "../../components/CoursesCard";
 import { useAuth } from "../../contexts/AuthContext";
 import { getUserCourses, Course, deleteCourse } from "../../lib/firebaseCourses";
 import { getCourseImageUrl, handleImageError } from "../../utils/defaultImages";
 import {
   Plus,
-  Calendar,
   BarChart3,
   Heart,
   Eye,
   MapPin,
   Edit3,
   Trash2,
-  MoreVertical,
   BookOpen,
   Clock
 } from "lucide-react";
@@ -31,7 +27,7 @@ export default function MyCoursesPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showStats, setShowStats] = useState(true);
+  const [showStats] = useState(true);
 
   // Firebase에서 사용자 코스 데이터 가져오기
   useEffect(() => {
@@ -46,9 +42,9 @@ export default function MyCoursesPage() {
         setError(null);
         const userCourses = await getUserCourses(user.uid);
         setCourses(userCourses);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("사용자 코스 데이터 로딩 실패:", err);
-        setError(err.message || "코스 데이터를 불러오는 중 오류가 발생했습니다.");
+        setError(err instanceof Error ? err.message : "코스 데이터를 불러오는 중 오류가 발생했습니다.");
       } finally {
         setLoading(false);
       }
@@ -94,11 +90,11 @@ export default function MyCoursesPage() {
         // 성공 시 UI에서 제거
         setCourses(prev => prev.filter(course => course.id !== courseId));
         alert("코스가 성공적으로 삭제되었습니다.");
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("코스 삭제 실패:", err);
 
         // 더 자세한 에러 메시지 제공
-        const errorMessage = err.message || '알 수 없는 오류가 발생했습니다.';
+        const errorMessage = err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.';
         alert(`코스 삭제 실패: ${errorMessage}`);
       } finally {
         setLoading(false);
@@ -107,12 +103,12 @@ export default function MyCoursesPage() {
   };
 
 
-  const formatDate = (timestamp: any) => {
+  const formatDate = (timestamp: unknown) => {
     if (!timestamp) return "";
     try {
       // Firebase Timestamp 객체인 경우
-      if (timestamp.toDate) {
-        return timestamp.toDate().toLocaleDateString('ko-KR');
+      if (timestamp && typeof timestamp === 'object' && 'toDate' in timestamp) {
+        return (timestamp as any).toDate().toLocaleDateString('ko-KR');
       }
       // Date 객체인 경우
       if (timestamp instanceof Date) {
@@ -120,7 +116,7 @@ export default function MyCoursesPage() {
       }
       // 문자열인 경우
       return new Date(timestamp).toLocaleDateString('ko-KR');
-    } catch (error) {
+    } catch {
       return "";
     }
   };

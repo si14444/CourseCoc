@@ -74,7 +74,7 @@ export default function ProfilePage() {
       } else {
         setError(result.error);
       }
-    } catch (error) {
+    } catch {
       setError("이미지 업로드 중 오류가 발생했습니다.");
     } finally {
       setUploading(false);
@@ -127,7 +127,7 @@ export default function ProfilePage() {
       } else {
         setError(result.error);
       }
-    } catch (error) {
+    } catch {
       setError("닉네임 업데이트 중 오류가 발생했습니다.");
     } finally {
       setUpdatingNickname(false);
@@ -162,7 +162,7 @@ export default function ProfilePage() {
       } else {
         setError(result.error);
       }
-    } catch (error) {
+    } catch {
       setError("회원탈퇴 처리 중 오류가 발생했습니다.");
     } finally {
       setDeleting(false);
@@ -180,7 +180,7 @@ export default function ProfilePage() {
       } else {
         setError(result.error || "로그아웃 중 오류가 발생했습니다.");
       }
-    } catch (error) {
+    } catch {
       setError("로그아웃 중 오류가 발생했습니다.");
     } finally {
       setLoggingOut(false);
