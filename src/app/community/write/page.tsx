@@ -8,6 +8,7 @@ import { db, storage } from "../../../lib/firebase";
 import { useAuth } from "../../../contexts/AuthContext";
 import { getCourseById, updateCourse } from "../../../lib/firebaseCourses";
 import { Header } from "../../../components/Header";
+import Link from "next/link";
 import {
   Camera,
   MapPin,
@@ -164,7 +165,7 @@ function PreviewMap({ locations }: { locations: Location[] }) {
 }
 
 export default function WritePage() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const editId = searchParams.get('edit');
@@ -592,6 +593,48 @@ export default function WritePage() {
   const handlePublish = () => {
     saveCourse();
   };
+
+  // 로딩 상태
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header />
+        <div className="pt-20 flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--coral-pink)] mx-auto mb-4"></div>
+            <p className="text-[var(--text-secondary)]">로딩 중...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 로그인하지 않은 사용자
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header />
+        <div className="pt-20 pb-8">
+          <div className="max-w-4xl mx-auto px-6">
+            <div className="text-center py-16">
+              <Plus className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+              <h3 className="text-lg font-medium text-[var(--text-primary)] mb-2">
+                로그인이 필요합니다
+              </h3>
+              <p className="text-[var(--text-secondary)] mb-6">
+                코스를 만들려면 먼저 로그인해주세요.
+              </p>
+              <Link href="/auth/login">
+                <Button className="bg-[var(--coral-pink)] text-white hover:bg-[var(--coral-pink)]/90">
+                  로그인하기
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
