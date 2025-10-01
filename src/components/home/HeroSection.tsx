@@ -127,7 +127,7 @@ export function HeroSection() {
           {!mounted || loading ? (
             <div className="text-center">
               <div className="text-lg text-[var(--text-secondary)]">
-                {!mounted ? "로딩 중..." : "통계 로딩 중..."}
+                로딩 중...
               </div>
             </div>
           ) : stats.publishedCourses > 0 ? (
