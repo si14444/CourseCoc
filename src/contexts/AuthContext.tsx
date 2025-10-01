@@ -10,6 +10,7 @@ import {
 import { User, onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { getUserProfile, UserProfile } from "@/lib/auth";
+import { useHydration } from "@/hooks/useHydration";
 
 interface AuthContextType {
   user: User | null;
@@ -38,10 +39,10 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const isHydrated = useHydration();
   const [user, setUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [mounted, setMounted] = useState(false);
 
   const refreshProfile = async () => {
     if (user) {
@@ -53,11 +54,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!mounted || !auth) return;
+    if (!isHydrated || !auth) return;
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
@@ -76,12 +73,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     });
 
     return unsubscribe;
-  }, [mounted]);
+  }, [isHydrated]);
 
   const value = {
     user,
     userProfile,
-    loading: loading || !mounted,
+    loading: loading || !isHydrated,
     refreshProfile,
   };
 

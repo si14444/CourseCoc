@@ -6,22 +6,19 @@ import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
 import { getHomeStats, HomeStats } from "@/lib/homeStats";
+import { useHydration } from "@/hooks/useHydration";
 
 export function HeroSection() {
+  const isHydrated = useHydration();
   const [stats, setStats] = useState<HomeStats>({
     totalCourses: 0,
     publishedCourses: 0,
     beta: true
   });
   const [loading, setLoading] = useState(true);
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!mounted) return;
+    if (!isHydrated) return;
 
     const loadStats = async () => {
       try {
@@ -35,7 +32,7 @@ export function HeroSection() {
     };
 
     loadStats();
-  }, [mounted]);
+  }, [isHydrated]);
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-[var(--warm-white)] via-[var(--very-light-pink)] to-[var(--light-pink)] py-20 lg:py-32">
       {/* Background decorative elements */}
@@ -124,7 +121,7 @@ export function HeroSection() {
 
         {/* Real Stats or Launch Message */}
         <div className="max-w-4xl mx-auto">
-          {!mounted || loading ? (
+          {!isHydrated || loading ? (
             <div className="text-center">
               <div className="text-lg text-[var(--text-secondary)]">
                 로딩 중...
@@ -162,7 +159,8 @@ export function HeroSection() {
                 베타 버전으로 무료 체험 중
               </div>
             </div>
-          )}</div>
+          )}
+        </div>
       </div>
     </section>
   );
