@@ -454,11 +454,11 @@ export default function CourseDetailPage() {
         {/* Kakao Map Course Overview */}
         <div className="mb-16">
           <h2 className="text-2xl font-bold mb-6">코스 지도 미리보기</h2>
-          <div className="h-[500px] bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] rounded-2xl overflow-hidden">
+          <div className="h-[500px] rounded-2xl overflow-hidden border border-gray-200 shadow-lg">
             {isMapLoaded ? (
               <CourseMap locations={course.locations} />
             ) : (
-              <div className="flex items-center justify-center h-full">
+              <div className="flex items-center justify-center h-full bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)]">
                 <div className="text-center">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--coral-pink)] mx-auto mb-4"></div>
                   <p className="text-gray-600">지도 로딩중...</p>
@@ -537,11 +537,11 @@ export default function CourseDetailPage() {
         {/* Interactive Kakao Map Final View */}
         <div className="mb-16">
           <h2 className="text-2xl font-bold mb-6 text-center">전체 코스 한눈에 보기</h2>
-          <div className="h-[600px] bg-gradient-to-br from-[var(--coral-pink)]/10 to-[var(--light-pink)]/30 rounded-2xl overflow-hidden">
+          <div className="h-[600px] rounded-2xl overflow-hidden border border-gray-200 shadow-lg">
             {isMapLoaded ? (
               <CourseMap locations={course.locations} />
             ) : (
-              <div className="flex items-center justify-center h-full">
+              <div className="flex items-center justify-center h-full bg-gradient-to-br from-[var(--coral-pink)]/10 to-[var(--light-pink)]/30">
                 <div className="text-center">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--coral-pink)] mx-auto mb-4"></div>
                   <p className="text-lg text-gray-600">데이트 코스 지도 로딩중...</p>
