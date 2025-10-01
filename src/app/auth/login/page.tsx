@@ -154,7 +154,8 @@ export default function LoginPage() {
               </Button>
             </form>
 
-            {/* Divider */}
+            {/* 간편가입 - 일시적으로 비활성화 */}
+            {/*
             <div className="relative">
               <Separator />
               <div className="absolute inset-0 flex justify-center">
@@ -164,9 +165,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Social Login Buttons */}
             <div className="space-y-3">
-              {/* Google Login */}
               <Button
                 type="button"
                 variant="outline"
@@ -196,7 +195,6 @@ export default function LoginPage() {
                 </div>
               </Button>
 
-              {/* Kakao Login */}
               <Button
                 type="button"
                 className="w-full bg-[#FEE500] hover:bg-[#FEE500]/90 text-black border-0 transition-all duration-300 ease-in-out transform hover:scale-[1.02]"
@@ -214,6 +212,7 @@ export default function LoginPage() {
                 </div>
               </Button>
             </div>
+            */}
 
             {/* Sign Up Link */}
             <div className="text-center pt-4 border-t border-border">
