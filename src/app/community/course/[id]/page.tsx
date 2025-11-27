@@ -93,13 +93,6 @@ function CourseMap({ locations }: { locations: Location[] }) {
               zIndex={index + 1}
             >
               <div className="relative w-10 h-10 cursor-pointer group">
-                {/* Number Badge - Floating Above */}
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md border border-[var(--coral-pink)] z-20">
-                  <span className="text-[var(--coral-pink)] font-bold text-xs">
-                    {index + 1}
-                  </span>
-                </div>
-
                 {/* Heart Pin Image */}
                 <img
                   src="/pin.png"
@@ -107,8 +100,15 @@ function CourseMap({ locations }: { locations: Location[] }) {
                   className="w-full h-full object-contain object-bottom drop-shadow-sm"
                 />
 
+                {/* Number Badge - Below the Pin */}
+                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-md border border-[var(--coral-pink)] z-20">
+                  <span className="text-[var(--coral-pink)] font-bold text-xs">
+                    {index + 1}
+                  </span>
+                </div>
+
                 {/* Tooltip */}
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 px-3 py-1.5 bg-white text-gray-800 text-sm font-medium rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-20 border border-gray-100">
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-white text-gray-800 text-sm font-medium rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-20 border border-gray-100">
                   {location.name}
                   {location.time && (
                     <span className="text-[#ff6b6b] ml-1 text-xs">
