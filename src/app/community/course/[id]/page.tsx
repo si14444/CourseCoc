@@ -1,43 +1,55 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import Image from "next/image";
-import { Header } from "../../../../components/Header";
-import { Heart, MapPin, Clock, Users, Share2, Bookmark } from "lucide-react";
-import { Map, MapMarker, Polyline } from "react-kakao-maps-sdk";
-import { getCourseById, updateCourseLikes, updateCourseBookmarks, Course } from "../../../../lib/firebaseCourses";
-import { Location } from "../../../../types";
+import { Bookmark, Clock, Heart, MapPin, Share2, Users } from "lucide-react";
 import dynamic from "next/dynamic";
+import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { CustomOverlayMap, Map, Polyline } from "react-kakao-maps-sdk";
+import { Header } from "../../../../components/Header";
+import {
+  Course,
+  getCourseById,
+  updateCourseBookmarks,
+  updateCourseLikes,
+} from "../../../../lib/firebaseCourses";
+import { Location } from "../../../../types";
 
 // Comments 컴포넌트를 동적으로 로드하여 하이드레이션 문제 해결
-const Comments = dynamic(() => import("../../../../components/Comments").then(mod => ({ default: mod.Comments })), {
-  ssr: false,
-  loading: () => (
-    <div className="mt-8 p-6 bg-[var(--surface)] rounded-lg">
-      <div className="animate-pulse">
-        <div className="h-6 bg-[var(--accent-color)] rounded w-24 mb-4"></div>
-        <div className="space-y-4">
-          {[1, 2, 3].map(i => (
-            <div key={i} className="flex space-x-3">
-              <div className="w-10 h-10 bg-[var(--accent-color)] rounded-full"></div>
-              <div className="flex-1">
-                <div className="h-4 bg-[var(--accent-color)] rounded w-32 mb-2"></div>
-                <div className="h-4 bg-[var(--accent-color)] rounded w-full"></div>
+const Comments = dynamic(
+  () =>
+    import("../../../../components/Comments").then((mod) => ({
+      default: mod.Comments,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="mt-8 p-6 bg-[var(--surface)] rounded-lg">
+        <div className="animate-pulse">
+          <div className="h-6 bg-[var(--accent-color)] rounded w-24 mb-4"></div>
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex space-x-3">
+                <div className="w-10 h-10 bg-[var(--accent-color)] rounded-full"></div>
+                <div className="flex-1">
+                  <div className="h-4 bg-[var(--accent-color)] rounded w-32 mb-2"></div>
+                  <div className="h-4 bg-[var(--accent-color)] rounded w-full"></div>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
-    </div>
-  )
-});
-
+    ),
+  }
+);
 
 // Kakao Map Component
 function CourseMap({ locations }: { locations: Location[] }) {
   // 좌표가 있는 위치만 필터링
-  const validLocations = locations.filter(loc => loc.position && loc.position.lat && loc.position.lng);
+  const validLocations = locations.filter(
+    (loc) => loc.position && loc.position.lat && loc.position.lng
+  );
 
   if (validLocations.length === 0) {
     return (
@@ -52,8 +64,12 @@ function CourseMap({ locations }: { locations: Location[] }) {
 
   // 지도 중심 좌표 계산 (모든 위치의 중점)
   const center = {
-    lat: validLocations.reduce((sum, loc) => sum + (loc.position?.lat || 0), 0) / validLocations.length,
-    lng: validLocations.reduce((sum, loc) => sum + (loc.position?.lng || 0), 0) / validLocations.length,
+    lat:
+      validLocations.reduce((sum, loc) => sum + (loc.position?.lat || 0), 0) /
+      validLocations.length,
+    lng:
+      validLocations.reduce((sum, loc) => sum + (loc.position?.lng || 0), 0) /
+      validLocations.length,
   };
 
   return (
@@ -66,25 +82,51 @@ function CourseMap({ locations }: { locations: Location[] }) {
       level={6}
     >
       {/* 위치 마커들 */}
-      {validLocations.map((location, index) => (
-        location.position && (
-          <MapMarker
-            key={index}
-            position={location.position}
-            image={{
-              src: '/pin.png',
-              size: { width: 40, height: 40 },
-              options: { offset: { x: 20, y: 40 } }
-            }}
-            title={`${index + 1}. ${location.name}${location.time ? ` (${location.time})` : ''}`}
-          />
-        )
-      ))}
+      {validLocations.map(
+        (location, index) =>
+          location.position && (
+            <CustomOverlayMap
+              key={index}
+              position={location.position}
+              xAnchor={0.5}
+              yAnchor={1}
+              zIndex={index + 1}
+            >
+              <div className="relative w-10 h-10 cursor-pointer group">
+                {/* Number Badge - Floating Above */}
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md border border-[var(--coral-pink)] z-20">
+                  <span className="text-[var(--coral-pink)] font-bold text-xs">
+                    {index + 1}
+                  </span>
+                </div>
+
+                {/* Heart Pin Image */}
+                <img
+                  src="/pin.png"
+                  alt={`Location ${index + 1}`}
+                  className="w-full h-full object-contain object-bottom drop-shadow-sm"
+                />
+
+                {/* Tooltip */}
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 px-3 py-1.5 bg-white text-gray-800 text-sm font-medium rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-20 border border-gray-100">
+                  {location.name}
+                  {location.time && (
+                    <span className="text-[#ff6b6b] ml-1 text-xs">
+                      ({location.time})
+                    </span>
+                  )}
+                </div>
+              </div>
+            </CustomOverlayMap>
+          )
+      )}
 
       {/* 경로 표시 (2개 이상의 위치가 있을 때만) */}
       {validLocations.length > 1 && (
         <Polyline
-          path={validLocations.map(location => location.position).filter((pos): pos is { lat: number; lng: number } => Boolean(pos))}
+          path={validLocations
+            .map((location) => location.position)
+            .filter((pos): pos is { lat: number; lng: number } => Boolean(pos))}
           strokeWeight={5}
           strokeColor={"#ff6b6b"}
           strokeOpacity={0.9}
@@ -94,7 +136,6 @@ function CourseMap({ locations }: { locations: Location[] }) {
     </Map>
   );
 }
-
 
 export default function CourseDetailPage() {
   const params = useParams();
@@ -134,8 +175,8 @@ export default function CourseDetailPage() {
         setLoading(true);
         setError(null);
 
-        if (!courseId || courseId === 'undefined' || courseId === 'null') {
-          throw new Error('잘못된 코스 ID입니다.');
+        if (!courseId || courseId === "undefined" || courseId === "null") {
+          throw new Error("잘못된 코스 ID입니다.");
         }
 
         const courseData = await getCourseById(courseId);
@@ -152,12 +193,18 @@ export default function CourseDetailPage() {
         }
 
         const errorCode = (err as { code?: string })?.code;
-        if (errorCode === 'permission-denied') {
-          setError("게시글을 볼 수 있는 권한이 없습니다. Firebase 보안 규칙을 확인해주세요.");
-        } else if (errorCode === 'not-found') {
+        if (errorCode === "permission-denied") {
+          setError(
+            "게시글을 볼 수 있는 권한이 없습니다. Firebase 보안 규칙을 확인해주세요."
+          );
+        } else if (errorCode === "not-found") {
           setError("요청하신 게시글이 존재하지 않습니다.");
         } else {
-          setError(`데이터 로딩 오류: ${err instanceof Error ? err.message : '알 수 없는 오류'}`);
+          setError(
+            `데이터 로딩 오류: ${
+              err instanceof Error ? err.message : "알 수 없는 오류"
+            }`
+          );
         }
       } finally {
         setLoading(false);
@@ -167,8 +214,8 @@ export default function CourseDetailPage() {
     if (courseId) {
       fetchCourse();
     } else {
-      console.error('courseId가 없습니다.');
-      setError('게시글 ID가 제공되지 않았습니다.');
+      console.error("courseId가 없습니다.");
+      setError("게시글 ID가 제공되지 않았습니다.");
     }
   }, [courseId]);
 
@@ -182,11 +229,18 @@ export default function CourseDetailPage() {
       // Firebase 업데이트 시도, 실패 시 로컬 상태만 변경
       try {
         await updateCourseLikes(course.id, increment);
-        setCourse(prev => prev ? { ...prev, likes: prev.likes + increment } : null);
+        setCourse((prev) =>
+          prev ? { ...prev, likes: prev.likes + increment } : null
+        );
       } catch (firebaseError) {
-        console.warn("Firebase 좋아요 업데이트 실패, 로컬 상태만 변경:", firebaseError);
+        console.warn(
+          "Firebase 좋아요 업데이트 실패, 로컬 상태만 변경:",
+          firebaseError
+        );
         // 로컬 상태만 변경 (새로고침 시 원래대로 돌아감)
-        setCourse(prev => prev ? { ...prev, likes: prev.likes + increment } : null);
+        setCourse((prev) =>
+          prev ? { ...prev, likes: prev.likes + increment } : null
+        );
         alert("좋아요는 임시로만 반영됩니다. Firebase 권한 설정이 필요합니다.");
       }
 
@@ -207,11 +261,18 @@ export default function CourseDetailPage() {
       // Firebase 업데이트 시도, 실패 시 로컬 상태만 변경
       try {
         await updateCourseBookmarks(course.id, increment);
-        setCourse(prev => prev ? { ...prev, bookmarks: prev.bookmarks + increment } : null);
+        setCourse((prev) =>
+          prev ? { ...prev, bookmarks: prev.bookmarks + increment } : null
+        );
       } catch (firebaseError) {
-        console.warn("Firebase 북마크 업데이트 실패, 로컬 상태만 변경:", firebaseError);
+        console.warn(
+          "Firebase 북마크 업데이트 실패, 로컬 상태만 변경:",
+          firebaseError
+        );
         // 로컬 상태만 변경 (새로고침 시 원래대로 돌아감)
-        setCourse(prev => prev ? { ...prev, bookmarks: prev.bookmarks + increment } : null);
+        setCourse((prev) =>
+          prev ? { ...prev, bookmarks: prev.bookmarks + increment } : null
+        );
         alert("북마크는 임시로만 반영됩니다. Firebase 권한 설정이 필요합니다.");
       }
 
@@ -268,16 +329,23 @@ export default function CourseDetailPage() {
         <div className="pt-16 flex items-center justify-center min-h-[60vh]">
           <div className="text-center max-w-4xl mx-auto px-4">
             <div className="text-6xl mb-4">😞</div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">게시글을 불러올 수 없습니다</h1>
-            <p className="text-gray-600 mb-4">{error || "요청하신 게시글이 존재하지 않습니다."}</p>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              게시글을 불러올 수 없습니다
+            </h1>
+            <p className="text-gray-600 mb-4">
+              {error || "요청하신 게시글이 존재하지 않습니다."}
+            </p>
 
             {/* 디버깅 정보 */}
             <div className="bg-gray-50 rounded-lg p-4 mb-6 text-left text-sm">
               <h3 className="font-semibold mb-2">디버깅 정보:</h3>
               <ul className="space-y-1 text-gray-600">
-                <li>• 게시글 ID: <code className="bg-gray-200 px-1 rounded">{courseId}</code></li>
-                <li>• 현재 상태: {loading ? '로딩 중' : '로딩 완료'}</li>
-                <li>• 에러 메시지: {error || '없음'}</li>
+                <li>
+                  • 게시글 ID:{" "}
+                  <code className="bg-gray-200 px-1 rounded">{courseId}</code>
+                </li>
+                <li>• 현재 상태: {loading ? "로딩 중" : "로딩 완료"}</li>
+                <li>• 에러 메시지: {error || "없음"}</li>
                 <li>• 프로젝트: coursecoc-1c242</li>
                 <li>• 컬렉션: courses</li>
               </ul>
@@ -294,14 +362,15 @@ export default function CourseDetailPage() {
               </button>
 
               <button
-                onClick={() => router.push('/community')}
+                onClick={() => router.push("/community")}
                 className="block w-full px-6 py-3 bg-[var(--coral-pink)] text-white rounded-lg hover:opacity-90 transition-opacity"
               >
                 커뮤니티로 돌아가기
               </button>
 
               <p className="text-xs text-gray-500 mt-4">
-                계속 문제가 발생하면 Firebase 보안 규칙을 확인해주세요.<br/>
+                계속 문제가 발생하면 Firebase 보안 규칙을 확인해주세요.
+                <br />
                 콘솔(F12)에서 더 자세한 에러 정보를 확인할 수 있습니다.
               </p>
             </div>
@@ -329,14 +398,14 @@ export default function CourseDetailPage() {
       <Header />
 
       {/* Hero Section */}
-      <div className={`relative overflow-hidden ${
-        course.heroImage || course.locations?.[0]?.image
-          ? 'h-screen'
-          : 'h-96'
-      }`}>
+      <div
+        className={`relative overflow-hidden ${
+          course.heroImage || course.locations?.[0]?.image ? "h-screen" : "h-96"
+        }`}
+      >
         {course.heroImage || course.locations?.[0]?.image ? (
           <Image
-            src={course.heroImage || course.locations?.[0]?.image || ''}
+            src={course.heroImage || course.locations?.[0]?.image || ""}
             alt={course.title}
             fill
             className="object-cover"
@@ -352,7 +421,6 @@ export default function CourseDetailPage() {
               <div className="absolute bottom-20 left-20 w-16 h-16 rounded-full bg-[var(--coral-pink)]/25 animate-pulse delay-500"></div>
               <div className="absolute bottom-32 right-32 w-8 h-8 rounded-full bg-[var(--coral-pink)]/30 animate-pulse delay-300"></div>
             </div>
-
           </div>
         )}
         {/* 이미지가 있을 때만 텍스트 가독성을 위한 오버레이 적용 */}
@@ -360,27 +428,33 @@ export default function CourseDetailPage() {
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
         )}
         <div className="absolute inset-0 flex items-center justify-center z-10">
-          <div className={`text-center px-4 ${
-            course.heroImage || course.locations?.[0]?.image
-              ? 'text-white'
-              : 'text-[var(--coral-pink)]'
-          }`}>
-            <h1 className={`font-bold drop-shadow-lg ${
+          <div
+            className={`text-center px-4 ${
               course.heroImage || course.locations?.[0]?.image
-                ? 'text-5xl md:text-6xl mb-6'
-                : 'text-4xl mb-4'
-            }`}>
+                ? "text-white"
+                : "text-[var(--coral-pink)]"
+            }`}
+          >
+            <h1
+              className={`font-bold drop-shadow-lg ${
+                course.heroImage || course.locations?.[0]?.image
+                  ? "text-5xl md:text-6xl mb-6"
+                  : "text-4xl mb-4"
+              }`}
+            >
               {course.title}
             </h1>
-            <p className={`drop-shadow-md ${
-              course.heroImage || course.locations?.[0]?.image
-                ? 'text-xl md:text-2xl max-w-5xl'
-                : 'text-lg max-w-4xl'
-            } ${
-              course.heroImage || course.locations?.[0]?.image
-                ? 'opacity-90'
-                : 'opacity-80'
-            }`}>
+            <p
+              className={`drop-shadow-md ${
+                course.heroImage || course.locations?.[0]?.image
+                  ? "text-xl md:text-2xl max-w-5xl"
+                  : "text-lg max-w-4xl"
+              } ${
+                course.heroImage || course.locations?.[0]?.image
+                  ? "opacity-90"
+                  : "opacity-80"
+              }`}
+            >
               {course.description}
             </p>
           </div>
@@ -424,23 +498,25 @@ export default function CourseDetailPage() {
             onClick={handleLike}
             className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all ${
               liked
-                ? 'bg-[var(--coral-pink)] text-white'
-                : 'bg-white border border-[var(--coral-pink)] text-[var(--coral-pink)] hover:bg-[var(--very-light-pink)]'
+                ? "bg-[var(--coral-pink)] text-white"
+                : "bg-white border border-[var(--coral-pink)] text-[var(--coral-pink)] hover:bg-[var(--very-light-pink)]"
             }`}
           >
-            <Heart className={`w-5 h-5 ${liked ? 'fill-current' : ''}`} />
+            <Heart className={`w-5 h-5 ${liked ? "fill-current" : ""}`} />
             좋아요 {course.likes}
           </button>
           <button
             onClick={handleBookmark}
             className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all ${
               bookmarked
-                ? 'bg-blue-500 text-white'
-                : 'border border-gray-300 hover:bg-gray-50'
+                ? "bg-blue-500 text-white"
+                : "border border-gray-300 hover:bg-gray-50"
             }`}
           >
-            <Bookmark className={`w-5 h-5 ${bookmarked ? 'fill-current' : ''}`} />
-            저장 {course.bookmarks > 0 ? course.bookmarks : ''}
+            <Bookmark
+              className={`w-5 h-5 ${bookmarked ? "fill-current" : ""}`}
+            />
+            저장 {course.bookmarks > 0 ? course.bookmarks : ""}
           </button>
           <button
             onClick={handleShare}
@@ -467,7 +543,8 @@ export default function CourseDetailPage() {
             )}
           </div>
           <p className="text-sm text-gray-600 mt-4 text-center">
-            지도를 드래그하여 이동하고, 스크롤로 확대/축소할 수 있습니다. 핀을 클릭하면 장소 정보를 확인할 수 있어요!
+            지도를 드래그하여 이동하고, 스크롤로 확대/축소할 수 있습니다. 핀을
+            클릭하면 장소 정보를 확인할 수 있어요!
           </p>
         </div>
 
@@ -475,9 +552,12 @@ export default function CourseDetailPage() {
         <div className="space-y-16 mb-16">
           <h2 className="text-2xl font-bold mb-6">데이트 코스 순서</h2>
           {course.locations.map((location: Location, index: number) => (
-            <div key={location.id || index} className="grid md:grid-cols-2 gap-8 items-center">
+            <div
+              key={location.id || index}
+              className="grid md:grid-cols-2 gap-8 items-center"
+            >
               {/* Image */}
-              <div className={`${index % 2 === 1 ? 'md:order-2' : ''}`}>
+              <div className={`${index % 2 === 1 ? "md:order-2" : ""}`}>
                 <div className="relative">
                   {location.image ? (
                     <div className="relative w-full h-64">
@@ -500,18 +580,26 @@ export default function CourseDetailPage() {
               </div>
 
               {/* Content */}
-              <div className={`${index % 2 === 1 ? 'md:order-1' : ''}`}>
+              <div className={`${index % 2 === 1 ? "md:order-1" : ""}`}>
                 <div className="mb-4">
                   {location.time && (
-                    <span className="text-sm text-[var(--coral-pink)] font-medium">{location.time}</span>
+                    <span className="text-sm text-[var(--coral-pink)] font-medium">
+                      {location.time}
+                    </span>
                   )}
-                  <h3 className="text-2xl font-bold mt-1 mb-3">{location.name}</h3>
+                  <h3 className="text-2xl font-bold mt-1 mb-3">
+                    {location.name}
+                  </h3>
                   {location.description && (
-                    <p className="text-lg text-gray-600 mb-4">{location.description}</p>
+                    <p className="text-lg text-gray-600 mb-4">
+                      {location.description}
+                    </p>
                   )}
                 </div>
                 {location.detail && (
-                  <p className="text-gray-700 leading-relaxed">{location.detail}</p>
+                  <p className="text-gray-700 leading-relaxed">
+                    {location.detail}
+                  </p>
                 )}
                 {location.address && (
                   <p className="text-sm text-gray-500 mt-3">
@@ -536,7 +624,9 @@ export default function CourseDetailPage() {
 
         {/* Interactive Kakao Map Final View */}
         <div className="mb-16">
-          <h2 className="text-2xl font-bold mb-6 text-center">전체 코스 한눈에 보기</h2>
+          <h2 className="text-2xl font-bold mb-6 text-center">
+            전체 코스 한눈에 보기
+          </h2>
           <div className="h-[600px] rounded-2xl overflow-hidden border border-gray-200 shadow-lg">
             {isMapLoaded ? (
               <CourseMap locations={course.locations} />
@@ -544,14 +634,17 @@ export default function CourseDetailPage() {
               <div className="flex items-center justify-center h-full bg-gradient-to-br from-[var(--coral-pink)]/10 to-[var(--light-pink)]/30">
                 <div className="text-center">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--coral-pink)] mx-auto mb-4"></div>
-                  <p className="text-lg text-gray-600">데이트 코스 지도 로딩중...</p>
+                  <p className="text-lg text-gray-600">
+                    데이트 코스 지도 로딩중...
+                  </p>
                 </div>
               </div>
             )}
           </div>
           <div className="text-center mt-4">
             <p className="text-sm text-gray-600">
-              🗺️ 총 {course.locations.length}개 장소를 연결하는 로맨틱한 데이트 코스
+              🗺️ 총 {course.locations.length}개 장소를 연결하는 로맨틱한 데이트
+              코스
             </p>
             <p className="text-xs text-gray-500 mt-1">
               빨간 선은 추천 이동 경로입니다
