@@ -108,13 +108,26 @@ function CourseMap({ locations }: { locations: Location[] }) {
                 </div>
 
                 {/* Tooltip */}
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-white text-gray-800 text-sm font-medium rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-20 border border-gray-100">
-                  {location.name}
-                  {location.time && (
-                    <span className="text-[#ff6b6b] ml-1 text-xs">
-                      ({location.time})
-                    </span>
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-white rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20 border border-gray-100 overflow-hidden min-w-[160px]">
+                  {location.image && (
+                    <div className="w-full h-24 bg-gray-100">
+                      <img
+                        src={location.image}
+                        alt={location.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                   )}
+                  <div className="px-3 py-2 text-center">
+                    <div className="text-gray-800 text-sm font-bold whitespace-nowrap">
+                      {location.name}
+                    </div>
+                    {location.time && (
+                      <div className="text-[var(--coral-pink)] text-xs mt-0.5">
+                        {location.time}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </CustomOverlayMap>
