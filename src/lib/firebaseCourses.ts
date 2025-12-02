@@ -1,21 +1,20 @@
+import { Location } from "@/types";
 import {
   collection,
-  getDocs,
-  doc,
-  getDoc,
-  query,
-  orderBy,
-  limit,
-  where,
-  updateDoc,
-  increment,
   deleteDoc,
-  serverTimestamp,
+  doc,
+  DocumentData,
+  getDoc,
+  getDocs,
+  increment,
+  orderBy,
+  query,
   QueryDocumentSnapshot,
-  DocumentData
-} from 'firebase/firestore';
-import { db, auth } from './firebase';
-import { Location } from '@/types';
+  serverTimestamp,
+  updateDoc,
+  where,
+} from "firebase/firestore";
+import { db } from "./firebase";
 
 // Course 타입 정의 (기존과 호환)
 export interface Course {
@@ -30,343 +29,304 @@ export interface Course {
   locations: Location[];
   content: string;
   isDraft: boolean;
-  createdAt: unknown; // Firebase Timestamp
-  updatedAt: unknown; // Firebase Timestamp
+  createdAt: unknown;
+  updatedAt: unknown;
   likes: number;
   views: number;
   bookmarks: number;
-  authorId?: string; // 코스 작성자 ID
-  // 디스플레이용 추가 필드들 (기존 샘플 데이터와 호환)
+  authorId?: string;
   placeCount?: number;
   steps?: string[];
   imageUrl?: string;
-  status?: 'published' | 'draft' | 'private'; // 디스플레이용 상태
+  status?: "published" | "draft" | "private";
 }
 
-
 // Firebase 문서를 Course 객체로 변환
-const convertFirestoreDocToCourse = (doc: QueryDocumentSnapshot<DocumentData>): Course => {
+function convertFirestoreDocToCourse(
+  doc: QueryDocumentSnapshot<DocumentData>
+): Course {
   const data = doc.data();
-
   return {
     id: doc.id,
-    title: data.title || '',
-    description: data.description || '',
+    title: data.title || "",
+    description: data.description || "",
     tags: data.tags || [],
-    duration: data.duration || '',
-    budget: data.budget || '',
-    season: data.season || '',
+    duration: data.duration || "",
+    budget: data.budget || "",
+    season: data.season || "",
     heroImage: data.heroImage,
     locations: data.locations || [],
-    content: data.content || '',
-    isDraft: data.isDraft || false,
+    content: data.content || "",
+    isDraft: data.isDraft ?? false,
     createdAt: data.createdAt,
     updatedAt: data.updatedAt,
     likes: data.likes || 0,
     views: data.views || 0,
     bookmarks: data.bookmarks || 0,
     authorId: data.authorId,
-    // 디스플레이용 필드들 변환
     placeCount: data.locations?.length || 0,
-    steps: data.locations?.map((loc: Location) => loc.name).filter(Boolean) || [],
-    imageUrl: data.heroImage || data.locations?.find((loc: Location) => loc.image)?.image,
-    status: data.isDraft ? 'draft' : 'published' // Firebase isDraft을 status로 변환
+    steps: data.steps,
+    imageUrl: data.imageUrl || data.heroImage,
+    status: data.status || (data.isDraft ? "draft" : "published"),
   };
-};
+}
 
 // 모든 발행된 코스 가져오기 (isDraft: false)
-export const getPublishedCourses = async (): Promise<Course[]> => {
+export async function getPublishedCourses(): Promise<Course[]> {
   try {
     if (!db) {
-      console.error('Firestore가 초기화되지 않았습니다.');
+      console.error("Firestore가 초기화되지 않았습니다.");
       return [];
     }
 
-    const coursesRef = collection(db, 'courses');
     const q = query(
-      coursesRef,
-      where('isDraft', '==', false),
-      orderBy('createdAt', 'desc'),
-      limit(50) // 성능을 위해 최대 50개 제한
+      collection(db, "courses"),
+      where("isDraft", "==", false),
+      orderBy("createdAt", "desc")
     );
 
-    const snapshot = await getDocs(q);
-    const courses = snapshot.docs.map(convertFirestoreDocToCourse);
-
-    return courses;
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(convertFirestoreDocToCourse);
   } catch (error) {
-    console.error('코스 목록을 가져오는 중 오류 발생:', error);
-    throw error;
+    console.error("Error getting published courses:", error);
+    return [];
   }
-};
+}
 
 // 특정 코스 가져오기 (상세 페이지용)
-export const getCourseById = async (courseId: string): Promise<Course | null> => {
+export async function getCourseById(courseId: string): Promise<Course | null> {
   try {
     if (!db) {
-      console.error('Firestore가 초기화되지 않았습니다.');
+      console.error("Firestore가 초기화되지 않았습니다.");
       return null;
     }
 
-    const docRef = doc(db, 'courses', courseId);
+    const docRef = doc(db, "courses", courseId);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-      const course = convertFirestoreDocToCourse(docSnap as QueryDocumentSnapshot<DocumentData>);
+      // 조회수 증가
+      await updateDoc(docRef, {
+        views: increment(1),
+      });
 
-      // 조회수 증가 기능 임시 제거 (권한 문제로 인해)
-      // TODO: Firebase 보안 규칙 수정 후 활성화
-      // try {
-      //   await updateDoc(docRef, {
-      //     views: increment(1)
-      //   });
-      // } catch (viewsError) {
-      //   console.warn('조회수 증가 실패 (권한 문제):', viewsError);
-      // }
-
-      return course;
+      return convertFirestoreDocToCourse(
+        docSnap as QueryDocumentSnapshot<DocumentData>
+      );
     } else {
       return null;
     }
   } catch (error) {
-    console.error('코스를 가져오는 중 오류 발생:', error);
-    throw error;
+    console.error("Error getting course:", error);
+    return null;
   }
-};
+}
 
 // 태그로 코스 검색
-export const getCoursesByTag = async (tag: string): Promise<Course[]> => {
+export async function getCoursesByTag(tag: string): Promise<Course[]> {
   try {
     if (!db) {
-      console.error('Firestore가 초기화되지 않았습니다.');
+      console.error("Firestore가 초기화되지 않았습니다.");
       return [];
     }
 
-    const coursesRef = collection(db, 'courses');
     const q = query(
-      coursesRef,
-      where('isDraft', '==', false),
-      where('tags', 'array-contains', tag),
-      orderBy('createdAt', 'desc'),
-      limit(20)
+      collection(db, "courses"),
+      where("tags", "array-contains", tag),
+      where("isDraft", "==", false)
     );
 
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map(convertFirestoreDocToCourse);
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(convertFirestoreDocToCourse);
   } catch (error) {
-    console.error('태그로 코스 검색 중 오류 발생:', error);
-    throw error;
+    console.error("Error getting courses by tag:", error);
+    return [];
   }
-};
+}
 
 // 좋아요 수 업데이트
-export const updateCourseLikes = async (courseId: string, increment_value: number = 1): Promise<void> => {
+export async function updateCourseLikes(
+  courseId: string,
+  increment_value: number = 1
+): Promise<void> {
   try {
     if (!db) {
-      console.error('Firestore가 초기화되지 않았습니다.');
+      console.error("Firestore가 초기화되지 않았습니다.");
       return;
     }
 
-    const docRef = doc(db, 'courses', courseId);
+    const docRef = doc(db, "courses", courseId);
     await updateDoc(docRef, {
-      likes: increment(increment_value)
+      likes: increment(increment_value),
     });
   } catch (error) {
-    console.error('좋아요 업데이트 중 오류 발생:', error);
-    throw error;
+    console.error("Error updating course likes:", error);
   }
-};
+}
 
 // 북마크 수 업데이트
-export const updateCourseBookmarks = async (courseId: string, increment_value: number = 1): Promise<void> => {
+export async function updateCourseBookmarks(
+  courseId: string,
+  increment_value: number = 1
+): Promise<void> {
   try {
     if (!db) {
-      console.error('Firestore가 초기화되지 않았습니다.');
+      console.error("Firestore가 초기화되지 않았습니다.");
       return;
     }
 
-    const docRef = doc(db, 'courses', courseId);
+    const docRef = doc(db, "courses", courseId);
     await updateDoc(docRef, {
-      bookmarks: increment(increment_value)
+      bookmarks: increment(increment_value),
     });
   } catch (error) {
-    console.error('북마크 업데이트 중 오류 발생:', error);
-    throw error;
+    console.error("Error updating course bookmarks:", error);
   }
-};
+}
 
 // 사용자의 코스 가져오기 (내 코스 페이지용)
-export const getUserCourses = async (userId: string): Promise<Course[]> => {
+export async function getUserCourses(userId: string): Promise<Course[]> {
   try {
     if (!db) {
-      console.error('Firestore가 초기화되지 않았습니다.');
+      console.error("Firestore가 초기화되지 않았습니다.");
       return [];
     }
 
-    const coursesRef = collection(db, 'courses');
+    if (!userId) {
+      console.error("사용자 ID가 제공되지 않았습니다.");
+      return [];
+    }
+
+    // authorId 필드로 쿼리
     const q = query(
-      coursesRef,
-      where('authorId', '==', userId),
-      limit(100) // 인덱스 문제로 orderBy 임시 제거
+      collection(db, "courses"),
+      where("authorId", "==", userId),
+      orderBy("createdAt", "desc")
     );
 
-    const snapshot = await getDocs(q);
-    const courses = snapshot.docs.map(convertFirestoreDocToCourse);
+    const querySnapshot = await getDocs(q);
 
-    // 클라이언트에서 정렬 (임시 해결책)
-    courses.sort((a, b) => {
-      if (!a.updatedAt || !b.updatedAt) return 0;
-
-      try {
-        const dateA = (a.updatedAt && typeof a.updatedAt === 'object' && 'toDate' in a.updatedAt)
-          ? (a.updatedAt as { toDate: () => Date }).toDate()
-          : new Date(a.updatedAt as string);
-        const dateB = (b.updatedAt && typeof b.updatedAt === 'object' && 'toDate' in b.updatedAt)
-          ? (b.updatedAt as { toDate: () => Date }).toDate()
-          : new Date(b.updatedAt as string);
-        return dateB.getTime() - dateA.getTime(); // 최신순
-      } catch {
-        return 0;
-      }
-    });
-
-    return courses;
-  } catch (error) {
-    console.error('사용자 코스 목록을 가져오는 중 오류 발생:', error);
-    throw error;
-  }
-};
-
-// 사용자의 특정 상태별 코스 가져오기
-export const getUserCoursesByStatus = async (userId: string, isDraft?: boolean): Promise<Course[]> => {
-  try {
-    if (!db) {
-      console.error('Firestore가 초기화되지 않았습니다.');
+    if (querySnapshot.empty) {
       return [];
     }
 
-    const coursesRef = collection(db, 'courses');
+    return querySnapshot.docs.map(convertFirestoreDocToCourse);
+  } catch (error) {
+    console.error("Error getting user courses:", error);
+    return [];
+  }
+}
+
+// 사용자의 특정 상태별 코스 가져오기
+export async function getUserCoursesByStatus(
+  userId: string,
+  isDraft?: boolean
+): Promise<Course[]> {
+  try {
+    if (!db) {
+      console.error("Firestore가 초기화되지 않았습니다.");
+      return [];
+    }
+
+    if (!userId) {
+      console.error("사용자 ID가 제공되지 않았습니다.");
+      return [];
+    }
+
     let q;
 
     if (isDraft !== undefined) {
+      // isDraft 상태로 필터링
       q = query(
-        coursesRef,
-        where('authorId', '==', userId),
-        where('isDraft', '==', isDraft),
-        limit(100) // 인덱스 문제로 orderBy 임시 제거
+        collection(db, "courses"),
+        where("authorId", "==", userId),
+        where("isDraft", "==", isDraft),
+        orderBy("createdAt", "desc")
       );
     } else {
+      // 모든 코스 가져오기
       q = query(
-        coursesRef,
-        where('authorId', '==', userId),
-        limit(100) // 인덱스 문제로 orderBy 임시 제거
+        collection(db, "courses"),
+        where("authorId", "==", userId),
+        orderBy("createdAt", "desc")
       );
     }
 
-    const snapshot = await getDocs(q);
-    const courses = snapshot.docs.map(convertFirestoreDocToCourse);
+    const querySnapshot = await getDocs(q);
 
-    // 클라이언트에서 정렬 (임시 해결책)
-    courses.sort((a, b) => {
-      if (!a.updatedAt || !b.updatedAt) return 0;
+    if (querySnapshot.empty) {
+      return [];
+    }
 
-      try {
-        const dateA = (a.updatedAt && typeof a.updatedAt === 'object' && 'toDate' in a.updatedAt)
-          ? (a.updatedAt as { toDate: () => Date }).toDate()
-          : new Date(a.updatedAt as string);
-        const dateB = (b.updatedAt && typeof b.updatedAt === 'object' && 'toDate' in b.updatedAt)
-          ? (b.updatedAt as { toDate: () => Date }).toDate()
-          : new Date(b.updatedAt as string);
-        return dateB.getTime() - dateA.getTime(); // 최신순
-      } catch {
-        return 0;
-      }
-    });
-
-    return courses;
+    return querySnapshot.docs.map(convertFirestoreDocToCourse);
   } catch (error) {
-    console.error('사용자 코스 목록을 가져오는 중 오류 발생:', error);
-    throw error;
+    console.error("Error getting user courses by status:", error);
+    return [];
   }
-};
+}
 
 // 코스 삭제
-export const deleteCourse = async (courseId: string, userId?: string): Promise<void> => {
+export async function deleteCourse(
+  courseId: string,
+  userId?: string
+): Promise<void> {
   try {
     if (!db) {
-      console.error('Firestore가 초기화되지 않았습니다.');
-      return;
+      throw new Error("Firestore가 초기화되지 않았습니다.");
     }
 
-    // 인증된 사용자인지 확인
-    if (!auth) {
-      throw new Error('Firebase Auth가 초기화되지 않았습니다.');
+    if (!courseId) {
+      throw new Error("코스 ID가 제공되지 않았습니다.");
     }
 
-    const currentUser = auth.currentUser;
-    if (!currentUser) {
-      throw new Error('로그인이 필요합니다.');
+    // 권한 확인 (userId가 제공된 경우)
+    if (userId) {
+      const docRef = doc(db, "courses", courseId);
+      const docSnap = await getDoc(docRef);
+
+      if (!docSnap.exists()) {
+        throw new Error("코스를 찾을 수 없습니다.");
+      }
+
+      const courseData = docSnap.data();
+      if (courseData.authorId !== userId) {
+        throw new Error("이 코스를 삭제할 권한이 없습니다.");
+      }
     }
 
-    // 전달받은 userId와 현재 사용자가 일치하는지 확인
-    const verifiedUserId = userId || currentUser.uid;
-    if (currentUser.uid !== verifiedUserId) {
-      throw new Error('권한이 없습니다.');
+    // 코스 삭제
+    await deleteDoc(doc(db, "courses", courseId));
+
+    if (process.env.NODE_ENV === "development") {
+      console.log(`코스 ${courseId}가 성공적으로 삭제되었습니다.`);
     }
-
-    const docRef = doc(db, 'courses', courseId);
-
-    // 삭제하기 전에 문서가 존재하고 작성자가 맞는지 확인
-    const docSnap = await getDoc(docRef);
-    if (!docSnap.exists()) {
-      throw new Error('삭제하려는 코스를 찾을 수 없습니다.');
-    }
-
-    const courseData = docSnap.data();
-    if (courseData.authorId !== verifiedUserId) {
-      throw new Error('본인이 작성한 코스만 삭제할 수 있습니다.');
-    }
-
-    // 삭제 실행
-    await deleteDoc(docRef);
-  } catch (error: unknown) {
-    console.error('코스 삭제 중 오류 발생:', error);
-    const err = error as { code?: string; message?: string };
-
-    // Firebase 에러 메시지를 사용자 친화적으로 변환
-    if (err.code === 'permission-denied') {
-      throw new Error('코스를 삭제할 권한이 없습니다. 본인이 작성한 코스인지 확인해주세요.');
-    } else if (err.code === 'not-found') {
-      throw new Error('삭제하려는 코스를 찾을 수 없습니다.');
-    } else if (err.code === 'unauthenticated') {
-      throw new Error('로그인 상태를 확인할 수 없습니다. 다시 로그인해주세요.');
-    }
-
+  } catch (error) {
+    console.error("Error deleting course:", error);
     throw error;
   }
-};
+}
 
 // 코스 업데이트 (전체 문서 업데이트)
-export const updateCourse = async (courseId: string, courseData: Partial<Course>): Promise<void> => {
+export async function updateCourse(
+  courseId: string,
+  courseData: Partial<Course>
+): Promise<void> {
   try {
     if (!db) {
-      console.error('Firestore가 초기화되지 않았습니다.');
-      return;
+      throw new Error("Firestore가 초기화되지 않았습니다.");
     }
 
-    const docRef = doc(db, 'courses', courseId);
-    const updateData = {
+    const docRef = doc(db, "courses", courseId);
+    await updateDoc(docRef, {
       ...courseData,
-      updatedAt: serverTimestamp()
-    };
+      updatedAt: serverTimestamp(),
+    });
 
-    // 수정 시 제거해야 할 필드들
-    delete (updateData as { id?: string }).id;
-    delete (updateData as { createdAt?: unknown }).createdAt; // 생성일은 수정하지 않음
-
-    await updateDoc(docRef, updateData);
+    if (process.env.NODE_ENV === "development") {
+      console.log(`코스 ${courseId}가 성공적으로 업데이트되었습니다.`);
+    }
   } catch (error) {
-    console.error('코스 업데이트 중 오류 발생:', error);
+    console.error("Error updating course:", error);
     throw error;
   }
-};
+}

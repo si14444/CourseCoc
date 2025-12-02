@@ -1,36 +1,36 @@
 "use client";
 
-import { useState, useEffect, useRef, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { Location } from "@/types";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { ref, uploadString, getDownloadURL } from "firebase/storage";
-import { db, storage } from "../../../lib/firebase";
-import { useAuth } from "../../../contexts/AuthContext";
-import { getCourseById, updateCourse } from "../../../lib/firebaseCourses";
-import { Header } from "../../../components/Header";
-import Link from "next/link";
-import Image from "next/image";
+import { getDownloadURL, ref, uploadString } from "firebase/storage";
 import {
+  Bookmark,
+  Calendar,
   Camera,
-  MapPin,
   Clock,
   DollarSign,
-  Calendar,
-  Plus,
-  X,
-  GripVertical,
   Eye,
-  Send,
+  GripVertical,
   Heart,
-  Bookmark,
+  MapPin,
+  Plus,
+  Send,
   Share2,
+  X,
 } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useRef, useState } from "react";
+import { Map, MapMarker, Polyline } from "react-kakao-maps-sdk";
+import { Header } from "../../../components/Header";
+import { AddressAutocomplete } from "../../../components/ui/AddressAutocomplete";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent } from "../../../components/ui/card";
-import { AddressAutocomplete } from "../../../components/ui/AddressAutocomplete";
 import { RichTextEditor } from "../../../components/ui/RichTextEditor";
-import { Map, MapMarker, Polyline } from "react-kakao-maps-sdk";
-import { Location } from "@/types";
+import { useAuth } from "../../../contexts/AuthContext";
+import { db, storage } from "../../../lib/firebase";
+import { getCourseById, updateCourse } from "../../../lib/firebaseCourses";
 
 interface FirebaseError extends Error {
   code?: string;
@@ -169,7 +169,7 @@ function WritePageContent() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const editId = searchParams.get('edit');
+  const editId = searchParams.get("edit");
   const [step, setStep] = useState(1);
   const [courseData, setCourseData] = useState<CourseData>({
     title: "",
@@ -194,7 +194,9 @@ function WritePageContent() {
   // 카카오맵 API 로드 (services 라이브러리 포함)
   useEffect(() => {
     // 이미 로드된 스크립트가 있는지 확인
-    const existingScript = document.querySelector('script[src*="dapi.kakao.com"]');
+    const existingScript = document.querySelector(
+      'script[src*="dapi.kakao.com"]'
+    );
     if (existingScript) {
       if (window.kakao && window.kakao.maps) {
         setIsMapLoaded(true);
@@ -215,7 +217,7 @@ function WritePageContent() {
     };
 
     script.onerror = () => {
-      console.error('Kakao Maps API 로드 실패');
+      console.error("Kakao Maps API 로드 실패");
     };
 
     return () => {
@@ -402,19 +404,22 @@ function WritePageContent() {
   };
 
   // 이미지 Firebase Storage 업로드 함수
-  const uploadImageToStorage = async (base64Image: string, path: string): Promise<string> => {
+  const uploadImageToStorage = async (
+    base64Image: string,
+    path: string
+  ): Promise<string> => {
     if (!storage) {
-      throw new Error('Storage가 초기화되지 않았습니다.');
+      throw new Error("Storage가 초기화되지 않았습니다.");
     }
 
     try {
       const imageRef = ref(storage, path);
-      await uploadString(imageRef, base64Image, 'data_url');
+      await uploadString(imageRef, base64Image, "data_url");
       const downloadURL = await getDownloadURL(imageRef);
       return downloadURL;
     } catch (error) {
-      console.error('이미지 업로드 실패:', error);
-      throw new Error('이미지 업로드에 실패했습니다.');
+      console.error("이미지 업로드 실패:", error);
+      throw new Error("이미지 업로드에 실패했습니다.");
     }
   };
 
@@ -456,7 +461,8 @@ function WritePageContent() {
     }
 
     // 태그 검증 및 정리
-    const validTags = courseData.tags?.filter(tag => tag && tag.trim() !== "") || [];
+    const validTags =
+      courseData.tags?.filter((tag) => tag && tag.trim() !== "") || [];
     if (validTags.length === 0) {
       alert("최소 1개의 태그를 선택해주세요.");
       return;
@@ -464,17 +470,19 @@ function WritePageContent() {
 
     setIsPublishing(true);
 
-
     try {
       // 이미지 업로드 처리
-      let heroImageUrl = '';
+      let heroImageUrl = "";
       if (courseData.heroImage?.trim()) {
         try {
           const timestamp = Date.now();
           const heroImagePath = `course-images/hero-${timestamp}.jpg`;
-          heroImageUrl = await uploadImageToStorage(courseData.heroImage, heroImagePath);
+          heroImageUrl = await uploadImageToStorage(
+            courseData.heroImage,
+            heroImagePath
+          );
         } catch (error) {
-          console.warn('대표 이미지 업로드 실패:', error);
+          console.warn("대표 이미지 업로드 실패:", error);
           // 이미지 업로드 실패해도 게시글 저장은 계속 진행
         }
       }
@@ -496,8 +504,8 @@ function WritePageContent() {
         views: 0,
         bookmarks: 0,
         // 작성자 정보 추가
-        authorId: user?.uid || '',
-        authorName: user?.displayName || user?.email || ''
+        authorId: user?.uid || "",
+        authorName: user?.displayName || user?.email || "",
       };
 
       // heroImage URL이 있을 때만 추가
@@ -509,7 +517,9 @@ function WritePageContent() {
       const processedLocations = await Promise.all(
         courseData.locations.map(async (location, index) => {
           const cleanLocation: Location = {
-            id: location.id || `loc-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            id:
+              location.id ||
+              `loc-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             name: location.name.trim(),
             address: location.address.trim(),
             time: location.time?.trim() || "",
@@ -522,7 +532,10 @@ function WritePageContent() {
             try {
               const timestamp = Date.now();
               const locationImagePath = `course-images/location-${timestamp}-${index}.jpg`;
-              const locationImageUrl = await uploadImageToStorage(location.image, locationImagePath);
+              const locationImageUrl = await uploadImageToStorage(
+                location.image,
+                locationImagePath
+              );
               cleanLocation.image = locationImageUrl;
             } catch (error) {
               console.warn(`장소 ${index + 1} 이미지 업로드 실패:`, error);
@@ -531,14 +544,16 @@ function WritePageContent() {
           }
 
           // 위치 정보 처리
-          if (location.position &&
-              typeof location.position.lat === 'number' &&
-              typeof location.position.lng === 'number' &&
-              !isNaN(location.position.lat) &&
-              !isNaN(location.position.lng)) {
+          if (
+            location.position &&
+            typeof location.position.lat === "number" &&
+            typeof location.position.lng === "number" &&
+            !isNaN(location.position.lat) &&
+            !isNaN(location.position.lng)
+          ) {
             cleanLocation.position = {
               lat: location.position.lat,
-              lng: location.position.lng
+              lng: location.position.lng,
             };
           }
 
@@ -554,7 +569,7 @@ function WritePageContent() {
         alert("코스가 성공적으로 수정되었습니다!");
         // 수정 성공 후 내 코스 페이지로 리다이렉트
         setTimeout(() => {
-          router.push('/courses');
+          router.push("/courses");
         }, 1000);
       } else {
         // 새 코스 생성
@@ -562,7 +577,7 @@ function WritePageContent() {
         alert("게시글이 성공적으로 발행되었습니다!");
         // 발행 성공 후 커뮤니티 페이지로 리다이렉트
         setTimeout(() => {
-          router.push('/community');
+          router.push("/community");
         }, 1000); // 1초 후 이동 (사용자가 성공 메시지를 볼 수 있도록)
       }
     } catch (error) {
@@ -571,19 +586,22 @@ function WritePageContent() {
       console.error("에러 상세:", {
         code: firebaseError?.code,
         message: firebaseError?.message,
-        stack: firebaseError?.stack
+        stack: firebaseError?.stack,
       });
 
       // Firebase 권한 에러인 경우 특별 처리
-      if (firebaseError?.code === 'permission-denied' || firebaseError?.message?.includes('permission')) {
-        console.error('권한 에러 디버깅 정보:', {
-          user: user,
-          userId: user?.uid,
-          userEmail: user?.email,
-          courseTitle: courseData.title,
-          authState: !!user,
-          timestamp: new Date().toISOString()
-        });
+      if (
+        firebaseError?.code === "permission-denied" ||
+        firebaseError?.message?.includes("permission")
+      ) {
+        // 개발 환경에서만 상세 로깅
+        if (process.env.NODE_ENV === "development") {
+          console.error("권한 에러 디버깅 정보:", {
+            userId: user?.uid,
+            timestamp: new Date().toISOString(),
+            errorCode: firebaseError?.code,
+          });
+        }
 
         alert(`권한 오류가 발생했습니다.
 
@@ -594,22 +612,19 @@ function WritePageContent() {
 2. 브라우저를 새로고침해보세요
 3. 관리자에게 문의해주세요
 
-기술적 세부사항:
-- 사용자 ID: ${user?.uid || '없음'}
-- 사용자 이메일: ${user?.email || '없음'}
-- 오류 코드: ${firebaseError?.code || 'permission-denied'}
-- 오류 메시지: ${firebaseError?.message || 'Missing or insufficient permissions'}
-- 시간: ${new Date().toLocaleString()}`);
-      } else if (firebaseError?.code === 'unavailable') {
+오류 코드: ${firebaseError?.code || "permission-denied"}`);
+      } else if (firebaseError?.code === "unavailable") {
         alert("네트워크 오류입니다. 인터넷 연결을 확인하고 다시 시도해주세요.");
-      } else if (firebaseError?.code === 'invalid-argument') {
-        alert("입력된 데이터에 문제가 있습니다. 모든 필드를 다시 확인해주세요.");
+      } else if (firebaseError?.code === "invalid-argument") {
+        alert(
+          "입력된 데이터에 문제가 있습니다. 모든 필드를 다시 확인해주세요."
+        );
       } else {
         alert(`저장 중 오류가 발생했습니다.
 
 오류 정보:
-- 코드: ${firebaseError?.code || '알 수 없음'}
-- 메시지: ${firebaseError?.message || '알 수 없는 오류'}
+- 코드: ${firebaseError?.code || "알 수 없음"}
+- 메시지: ${firebaseError?.message || "알 수 없는 오류"}
 
 다시 시도해주시거나 관리자에게 문의해주세요.`);
       }
@@ -683,7 +698,9 @@ function WritePageContent() {
             {isLoadingCourse && (
               <div className="mt-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--coral-pink)] mx-auto mb-2"></div>
-                <p className="text-[var(--text-secondary)]">코스 정보를 불러오는 중...</p>
+                <p className="text-[var(--text-secondary)]">
+                  코스 정보를 불러오는 중...
+                </p>
               </div>
             )}
 
@@ -1493,9 +1510,12 @@ function WritePageContent() {
                         >
                           <Send className="w-4 h-4 mr-2" />
                           {isPublishing
-                            ? (editId ? "수정중..." : "발행중...")
-                            : (editId ? "수정완료" : "게시하기")
-                          }
+                            ? editId
+                              ? "수정중..."
+                              : "발행중..."
+                            : editId
+                            ? "수정완료"
+                            : "게시하기"}
                         </Button>
                       </div>
                     </div>
