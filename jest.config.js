@@ -19,7 +19,7 @@ const customJestConfig = {
     "!src/app/layout.tsx",
     "!src/app/**/layout.tsx",
   ],
-  coverageThresholds: {
+  coverageThreshold: {
     global: {
       branches: 50,
       functions: 50,
