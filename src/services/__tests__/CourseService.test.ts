@@ -1,5 +1,6 @@
+import { Course } from "@/lib/firebaseCourses";
 import { ICourseRepository } from "@/repositories/CourseRepository";
-import { Course, Location } from "@/types";
+import { Location } from "@/types";
 import { CourseService } from "../CourseService";
 
 // Mock Repository
@@ -8,7 +9,7 @@ class MockCourseRepository implements ICourseRepository {
 
   async create(course: Omit<Course, "id">): Promise<string> {
     const id = "test-id-" + Date.now();
-    this.courses.set(id, { ...course, id } as Course);
+    this.courses.set(id, { ...course, id });
     return id;
   }
 
@@ -28,7 +29,7 @@ class MockCourseRepository implements ICourseRepository {
 
   async findByTag(tag: string): Promise<Course[]> {
     return Array.from(this.courses.values()).filter((c) =>
-      c.tags.includes(tag)
+      c.tags?.includes(tag)
     );
   }
 

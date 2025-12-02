@@ -1,5 +1,5 @@
 import { db } from "@/lib/firebase";
-import { Course } from "@/types";
+import { Course } from "@/lib/firebaseCourses";
 import {
   addDoc,
   collection,
@@ -92,8 +92,8 @@ export class FirebaseCourseRepository implements ICourseRepository {
       locations: data.locations || [],
       content: data.content || "",
       isDraft: data.isDraft ?? false,
-      createdAt: data.createdAt?.toDate() || new Date(),
-      updatedAt: data.updatedAt?.toDate() || new Date(),
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
       likes: data.likes || 0,
       views: data.views || 0,
       bookmarks: data.bookmarks || 0,
@@ -102,7 +102,7 @@ export class FirebaseCourseRepository implements ICourseRepository {
       steps: data.steps,
       imageUrl: data.imageUrl || data.heroImage,
       status: data.status || (data.isDraft ? "draft" : "published"),
-    } as Course;
+    };
   }
 
   async create(course: Omit<Course, "id">): Promise<string> {
