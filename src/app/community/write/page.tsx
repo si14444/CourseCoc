@@ -490,8 +490,31 @@ function WritePageContent() {
                       이전 단계
                     </Button>
                     <Button
-                      onClick={() => {
-                        /* TODO: 발행 로직 */
+                      onClick={async () => {
+                        if (!user) {
+                          alert("로그인이 필요합니다.");
+                          return;
+                        }
+
+                        try {
+                          const { publishCourse } = await import(
+                            "@/hooks/useWriteCourse"
+                          );
+                          const result = await publishCourse(
+                            courseData,
+                            user.uid
+                          );
+
+                          if (result.success) {
+                            alert("코스가 성공적으로 발행되었습니다!");
+                            window.location.href = `/community/course/${result.data}`;
+                          } else {
+                            alert(`발행 실패: ${result.error}`);
+                          }
+                        } catch (error) {
+                          console.error("발행 중 오류:", error);
+                          alert("발행 중 오류가 발생했습니다.");
+                        }
                       }}
                       disabled={isPublishing}
                       className="bg-[var(--coral-pink)] text-white hover:bg-[var(--coral-pink)]/90"

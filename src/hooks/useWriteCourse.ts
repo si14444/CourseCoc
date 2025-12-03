@@ -198,3 +198,18 @@ export const useWriteCourse = (editId?: string | null) => {
     router,
   };
 };
+
+/**
+ * 코스를 발행하는 함수
+ */
+export async function publishCourse(courseData: any, userId: string) {
+  const { CourseService } = await import("@/services/CourseService");
+  const { courseRepository } = await import("@/repositories/CourseRepository");
+
+  const courseService = new CourseService(courseRepository);
+
+  return await courseService.publishCourse({
+    ...courseData,
+    authorId: userId,
+  });
+}

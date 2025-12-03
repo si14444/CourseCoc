@@ -1,123 +1,78 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { CONTAINER_CLASSES } from "@/utils/layouts";
+import {
+  BarChart3,
+  BookOpen,
+  Clock,
+  Edit3,
+  Eye,
+  Heart,
+  MapPin,
+  Plus,
+  Trash2,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
 import { Header } from "../../components/Header";
 import { SearchAndFilter } from "../../components/SearchAndFilter";
-import { useAuth } from "../../contexts/AuthContext";
-import { getUserCourses, Course, deleteCourse } from "../../lib/firebaseCourses";
-import { getCourseImageUrl, handleImageError } from "../../utils/defaultImages";
-import {
-  Plus,
-  BarChart3,
-  Heart,
-  Eye,
-  MapPin,
-  Edit3,
-  Trash2,
-  BookOpen,
-  Clock
-} from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
-import { CONTAINER_CLASSES } from "@/utils/layouts";
-import Link from "next/link";
-import Image from "next/image";
+import { useAuth } from "../../contexts/AuthContext";
+import { useUserCourses } from "../../hooks/useCourses";
+import { getCourseImageUrl, handleImageError } from "../../utils/defaultImages";
 
 export default function MyCoursesPage() {
   const { user, loading: authLoading } = useAuth();
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { courses, loading, error, deleteCourse, refetch } = useUserCourses(
+    user?.uid || ""
+  );
   const [showStats] = useState(true);
-
-  // Firebase에서 사용자 코스 데이터 가져오기
-  useEffect(() => {
-    const fetchUserCourses = async () => {
-      if (!user) {
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        setError(null);
-        const userCourses = await getUserCourses(user.uid);
-        setCourses(userCourses);
-      } catch (err: unknown) {
-        console.error("사용자 코스 데이터 로딩 실패:", err);
-        setError(err instanceof Error ? err.message : "코스 데이터를 불러오는 중 오류가 발생했습니다.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (!authLoading) {
-      fetchUserCourses();
-    }
-  }, [user, authLoading]);
 
   // 통계 계산
   const stats = {
     totalCourses: courses.length,
     totalViews: courses.reduce((sum, course) => sum + (course.views || 0), 0),
     totalLikes: courses.reduce((sum, course) => sum + (course.likes || 0), 0),
-    avgRating: 4.8 // 평점 시스템이 구현되면 실제 계산으로 변경
+    avgRating: 4.8, // 평점 시스템이 구현되면 실제 계산으로 변경
   };
 
   // 모든 코스 표시 (필터링 없음)
   const filteredCourses = courses;
 
   const handleDeleteCourse = async (courseId: string) => {
-    if (confirm("정말로 이 코스를 삭제하시겠습니까?\n삭제된 코스는 복구할 수 없습니다.")) {
-      try {
-        // 사용자 인증 상태 재확인
-        if (!user) {
-          alert("로그인 상태를 확인할 수 없습니다. 다시 로그인해주세요.");
-          return;
-        }
+    if (
+      confirm(
+        "정말로 이 코스를 삭제하시겠습니까?\n삭제된 코스는 복구할 수 없습니다."
+      )
+    ) {
+      const result = await deleteCourse(courseId);
 
-        setLoading(true);
-
-        // 삭제할 코스가 현재 사용자의 코스인지 미리 확인
-        const courseToDelete = courses.find(course => course.id === courseId);
-        if (courseToDelete && courseToDelete.authorId !== user.uid) {
-          alert("본인이 작성한 코스만 삭제할 수 있습니다.");
-          return;
-        }
-
-        // 사용자 ID와 함께 삭제 요청
-        await deleteCourse(courseId, user.uid);
-
-        // 성공 시 UI에서 제거
-        setCourses(prev => prev.filter(course => course.id !== courseId));
+      if (result.success) {
         alert("코스가 성공적으로 삭제되었습니다.");
-      } catch (err: unknown) {
-        console.error("코스 삭제 실패:", err);
-
-        // 더 자세한 에러 메시지 제공
-        const errorMessage = err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.';
-        alert(`코스 삭제 실패: ${errorMessage}`);
-      } finally {
-        setLoading(false);
+      } else {
+        alert(`코스 삭제 실패: ${result.error}`);
       }
     }
   };
-
 
   const formatDate = (timestamp: unknown) => {
     if (!timestamp) return "";
     try {
       // Firebase Timestamp 객체인 경우
-      if (timestamp && typeof timestamp === 'object' && 'toDate' in timestamp) {
-        return (timestamp as { toDate: () => Date }).toDate().toLocaleDateString('ko-KR');
+      if (timestamp && typeof timestamp === "object" && "toDate" in timestamp) {
+        return (timestamp as { toDate: () => Date })
+          .toDate()
+          .toLocaleDateString("ko-KR");
       }
       // Date 객체인 경우
       if (timestamp instanceof Date) {
-        return timestamp.toLocaleDateString('ko-KR');
+        return timestamp.toLocaleDateString("ko-KR");
       }
       // 문자열인 경우
-      if (typeof timestamp === 'string' || typeof timestamp === 'number') {
-        return new Date(timestamp).toLocaleDateString('ko-KR');
+      if (typeof timestamp === "string" || typeof timestamp === "number") {
+        return new Date(timestamp).toLocaleDateString("ko-KR");
       }
       return "";
     } catch {
@@ -134,7 +89,9 @@ export default function MyCoursesPage() {
           <div className={CONTAINER_CLASSES}>
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--primary-color)] mx-auto mb-4"></div>
-              <p className="text-[var(--text-secondary)]">코스 데이터를 불러오는 중...</p>
+              <p className="text-[var(--text-secondary)]">
+                코스 데이터를 불러오는 중...
+              </p>
             </div>
           </div>
         </main>
@@ -158,9 +115,7 @@ export default function MyCoursesPage() {
                 내 코스를 보려면 먼저 로그인해주세요.
               </p>
               <Link href="/auth/login">
-                <Button className="btn-primary">
-                  로그인하기
-                </Button>
+                <Button className="btn-primary">로그인하기</Button>
               </Link>
             </div>
           </div>
@@ -188,8 +143,7 @@ export default function MyCoursesPage() {
             <div className="mt-4 sm:mt-0">
               <Link href="/community/write">
                 <Button className="btn-primary">
-                  <Plus className="w-4 h-4 mr-2" />
-                  새 코스 만들기
+                  <Plus className="w-4 h-4 mr-2" />새 코스 만들기
                 </Button>
               </Link>
             </div>
@@ -205,8 +159,12 @@ export default function MyCoursesPage() {
                       <BookOpen className="h-8 w-8 text-[var(--coral-pink)]" />
                     </div>
                     <div className="ml-4">
-                      <p className="text-sm font-medium text-[var(--text-secondary)]">총 코스</p>
-                      <p className="text-2xl font-bold text-[var(--text-primary)]">{stats.totalCourses}</p>
+                      <p className="text-sm font-medium text-[var(--text-secondary)]">
+                        총 코스
+                      </p>
+                      <p className="text-2xl font-bold text-[var(--text-primary)]">
+                        {stats.totalCourses}
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -219,8 +177,12 @@ export default function MyCoursesPage() {
                       <Eye className="h-8 w-8 text-[var(--coral-pink)]" />
                     </div>
                     <div className="ml-4">
-                      <p className="text-sm font-medium text-[var(--text-secondary)]">총 조회수</p>
-                      <p className="text-2xl font-bold text-[var(--text-primary)]">{stats.totalViews.toLocaleString()}</p>
+                      <p className="text-sm font-medium text-[var(--text-secondary)]">
+                        총 조회수
+                      </p>
+                      <p className="text-2xl font-bold text-[var(--text-primary)]">
+                        {stats.totalViews.toLocaleString()}
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -233,8 +195,12 @@ export default function MyCoursesPage() {
                       <Heart className="h-8 w-8 text-[var(--coral-pink)]" />
                     </div>
                     <div className="ml-4">
-                      <p className="text-sm font-medium text-[var(--text-secondary)]">총 좋아요</p>
-                      <p className="text-2xl font-bold text-[var(--text-primary)]">{stats.totalLikes}</p>
+                      <p className="text-sm font-medium text-[var(--text-secondary)]">
+                        총 좋아요
+                      </p>
+                      <p className="text-2xl font-bold text-[var(--text-primary)]">
+                        {stats.totalLikes}
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -247,15 +213,18 @@ export default function MyCoursesPage() {
                       <BarChart3 className="h-8 w-8 text-[var(--coral-pink)]" />
                     </div>
                     <div className="ml-4">
-                      <p className="text-sm font-medium text-[var(--text-secondary)]">평균 평점</p>
-                      <p className="text-2xl font-bold text-[var(--text-primary)]">{stats.avgRating}</p>
+                      <p className="text-sm font-medium text-[var(--text-secondary)]">
+                        평균 평점
+                      </p>
+                      <p className="text-2xl font-bold text-[var(--text-primary)]">
+                        {stats.avgRating}
+                      </p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
           )}
-
 
           {/* 에러 상태 */}
           {error && (
@@ -266,7 +235,7 @@ export default function MyCoursesPage() {
                 </h3>
                 <p className="text-red-600 mb-4">{error}</p>
                 <Button
-                  onClick={() => window.location.reload()}
+                  onClick={() => refetch()}
                   className="text-red-800 border-red-300 hover:bg-red-50"
                   variant="outline"
                 >
@@ -291,8 +260,7 @@ export default function MyCoursesPage() {
               </p>
               <Link href="/community/write">
                 <Button className="btn-primary">
-                  <Plus className="w-4 h-4 mr-2" />
-                  새 코스 만들기
+                  <Plus className="w-4 h-4 mr-2" />새 코스 만들기
                 </Button>
               </Link>
             </div>
@@ -303,11 +271,15 @@ export default function MyCoursesPage() {
                   <Card className="shadow-romantic hover:shadow-[0_8px_30px_var(--pink-shadow-hover)] transition-all duration-300 overflow-hidden">
                     {/* 이미지 */}
                     <div className="relative h-48 overflow-hidden bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)]">
-                      {(course.heroImage || course.imageUrl || (course.locations?.some(loc => loc.image))) ? (
+                      {course.heroImage ||
+                      course.imageUrl ||
+                      course.locations?.some((loc) => loc.image) ? (
                         <Image
                           src={getCourseImageUrl(
                             course.heroImage || course.imageUrl,
-                            course.locations?.map(loc => loc.image).filter((img): img is string => Boolean(img)),
+                            course.locations
+                              ?.map((loc) => loc.image)
+                              .filter((img): img is string => Boolean(img)),
                             course.tags
                           )}
                           alt={course.title}
@@ -322,7 +294,9 @@ export default function MyCoursesPage() {
                             <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-[var(--coral-pink)]/20 flex items-center justify-center mx-auto mb-2 sm:mb-3">
                               <span className="text-lg sm:text-2xl">💕</span>
                             </div>
-                            <p className="text-xs sm:text-sm text-[var(--coral-pink)] font-medium">로맨틱 데이트 코스</p>
+                            <p className="text-xs sm:text-sm text-[var(--coral-pink)] font-medium">
+                              로맨틱 데이트 코스
+                            </p>
                           </div>
                         </div>
                       )}
@@ -377,7 +351,11 @@ export default function MyCoursesPage() {
                           <span>업데이트: {formatDate(course.updatedAt)}</span>
                         </div>
                         <Link href={`/community/course/${course.id}`}>
-                          <Button variant="outline" size="sm" className="text-xs">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-xs"
+                          >
                             상세보기
                           </Button>
                         </Link>
@@ -388,7 +366,6 @@ export default function MyCoursesPage() {
               ))}
             </div>
           )}
-
         </div>
       </main>
     </div>

@@ -105,10 +105,17 @@ export async function getCourseById(courseId: string): Promise<Course | null> {
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-      // 조회수 증가
-      await updateDoc(docRef, {
-        views: increment(1),
-      });
+      // 조회수 증가 시도 (실패해도 코스 데이터는 반환)
+      try {
+        await updateDoc(docRef, {
+          views: increment(1),
+        });
+      } catch (viewError) {
+        // 조회수 증가 실패 시 로그만 남기고 계속 진행
+        if (process.env.NODE_ENV === "development") {
+          console.warn("조회수 증가 실패 (권한 부족 가능성):", viewError);
+        }
+      }
 
       return convertFirestoreDocToCourse(
         docSnap as QueryDocumentSnapshot<DocumentData>

@@ -22,7 +22,7 @@ service cloud.firestore {
     
     // Courses collection
     match /courses/{courseId} {
-      // 모든 사용자가 발행된 코스 읽기 가능
+      // 🔓 누구나 코스 읽기 가능 (로그인 불필요)
       allow read: if true;
       
       // 인증된 사용자만 코스 생성 가능
@@ -43,7 +43,7 @@ service cloud.firestore {
     
     // Comments collection
     match /comments/{commentId} {
-      // 모든 사용자가 댓글 읽기 가능
+      // 🔓 누구나 댓글 읽기 가능 (로그인 불필요)
       allow read: if true;
       
       // 인증된 사용자만 댓글 작성 가능

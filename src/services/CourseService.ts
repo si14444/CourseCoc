@@ -4,8 +4,9 @@ import {
   createSuccessResult,
   handleError,
 } from "@/lib/errors";
+import { Course } from "@/lib/firebaseCourses";
 import { ICourseRepository } from "@/repositories/CourseRepository";
-import { Course } from "@/types";
+import { Location } from "@/types";
 
 export interface CourseData {
   title: string;
@@ -15,7 +16,7 @@ export interface CourseData {
   budget: string;
   season: string;
   heroImage?: string;
-  locations: any[];
+  locations: Location[];
   content: string;
   authorId: string;
 }

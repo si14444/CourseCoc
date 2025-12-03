@@ -1,6 +1,6 @@
+import { Course } from "@/lib/firebaseCourses";
 import { courseRepository } from "@/repositories/CourseRepository";
 import { CourseService } from "@/services/CourseService";
-import { Course } from "@/types";
 import { useCallback, useEffect, useState } from "react";
 
 const courseService = new CourseService(courseRepository);
