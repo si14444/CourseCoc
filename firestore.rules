@@ -60,5 +60,25 @@ service cloud.firestore {
       allow delete: if isAuthenticated()
         && resource.data.authorId == request.auth.uid;
     }
+    
+    // Posts collection (커뮤니티 게시글)
+    match /posts/{postId} {
+      // 🔓 누구나 게시글 읽기 가능 (로그인 불필요)
+      allow read: if true;
+      
+      // 인증된 사용자만 게시글 작성 가능
+      allow create: if isAuthenticated()
+        && request.resource.data.authorId == request.auth.uid
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.title.size() <= 200;
+      
+      // 작성자만 수정/삭제 가능
+      allow update: if isAuthenticated()
+        && resource.data.authorId == request.auth.uid;
+      
+      allow delete: if isAuthenticated()
+        && resource.data.authorId == request.auth.uid;
+    }
   }
 }

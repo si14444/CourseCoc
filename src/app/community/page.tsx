@@ -1,194 +1,118 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CourseCard } from "../../components/CoursesCard";
-import { EmptyState } from "../../components/EmptyState";
+import Link from "next/link";
+import { Plus, MessageCircle, Users } from "lucide-react";
 import { Header } from "../../components/Header";
-import { SearchAndFilter } from "../../components/SearchAndFilter";
-import { getPublishedCourses, Course } from "../../lib/firebaseCourses";
-import { getCourseCommentCount } from "../../lib/firebaseComments";
-import { CONTAINER_CLASSES, COURSE_GRID_CLASSES } from "@/utils/layouts";
+import { PostCard } from "../../components/PostCard";
+import { getPosts, Post } from "../../lib/firebasePosts";
+import { useAuth } from "../../contexts/AuthContext";
+import { CONTAINER_CLASSES } from "@/utils/layouts";
 
 export default function Community() {
-  const [courses, setCourses] = useState<Course[]>([]);
+  const { user } = useAuth();
+  const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filteredCourses, setFilteredCourses] = useState<Course[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
 
-  // Firebase에서 코스 데이터 가져오기
   useEffect(() => {
-    const fetchCourses = async () => {
+    const fetchPosts = async () => {
       try {
         setLoading(true);
         setError(null);
-        const publishedCourses = await getPublishedCourses();
-        setCourses(publishedCourses);
-        setFilteredCourses(publishedCourses);
-
-        // Fetch comment counts for all courses
-        const counts: Record<string, number> = {};
-        await Promise.all(
-          publishedCourses.map(async (course) => {
-            try {
-              counts[course.id] = await getCourseCommentCount(course.id);
-            } catch (error) {
-              console.error(`Error fetching comment count for course ${course.id}:`, error);
-              counts[course.id] = 0;
-            }
-          })
-        );
-        setCommentCounts(counts);
+        const { posts: fetchedPosts } = await getPosts();
+        setPosts(fetchedPosts);
       } catch (err: unknown) {
-        console.error("코스 데이터 로딩 실패:", err);
-        setError(err instanceof Error ? err.message : "코스 데이터를 불러오는 중 오류가 발생했습니다.");
+        console.error("게시글 로딩 실패:", err);
+        setError(
+          err instanceof Error
+            ? err.message
+            : "게시글을 불러오는 중 오류가 발생했습니다."
+        );
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCourses();
+    fetchPosts();
   }, []);
-
-  // 검색 및 필터링 로직
-  useEffect(() => {
-    let filtered = courses;
-
-    // 검색어로 필터링
-    if (searchTerm.trim()) {
-      const searchLower = searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        course =>
-          course.title.toLowerCase().includes(searchLower) ||
-          course.description.toLowerCase().includes(searchLower) ||
-          course.tags.some(tag => tag.toLowerCase().includes(searchLower)) ||
-          course.locations?.some(location =>
-            location.name.toLowerCase().includes(searchLower) ||
-            location.description.toLowerCase().includes(searchLower)
-          )
-      );
-    }
-
-    // 선택된 태그로 필터링
-    if (selectedTags.length > 0) {
-      filtered = filtered.filter(course =>
-        selectedTags.every(tag => course.tags.includes(tag))
-      );
-    }
-
-    setFilteredCourses(filtered);
-  }, [courses, searchTerm, selectedTags]);
-
-  // 검색어 변경 핸들러
-  const handleSearch = (term: string) => {
-    setSearchTerm(term);
-  };
-
-  // 태그 필터 변경 핸들러
-  const handleTagFilter = (tags: string[]) => {
-    setSelectedTags(tags);
-  };
-
 
   return (
     <div
-      className="min-h-screen bg-white"
+      className="min-h-screen bg-gradient-to-b from-pink-50 to-white"
       suppressHydrationWarning
     >
       <Header />
 
-      {/* Main Content */}
       <main className="pt-20 pb-8">
         <div className={CONTAINER_CLASSES}>
-          {/* Welcome Section */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              완벽한 데이트 코스 만들기
-            </h1>
-            <p className="text-lg text-gray-600 max-w-4xl mx-auto">
-              아름다운 이야기를 담은 로맨틱한 경험을 디자인해보세요. 모든 순간,
-              모든 발걸음이 사랑으로 만들어집니다.
-            </p>
-
+          {/* Page Header - Minimal */}
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="text-2xl font-bold text-gray-900">커뮤니티</h1>
+            {user ? (
+              <Link href="/community/post">
+                <button className="flex items-center space-x-2 px-4 py-2 bg-pink-500 text-white rounded-lg font-medium hover:bg-pink-600 transition-colors">
+                  <Plus className="w-4 h-4" />
+                  <span>글쓰기</span>
+                </button>
+              </Link>
+            ) : (
+              <Link href="/auth/login">
+                <button className="flex items-center space-x-2 px-4 py-2 bg-gray-100 text-gray-600 rounded-lg font-medium hover:bg-gray-200 transition-colors">
+                  <Plus className="w-4 h-4" />
+                  <span>글쓰기</span>
+                </button>
+              </Link>
+            )}
           </div>
 
-          <SearchAndFilter
-            onSearch={handleSearch}
-            onTagFilter={handleTagFilter}
-          />
-
-
-          {/* 로딩 상태 */}
+          {/* Loading State */}
           {loading && (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--coral-pink)] mx-auto mb-4"></div>
-              <p className="text-gray-600">멋진 데이트 코스들을 불러오는 중...</p>
+            <div className="text-center py-16">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto mb-4"></div>
+              <p className="text-gray-600">게시글을 불러오는 중...</p>
             </div>
           )}
 
-          {/* 에러 상태 */}
+          {/* Error State */}
           {error && (
             <div className="text-center py-12">
-              <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-2xl mx-auto">
+              <div className="bg-red-50 border border-red-200 rounded-xl p-6 max-w-2xl mx-auto">
                 <h3 className="text-lg font-semibold text-red-800 mb-2">
                   오류가 발생했습니다
                 </h3>
-                <p className="text-red-600 mb-4">{error}</p>
+                <p className="text-red-600">{error}</p>
               </div>
             </div>
           )}
 
-          {/* Content Area */}
+          {/* Posts List */}
           {!loading && !error && (
             <>
-              {filteredCourses.length === 0 ? (
-                courses.length === 0 ? (
-                  <EmptyState />
-                ) : (
-                  // 검색/필터 결과가 없는 경우
-                  <div className="text-center py-12">
-                    <div className="text-gray-400 mb-4">
-                      <svg className="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                      </svg>
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                      검색 결과가 없습니다
-                    </h3>
-                    <p className="text-gray-600 mb-4">
-                      다른 키워드나 태그로 검색해보세요
-                    </p>
-                    <button
-                      onClick={() => {
-                        setSearchTerm("");
-                        setSelectedTags([]);
-                      }}
-                      className="text-[var(--coral-pink)] hover:underline"
-                    >
-                      모든 코스 보기
-                    </button>
+              {posts.length === 0 ? (
+                <div className="text-center py-16">
+                  <div className="inline-flex items-center justify-center w-20 h-20 bg-pink-100 rounded-full mb-4">
+                    <MessageCircle className="w-10 h-10 text-pink-400" />
                   </div>
-                )
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    아직 게시글이 없습니다
+                  </h3>
+                  <p className="text-gray-600 mb-6">
+                    첫 번째 게시글을 작성해보세요!
+                  </p>
+                  {user && (
+                    <Link href="/community/write">
+                      <button className="inline-flex items-center space-x-2 px-6 py-3 bg-pink-500 text-white rounded-xl font-medium hover:bg-pink-600 transition-colors">
+                        <Plus className="w-5 h-5" />
+                        <span>글쓰기</span>
+                      </button>
+                    </Link>
+                  )}
+                </div>
               ) : (
-                <div className={COURSE_GRID_CLASSES}>
-                  {filteredCourses.map((course) => (
-                    <CourseCard
-                      key={course.id}
-                      id={course.id}
-                      title={course.title}
-                      description={course.description}
-                      placeCount={course.placeCount || course.locations?.length || 0}
-                      likes={course.likes}
-                      views={course.views}
-                      commentCount={commentCounts[course.id] || 0}
-                      steps={course.steps || course.locations?.map(loc => loc.name).filter(Boolean) || []}
-                      imageUrl={course.imageUrl || course.heroImage}
-                      tags={course.tags}
-                      heroImage={course.heroImage}
-                      locationImages={course.locations?.map(loc => loc.image).filter((img): img is string => Boolean(img)) || []}
-                    />
+                <div className="space-y-4">
+                  {posts.map((post) => (
+                    <PostCard key={post.id} post={post} />
                   ))}
                 </div>
               )}

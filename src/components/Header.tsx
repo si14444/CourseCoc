@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  BookOpen,
-  Menu,
-  Plus,
-  Users,
-  X,
-  LogIn,
-  User,
-} from "lucide-react";
+import { BookOpen, Menu, Plus, Users, X, LogIn, User } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -20,7 +12,6 @@ import { CONTAINER_CLASSES } from "@/utils/layouts";
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, userProfile } = useAuth();
-
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-white/90 border-b border-pink-200 shadow-sm">
@@ -38,7 +29,9 @@ export function Header() {
               />
             </div>
             <div className="flex items-center space-x-1 sm:space-x-2">
-              <span className="text-lg sm:text-xl font-bold text-gray-900">CourseCoc</span>
+              <span className="text-lg sm:text-xl font-bold text-gray-900">
+                CourseCoc
+              </span>
               <Badge
                 variant="secondary"
                 className="bg-pink-100 text-pink-600 border-pink-300 text-xs hidden sm:inline-flex"
@@ -50,6 +43,13 @@ export function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
+            <Link
+              href="/course-list"
+              className="flex items-center space-x-2 text-gray-600 hover:text-pink-500 font-medium transition-colors duration-200"
+            >
+              <BookOpen className="w-5 h-5" />
+              <span>코스 목록</span>
+            </Link>
             <Link
               href="/community"
               className="flex items-center space-x-2 text-gray-600 hover:text-pink-500 font-medium transition-colors duration-200"
@@ -126,12 +126,12 @@ export function Header() {
           <div className="md:hidden py-3 sm:py-4 border-t border-pink-200 bg-white/95 backdrop-blur-sm">
             <div className="flex flex-col space-y-3 sm:space-y-4">
               <Link
-                href="/courses"
+                href="/course-list"
                 className="flex items-center space-x-2 text-gray-600 hover:text-pink-500 font-medium py-2 px-2 rounded-lg hover:bg-pink-50 transition-all"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 <BookOpen className="w-5 h-5" />
-                <span>내 코스</span>
+                <span>코스 목록</span>
               </Link>
               <Link
                 href="/community"
@@ -140,6 +140,14 @@ export function Header() {
               >
                 <Users className="w-5 h-5" />
                 <span>커뮤니티</span>
+              </Link>
+              <Link
+                href="/courses"
+                className="flex items-center space-x-2 text-gray-600 hover:text-pink-500 font-medium py-2 px-2 rounded-lg hover:bg-pink-50 transition-all"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <BookOpen className="w-5 h-5" />
+                <span>내 코스</span>
               </Link>
 
               {/* 구분선 */}
@@ -183,7 +191,10 @@ export function Header() {
                     </Link>
                   </div>
                 )}
-                <Link href="/community/write" onClick={() => setIsMobileMenuOpen(false)}>
+                <Link
+                  href="/community/write"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
                   <Button
                     size="sm"
                     className="w-full bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-lg transition-all duration-300 text-sm"
