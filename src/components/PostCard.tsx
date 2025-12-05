@@ -38,7 +38,7 @@ export function PostCard({ post }: PostCardProps) {
 
   return (
     <Link href={`/community/${post.id}`}>
-      <article className="bg-white border border-pink-100 rounded-xl p-5 hover:shadow-lg hover:border-pink-200 transition-all duration-300 cursor-pointer group">
+      <article className="bg-white border border-gray-100 rounded-xl p-4 hover:shadow-md hover:border-gray-200 transition-all duration-200 cursor-pointer group">
         <div className="flex items-start space-x-4">
           {/* Author Avatar */}
           <div className="flex-shrink-0">
