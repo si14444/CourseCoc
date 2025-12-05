@@ -2,111 +2,40 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import {
-  Plus,
-  MessageCircle,
-  Flame,
-  Clock,
-  User,
-  Hash,
-  TrendingUp,
-  FileText,
-  Megaphone,
-  Heart,
-} from "lucide-react";
+import { Plus, MessageCircle, FileText } from "lucide-react";
 import { Header } from "../../components/Header";
 import { PostCard } from "../../components/PostCard";
-import { CourseCard } from "../../components/CoursesCard";
 import { getPosts, Post } from "../../lib/firebasePosts";
-import { getPublishedCourses, Course } from "../../lib/firebaseCourses";
 import { useAuth } from "../../contexts/AuthContext";
-
-type SortOption = "latest" | "popular";
-
-// 광고 배너 컴포넌트
-function AdBanner({
-  variant = "horizontal",
-}: {
-  variant?: "horizontal" | "sidebar";
-}) {
-  if (variant === "sidebar") {
-    return (
-      <div className="bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] rounded-xl p-4 border border-[var(--coral-pink)]/20">
-        <div className="flex items-center space-x-2 text-[var(--coral-pink)] mb-2">
-          <Megaphone className="w-4 h-4" />
-          <span className="text-xs font-medium">광고</span>
-        </div>
-        <div className="h-32 bg-white/50 rounded-lg flex items-center justify-center border-2 border-dashed border-[var(--coral-pink)]/30">
-          <span className="text-sm text-[var(--text-secondary)]">AD SPACE</span>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="bg-gradient-to-r from-[var(--very-light-pink)] via-white to-[var(--light-pink)] rounded-xl p-4 border border-[var(--coral-pink)]/20">
-      <div className="flex items-center space-x-2 text-[var(--coral-pink)] mb-2">
-        <Megaphone className="w-4 h-4" />
-        <span className="text-xs font-medium">광고</span>
-      </div>
-      <div className="h-24 bg-white/50 rounded-lg flex items-center justify-center border-2 border-dashed border-[var(--coral-pink)]/30">
-        <span className="text-sm text-[var(--text-secondary)]">
-          AD BANNER SPACE
-        </span>
-      </div>
-    </div>
-  );
-}
+import { CONTAINER_CLASSES } from "@/utils/layouts";
 
 export default function Community() {
-  const { user, userProfile } = useAuth();
+  const { user } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
-  const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [sortBy, setSortBy] = useState<SortOption>("latest");
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchPosts = async () => {
       try {
         setLoading(true);
         setError(null);
-
-        // 게시글과 코스 동시 로딩
-        const [postsResult, coursesResult] = await Promise.all([
-          getPosts(),
-          getPublishedCourses(),
-        ]);
-
-        setPosts(postsResult.posts);
-        // 인기 코스 3개만
-        setCourses(
-          coursesResult
-            .sort((a, b) => (b.likes || 0) - (a.likes || 0))
-            .slice(0, 3)
-        );
+        const { posts: fetchedPosts } = await getPosts();
+        setPosts(fetchedPosts);
       } catch (err: unknown) {
-        console.error("데이터 로딩 실패:", err);
-        setError("데이터를 불러오는 중 오류가 발생했습니다.");
+        console.error("게시글 로딩 실패:", err);
+        setError(
+          err instanceof Error
+            ? err.message
+            : "게시글을 불러오는 중 오류가 발생했습니다."
+        );
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    fetchPosts();
   }, []);
-
-  // 정렬된 게시글
-  const sortedPosts = [...posts].sort((a, b) => {
-    if (sortBy === "popular") {
-      return b.likes + b.commentCount - (a.likes + a.commentCount);
-    }
-    return b.createdAt.getTime() - a.createdAt.getTime();
-  });
-
-  // 인기 태그
-  const popularTags = ["데이트", "카페", "맛집", "서울", "야경", "드라이브"];
 
   return (
     <div
@@ -115,315 +44,84 @@ export default function Community() {
     >
       <Header />
 
-      <main className="pt-16">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Left Sidebar - Desktop Only */}
-            <aside className="hidden lg:block lg:col-span-3">
-              <div className="sticky top-20 space-y-4">
-                {/* Profile Card */}
-                {user ? (
-                  <div className="bg-white rounded-xl p-4 shadow-sm border border-[var(--coral-pink)]/10">
-                    <div className="flex items-center space-x-3 mb-4">
-                      {userProfile?.profileImageUrl ? (
-                        <Image
-                          src={userProfile.profileImageUrl}
-                          alt="프로필"
-                          width={48}
-                          height={48}
-                          className="w-12 h-12 rounded-full object-cover ring-2 ring-[var(--light-pink)]"
-                        />
-                      ) : (
-                        <div className="w-12 h-12 bg-gradient-to-br from-[var(--light-pink)] to-[var(--coral-pink)] rounded-full flex items-center justify-center">
-                          <span className="text-white font-bold text-lg">
-                            {(userProfile?.nickname ||
-                              user.displayName ||
-                              "U")[0].toUpperCase()}
-                          </span>
-                        </div>
-                      )}
-                      <div>
-                        <p className="font-medium text-[var(--text-primary)]">
-                          {userProfile?.nickname ||
-                            user.displayName ||
-                            "사용자"}
-                        </p>
-                        <p className="text-sm text-[var(--text-secondary)]">
-                          {user.email}
-                        </p>
-                      </div>
-                    </div>
-                    <Link href="/community/post">
-                      <button className="w-full py-2.5 bg-gradient-to-r from-[var(--light-pink)] to-[var(--coral-pink)] text-white rounded-lg font-medium hover:shadow-lg hover:shadow-[var(--pink-shadow)] transition-all flex items-center justify-center space-x-2">
-                        <Plus className="w-4 h-4" />
-                        <span>새 글 작성</span>
-                      </button>
-                    </Link>
-                  </div>
-                ) : (
-                  <div className="bg-gradient-to-br from-[var(--very-light-pink)] to-white rounded-xl p-4 shadow-sm border border-[var(--coral-pink)]/10">
-                    <div className="text-center mb-3">
-                      <Heart className="w-8 h-8 text-[var(--coral-pink)] mx-auto mb-2" />
-                      <p className="text-[var(--text-secondary)] text-sm">
-                        로그인하고 글을 작성해보세요
-                      </p>
-                    </div>
-                    <Link href="/auth/login">
-                      <button className="w-full py-2.5 bg-[var(--coral-pink)] text-white rounded-lg font-medium hover:bg-[var(--coral-pink)]/90 transition-colors">
-                        로그인
-                      </button>
-                    </Link>
-                  </div>
-                )}
-
-                {/* Navigation */}
-                <nav className="bg-white rounded-xl shadow-sm border border-[var(--coral-pink)]/10 overflow-hidden">
-                  <button
-                    onClick={() => setSortBy("latest")}
-                    className={`w-full flex items-center space-x-3 px-4 py-3 text-left transition-colors ${
-                      sortBy === "latest"
-                        ? "bg-[var(--very-light-pink)] text-[var(--coral-pink)] border-l-4 border-[var(--coral-pink)]"
-                        : "text-[var(--text-primary)] hover:bg-[var(--very-light-pink)]/50"
-                    }`}
-                  >
-                    <Clock className="w-5 h-5" />
-                    <span className="font-medium">최신글</span>
-                  </button>
-                  <button
-                    onClick={() => setSortBy("popular")}
-                    className={`w-full flex items-center space-x-3 px-4 py-3 text-left transition-colors ${
-                      sortBy === "popular"
-                        ? "bg-[var(--very-light-pink)] text-[var(--coral-pink)] border-l-4 border-[var(--coral-pink)]"
-                        : "text-[var(--text-primary)] hover:bg-[var(--very-light-pink)]/50"
-                    }`}
-                  >
-                    <Flame className="w-5 h-5" />
-                    <span className="font-medium">인기글</span>
-                  </button>
-                  {user && (
-                    <button className="w-full flex items-center space-x-3 px-4 py-3 text-left text-[var(--text-primary)] hover:bg-[var(--very-light-pink)]/50 transition-colors">
-                      <User className="w-5 h-5" />
-                      <span className="font-medium">내가 쓴 글</span>
-                    </button>
-                  )}
-                </nav>
-
-                {/* Sidebar Ad */}
-                <AdBanner variant="sidebar" />
-              </div>
-            </aside>
-
-            {/* Main Feed */}
-            <div className="lg:col-span-6">
-              {/* Mobile Header */}
-              <div className="lg:hidden flex items-center justify-between mb-4">
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => setSortBy("latest")}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                      sortBy === "latest"
-                        ? "bg-[var(--coral-pink)] text-white"
-                        : "bg-white text-[var(--text-secondary)] border border-[var(--coral-pink)]/20"
-                    }`}
-                  >
-                    최신
-                  </button>
-                  <button
-                    onClick={() => setSortBy("popular")}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                      sortBy === "popular"
-                        ? "bg-[var(--coral-pink)] text-white"
-                        : "bg-white text-[var(--text-secondary)] border border-[var(--coral-pink)]/20"
-                    }`}
-                  >
-                    인기
-                  </button>
-                </div>
-                {user && (
-                  <Link href="/community/post">
-                    <button className="p-2 bg-[var(--coral-pink)] text-white rounded-full hover:shadow-lg transition-all">
-                      <Plus className="w-5 h-5" />
-                    </button>
-                  </Link>
-                )}
-              </div>
-
-              {/* Loading State */}
-              {loading && (
-                <div className="bg-white rounded-xl p-8 text-center shadow-sm border border-[var(--coral-pink)]/10">
-                  <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[var(--coral-pink)] mx-auto mb-3"></div>
-                  <p className="text-[var(--text-secondary)]">로딩 중...</p>
-                </div>
-              )}
-
-              {/* Error State */}
-              {error && (
-                <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
-                  <p className="text-red-600">{error}</p>
-                </div>
-              )}
-
-              {/* Content */}
-              {!loading && !error && (
-                <div className="space-y-4">
-                  {/* 인기 코스 섹션 */}
-                  {courses.length > 0 && (
-                    <div className="bg-gradient-to-br from-[var(--very-light-pink)] to-white rounded-xl p-4 border border-[var(--coral-pink)]/10">
-                      <div className="flex items-center justify-between mb-3">
-                        <h2 className="font-bold text-[var(--text-primary)] flex items-center space-x-2">
-                          <Heart className="w-5 h-5 text-[var(--coral-pink)]" />
-                          <span>인기 데이트 코스</span>
-                        </h2>
-                        <Link
-                          href="/course-list"
-                          className="text-sm text-[var(--coral-pink)] hover:underline"
-                        >
-                          전체보기 →
-                        </Link>
-                      </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        {courses.map((course) => (
-                          <CourseCard
-                            key={course.id}
-                            id={course.id}
-                            title={course.title}
-                            description={course.description}
-                            placeCount={
-                              course.placeCount || course.locations?.length || 0
-                            }
-                            likes={course.likes}
-                            views={course.views}
-                            steps={
-                              course.steps ||
-                              course.locations
-                                ?.map((loc) => loc.name)
-                                .filter(Boolean) ||
-                              []
-                            }
-                            imageUrl={course.imageUrl || course.heroImage}
-                            compact
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* 광고 배너 1 */}
-                  <AdBanner variant="horizontal" />
-
-                  {/* 게시글 섹션 */}
-                  <div className="bg-white rounded-xl p-4 border border-[var(--coral-pink)]/10">
-                    <h2 className="font-bold text-[var(--text-primary)] mb-3 flex items-center space-x-2">
-                      <MessageCircle className="w-5 h-5 text-[var(--coral-pink)]" />
-                      <span>커뮤니티 게시글</span>
-                    </h2>
-
-                    {sortedPosts.length === 0 ? (
-                      <div className="py-12 text-center">
-                        <div className="w-16 h-16 bg-[var(--very-light-pink)] rounded-full flex items-center justify-center mx-auto mb-4">
-                          <FileText className="w-8 h-8 text-[var(--coral-pink)]" />
-                        </div>
-                        <h3 className="text-lg font-medium text-[var(--text-primary)] mb-2">
-                          아직 게시글이 없습니다
-                        </h3>
-                        <p className="text-[var(--text-secondary)] mb-4">
-                          첫 번째 게시글을 작성해보세요!
-                        </p>
-                        {user && (
-                          <Link href="/community/post">
-                            <button className="inline-flex items-center space-x-2 px-5 py-2.5 bg-[var(--coral-pink)] text-white rounded-lg font-medium hover:shadow-lg transition-all">
-                              <Plus className="w-4 h-4" />
-                              <span>글쓰기</span>
-                            </button>
-                          </Link>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        {sortedPosts.slice(0, 3).map((post) => (
-                          <PostCard key={post.id} post={post} />
-                        ))}
-
-                        {/* 중간 광고 배너 */}
-                        {sortedPosts.length > 3 && (
-                          <>
-                            <AdBanner variant="horizontal" />
-                            {sortedPosts.slice(3).map((post) => (
-                              <PostCard key={post.id} post={post} />
-                            ))}
-                          </>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Right Sidebar - Desktop Only */}
-            <aside className="hidden lg:block lg:col-span-3">
-              <div className="sticky top-20 space-y-4">
-                {/* Popular Tags */}
-                <div className="bg-white rounded-xl p-4 shadow-sm border border-[var(--coral-pink)]/10">
-                  <div className="flex items-center space-x-2 mb-3">
-                    <TrendingUp className="w-5 h-5 text-[var(--coral-pink)]" />
-                    <h3 className="font-semibold text-[var(--text-primary)]">
-                      인기 태그
-                    </h3>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {popularTags.map((tag) => (
-                      <button
-                        key={tag}
-                        className="flex items-center space-x-1 px-3 py-1.5 bg-[var(--very-light-pink)] hover:bg-[var(--light-pink)] text-[var(--text-secondary)] hover:text-[var(--coral-pink)] rounded-full text-sm transition-colors"
-                      >
-                        <Hash className="w-3 h-3" />
-                        <span>{tag}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Quick Stats */}
-                <div className="bg-white rounded-xl p-4 shadow-sm border border-[var(--coral-pink)]/10">
-                  <h3 className="font-semibold text-[var(--text-primary)] mb-3">
-                    통계
-                  </h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-[var(--text-secondary)]">
-                        전체 게시글
-                      </span>
-                      <span className="font-medium text-[var(--coral-pink)]">
-                        {posts.length}개
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-[var(--text-secondary)]">
-                        전체 코스
-                      </span>
-                      <span className="font-medium text-[var(--coral-pink)]">
-                        {courses.length}개
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Sidebar Ad */}
-                <AdBanner variant="sidebar" />
-
-                {/* Go to Course List */}
-                <Link href="/course-list" className="block">
-                  <div className="bg-gradient-to-r from-[var(--light-pink)] to-[var(--coral-pink)] rounded-xl p-4 text-white hover:shadow-lg hover:shadow-[var(--pink-shadow)] transition-all">
-                    <h3 className="font-semibold mb-1">데이트 코스 보기</h3>
-                    <p className="text-sm text-white/80">
-                      다른 커플들의 코스를 둘러보세요 →
-                    </p>
-                  </div>
-                </Link>
-              </div>
-            </aside>
+      <main className="pt-20 pb-8">
+        <div className={CONTAINER_CLASSES}>
+          {/* Simple Header */}
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+              커뮤니티
+            </h1>
+            {user ? (
+              <Link href="/community/post">
+                <button className="flex items-center space-x-2 px-4 py-2 bg-[var(--coral-pink)] text-white rounded-lg font-medium hover:shadow-lg hover:shadow-[var(--pink-shadow)] transition-all">
+                  <Plus className="w-4 h-4" />
+                  <span>글쓰기</span>
+                </button>
+              </Link>
+            ) : (
+              <Link href="/auth/login">
+                <button className="flex items-center space-x-2 px-4 py-2 bg-gray-100 text-[var(--text-secondary)] rounded-lg font-medium hover:bg-gray-200 transition-colors">
+                  <Plus className="w-4 h-4" />
+                  <span>글쓰기</span>
+                </button>
+              </Link>
+            )}
           </div>
+
+          {/* Loading State */}
+          {loading && (
+            <div className="text-center py-16">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--coral-pink)] mx-auto mb-4"></div>
+              <p className="text-[var(--text-secondary)]">
+                게시글을 불러오는 중...
+              </p>
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && (
+            <div className="text-center py-12">
+              <div className="bg-red-50 border border-red-200 rounded-xl p-6 max-w-2xl mx-auto">
+                <h3 className="text-lg font-semibold text-red-800 mb-2">
+                  오류가 발생했습니다
+                </h3>
+                <p className="text-red-600">{error}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Posts List */}
+          {!loading && !error && (
+            <>
+              {posts.length === 0 ? (
+                <div className="text-center py-16">
+                  <div className="inline-flex items-center justify-center w-20 h-20 bg-[var(--very-light-pink)] rounded-full mb-4">
+                    <FileText className="w-10 h-10 text-[var(--coral-pink)]" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-2">
+                    아직 게시글이 없습니다
+                  </h3>
+                  <p className="text-[var(--text-secondary)] mb-6">
+                    첫 번째 게시글을 작성해보세요!
+                  </p>
+                  {user && (
+                    <Link href="/community/post">
+                      <button className="inline-flex items-center space-x-2 px-6 py-3 bg-[var(--coral-pink)] text-white rounded-xl font-medium hover:shadow-lg hover:shadow-[var(--pink-shadow)] transition-all">
+                        <Plus className="w-5 h-5" />
+                        <span>글쓰기</span>
+                      </button>
+                    </Link>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-4 max-w-4xl mx-auto">
+                  {posts.map((post) => (
+                    <PostCard key={post.id} post={post} />
+                  ))}
+                </div>
+              )}
+            </>
+          )}
         </div>
       </main>
     </div>
