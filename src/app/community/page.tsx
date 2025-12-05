@@ -9,6 +9,46 @@ import { getPosts, Post } from "../../lib/firebasePosts";
 import { useAuth } from "../../contexts/AuthContext";
 import { CONTAINER_CLASSES } from "@/utils/layouts";
 
+// 더미 데이터 (테스트용)
+const DUMMY_POSTS: Post[] = [
+  {
+    id: "dummy-1",
+    authorId: "dummy-user-1",
+    author: { nickname: "로맨틱커플" },
+    title: "첫 데이트 코스 추천해주세요! 🌸",
+    content:
+      "다음 주에 여자친구랑 첫 데이트를 하는데요, 서울에서 좋은 코스 있을까요? 카페랑 맛집 위주로 추천해주시면 감사하겠습니다. 분위기 좋은 곳이면 더 좋겠어요!",
+    createdAt: new Date(Date.now() - 1000 * 60 * 30), // 30분 전
+    likes: 15,
+    views: 128,
+    commentCount: 8,
+  },
+  {
+    id: "dummy-2",
+    authorId: "dummy-user-2",
+    author: { nickname: "힐링여행" },
+    title: "한강 야경 데이트 후기 ✨",
+    content:
+      "어제 여의도 한강공원에서 야경 보고 왔는데 진짜 너무 좋았어요! 치킨 시켜서 먹으면서 불꽃놀이도 하고... 강추합니다!",
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2시간 전
+    likes: 42,
+    views: 256,
+    commentCount: 12,
+  },
+  {
+    id: "dummy-3",
+    authorId: "dummy-user-3",
+    author: { nickname: "커피러버" },
+    title: "성수동 카페 투어 코스 공유합니다 ☕",
+    content:
+      "성수동 카페 투어 다녀왔어요! 오늘 갔던 곳들 정리해봅니다.\n\n1. 어니언 - 빵이 맛있어요\n2. 센터커피 - 분위기 최고\n3. 메쉬커피 - 커피 퀄리티 좋음\n\n사진은 코스에 올려놨어요!",
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 5), // 5시간 전
+    likes: 28,
+    views: 189,
+    commentCount: 6,
+  },
+];
+
 export default function Community() {
   const { user } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
@@ -21,14 +61,13 @@ export default function Community() {
         setLoading(true);
         setError(null);
         const { posts: fetchedPosts } = await getPosts();
-        setPosts(fetchedPosts);
+        // 실제 데이터가 없으면 더미 데이터 사용
+        setPosts(fetchedPosts.length > 0 ? fetchedPosts : DUMMY_POSTS);
       } catch (err: unknown) {
         console.error("게시글 로딩 실패:", err);
-        setError(
-          err instanceof Error
-            ? err.message
-            : "게시글을 불러오는 중 오류가 발생했습니다."
-        );
+        // 에러 시에도 더미 데이터 표시
+        setPosts(DUMMY_POSTS);
+        setError(null);
       } finally {
         setLoading(false);
       }

@@ -27,7 +27,6 @@ import {
 } from "../../../lib/firebasePosts";
 import {
   Comment,
-  addComment,
   updateComment,
   deleteComment,
 } from "../../../lib/firebaseComments";
@@ -44,6 +43,135 @@ import {
 } from "firebase/firestore";
 import { db } from "../../../lib/firebase";
 
+// 더미 게시글 데이터
+const DUMMY_POSTS: Record<string, Post> = {
+  "dummy-1": {
+    id: "dummy-1",
+    authorId: "dummy-user-1",
+    author: { nickname: "로맨틱커플" },
+    title: "첫 데이트 코스 추천해주세요! 🌸",
+    content: `다음 주에 여자친구랑 첫 데이트를 하는데요, 서울에서 좋은 코스 있을까요?
+
+카페랑 맛집 위주로 추천해주시면 감사하겠습니다. 분위기 좋은 곳이면 더 좋겠어요!
+
+저희 둘 다 20대 초반이고, 사진 찍는 거 좋아해서 포토스팟도 있으면 좋을 것 같아요.
+
+예산은 10만원 정도 생각하고 있습니다. 도와주세요! 🙏`,
+    createdAt: new Date(Date.now() - 1000 * 60 * 30),
+    likes: 15,
+    views: 128,
+    commentCount: 3,
+  },
+  "dummy-2": {
+    id: "dummy-2",
+    authorId: "dummy-user-2",
+    author: { nickname: "힐링여행" },
+    title: "한강 야경 데이트 후기 ✨",
+    content: `어제 여의도 한강공원에서 야경 보고 왔는데 진짜 너무 좋았어요!
+
+치킨 시켜서 먹으면서 불꽃놀이도 하고... 강추합니다!
+
+준비물:
+- 돗자리 (필수!)
+- 간식/음료
+- 블루투스 스피커
+
+시간은 해질녘에 가서 노을 보고, 야경까지 보는 게 베스트예요.`,
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2),
+    likes: 42,
+    views: 256,
+    commentCount: 2,
+  },
+  "dummy-3": {
+    id: "dummy-3",
+    authorId: "dummy-user-3",
+    author: { nickname: "커피러버" },
+    title: "성수동 카페 투어 코스 공유합니다 ☕",
+    content: `성수동 카페 투어 다녀왔어요! 오늘 갔던 곳들 정리해봅니다.
+
+1. 어니언 - 빵이 맛있어요 (소금빵 강추)
+2. 센터커피 - 분위기 최고, 인스타 감성
+3. 메쉬커피 - 커피 퀄리티 좋음
+
+사진은 코스에 올려놨어요!
+
+총 소요시간: 약 4시간
+총 비용: 3만원 정도`,
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 5),
+    likes: 28,
+    views: 189,
+    commentCount: 1,
+  },
+};
+
+// 더미 댓글 데이터
+const DUMMY_COMMENTS: Record<string, Comment[]> = {
+  "dummy-1": [
+    {
+      id: "comment-1",
+      courseId: "",
+      authorId: "commenter-1",
+      author: { nickname: "데이트마스터" },
+      content: "성수동 추천드려요! 카페도 많고 분위기도 좋아요 ☕",
+      createdAt: new Date(Date.now() - 1000 * 60 * 20),
+      likes: 5,
+      isEdited: false,
+      replyCount: 1,
+      replies: [
+        {
+          id: "reply-1",
+          courseId: "",
+          authorId: "dummy-user-1",
+          author: { nickname: "로맨틱커플" },
+          content: "오 감사합니다! 성수동 괜찮겠네요 👍",
+          createdAt: new Date(Date.now() - 1000 * 60 * 15),
+          likes: 0,
+          isEdited: false,
+          replyCount: 0,
+          parentId: "comment-1",
+        },
+      ],
+    },
+    {
+      id: "comment-2",
+      courseId: "",
+      authorId: "commenter-2",
+      author: { nickname: "서울러버" },
+      content: "이태원도 괜찮아요! 사진 찍을 곳도 많고 맛집도 많습니다~",
+      createdAt: new Date(Date.now() - 1000 * 60 * 10),
+      likes: 3,
+      isEdited: false,
+      replyCount: 0,
+    },
+  ],
+  "dummy-2": [
+    {
+      id: "comment-3",
+      courseId: "",
+      authorId: "commenter-3",
+      author: { nickname: "야경러버" },
+      content: "저도 여의도 자주 가요! 다음엔 반포대교 무지개분수도 보세요 🌈",
+      createdAt: new Date(Date.now() - 1000 * 60 * 60),
+      likes: 8,
+      isEdited: false,
+      replyCount: 0,
+    },
+  ],
+  "dummy-3": [
+    {
+      id: "comment-4",
+      courseId: "",
+      authorId: "commenter-4",
+      author: { nickname: "카페헌터" },
+      content: "대림창고도 가보셨나요? 성수동 가시면 거기도 꼭 가보세요!",
+      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 3),
+      likes: 4,
+      isEdited: false,
+      replyCount: 0,
+    },
+  ],
+};
+
 interface PostDetailPageProps {
   params: Promise<{ id: string }>;
 }
@@ -53,6 +181,7 @@ export default function PostDetailPage({ params }: PostDetailPageProps) {
   const router = useRouter();
   const { user, userProfile } = useAuth();
   const isHydrated = useHydration();
+  const isDummyPost = postId.startsWith("dummy-");
 
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
@@ -68,6 +197,12 @@ export default function PostDetailPage({ params }: PostDetailPageProps) {
 
   // 게시글용 댓글 조회
   const loadPostComments = useCallback(async () => {
+    // 더미 포스트인 경우 더미 댓글 사용
+    if (isDummyPost) {
+      setComments(DUMMY_COMMENTS[postId] || []);
+      return;
+    }
+
     if (!db) return;
     try {
       const q = query(
@@ -111,17 +246,24 @@ export default function PostDetailPage({ params }: PostDetailPageProps) {
     } catch (error) {
       console.error("Error loading comments:", error);
     }
-  }, [postId]);
+  }, [postId, isDummyPost]);
 
   useEffect(() => {
     const fetchPost = async () => {
       try {
         setLoading(true);
-        const postData = await getPostById(postId);
-        if (postData) {
-          setPost(postData);
-          await incrementPostViews(postId);
+
+        // 더미 포스트 처리
+        if (isDummyPost && DUMMY_POSTS[postId]) {
+          setPost(DUMMY_POSTS[postId]);
           await loadPostComments();
+        } else {
+          const postData = await getPostById(postId);
+          if (postData) {
+            setPost(postData);
+            await incrementPostViews(postId);
+            await loadPostComments();
+          }
         }
       } catch (error) {
         console.error("Error fetching post:", error);
@@ -133,7 +275,7 @@ export default function PostDetailPage({ params }: PostDetailPageProps) {
     if (isHydrated) {
       fetchPost();
     }
-  }, [postId, isHydrated, loadPostComments]);
+  }, [postId, isHydrated, loadPostComments, isDummyPost]);
 
   const handleDeletePost = async () => {
     if (!user || !post) return;

@@ -58,6 +58,33 @@ function AdBanner({
   );
 }
 
+// 더미 게시글 데이터
+const DUMMY_POSTS: Post[] = [
+  {
+    id: "dummy-1",
+    authorId: "dummy-user-1",
+    author: { nickname: "로맨틱커플" },
+    title: "첫 데이트 코스 추천해주세요! 🌸",
+    content:
+      "다음 주에 여자친구랑 첫 데이트를 하는데요, 서울에서 좋은 코스 있을까요?",
+    createdAt: new Date(Date.now() - 1000 * 60 * 30),
+    likes: 15,
+    views: 128,
+    commentCount: 8,
+  },
+  {
+    id: "dummy-2",
+    authorId: "dummy-user-2",
+    author: { nickname: "힐링여행" },
+    title: "한강 야경 데이트 후기 ✨",
+    content: "어제 여의도 한강공원에서 야경 보고 왔는데 진짜 너무 좋았어요!",
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2),
+    likes: 42,
+    views: 256,
+    commentCount: 12,
+  },
+];
+
 export default function Home() {
   const { user, userProfile } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
@@ -74,7 +101,10 @@ export default function Home() {
           getPublishedCourses(),
         ]);
 
-        setPosts(postsResult.posts);
+        // 실제 데이터가 없으면 더미 데이터 사용
+        setPosts(
+          postsResult.posts.length > 0 ? postsResult.posts : DUMMY_POSTS
+        );
         setCourses(
           coursesResult
             .sort((a, b) => (b.likes || 0) - (a.likes || 0))
