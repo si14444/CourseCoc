@@ -89,7 +89,7 @@ export function CourseCard({
 
   return (
     <Link href={`/community/course/${id}`}>
-      <Card className={COURSE_CARD_CLASSES}>
+      <Card className={`${COURSE_CARD_CLASSES} overflow-hidden`}>
         {/* Image Header */}
         <div className="h-40 sm:h-48 lg:h-52 bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] relative overflow-hidden">
           {heroImage ||
@@ -138,8 +138,7 @@ export function CourseCard({
           >
             <div className={ICON_TEXT_CLASSES}>
               <MapPin className="w-4 h-4 text-[var(--coral-pink)]" />
-              <span className="hidden sm:inline">{placeCount}개 장소</span>
-              <span className="sm:hidden">{placeCount}곳</span>
+              <span>{placeCount}개 장소</span>
             </div>
             <div className={ICON_TEXT_CLASSES}>
               <Heart className="w-4 h-4 text-[var(--coral-pink)]" />

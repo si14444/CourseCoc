@@ -13,6 +13,9 @@ import {
   TrendingUp,
   Heart,
   Megaphone,
+  BarChart3,
+  FileText,
+  Map,
 } from "lucide-react";
 import { Header } from "../components/Header";
 import { PostCard } from "../components/PostCard";
@@ -31,28 +34,26 @@ function AdBanner({
 }) {
   if (variant === "sidebar") {
     return (
-      <div className="bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] rounded-xl p-4 border border-[var(--coral-pink)]/20">
-        <div className="flex items-center space-x-2 text-[var(--coral-pink)] mb-2">
+      <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200">
+        <div className="flex items-center space-x-2 text-gray-600 mb-2">
           <Megaphone className="w-4 h-4" />
           <span className="text-xs font-medium">광고</span>
         </div>
-        <div className="h-32 bg-white/50 rounded-lg flex items-center justify-center border-2 border-dashed border-[var(--coral-pink)]/30">
-          <span className="text-sm text-[var(--text-secondary)]">AD SPACE</span>
+        <div className="h-32 bg-white rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300">
+          <span className="text-sm text-gray-400">AD SPACE</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-gradient-to-r from-[var(--very-light-pink)] via-white to-[var(--light-pink)] rounded-xl p-4 border border-[var(--coral-pink)]/20">
-      <div className="flex items-center space-x-2 text-[var(--coral-pink)] mb-2">
+    <div className="bg-gradient-to-r from-gray-50 via-white to-gray-50 rounded-xl p-4 border border-gray-200">
+      <div className="flex items-center space-x-2 text-gray-600 mb-2">
         <Megaphone className="w-4 h-4" />
         <span className="text-xs font-medium">광고</span>
       </div>
-      <div className="h-24 bg-white/50 rounded-lg flex items-center justify-center border-2 border-dashed border-[var(--coral-pink)]/30">
-        <span className="text-sm text-[var(--text-secondary)]">
-          AD BANNER SPACE
-        </span>
+      <div className="h-24 bg-white rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300">
+        <span className="text-sm text-gray-400">AD BANNER SPACE</span>
       </div>
     </div>
   );
@@ -101,14 +102,13 @@ export default function Home() {
           getPublishedCourses(),
         ]);
 
-        // 실제 데이터가 없으면 더미 데이터 사용
         setPosts(
           postsResult.posts.length > 0 ? postsResult.posts : DUMMY_POSTS
         );
         setCourses(
           coursesResult
             .sort((a, b) => (b.likes || 0) - (a.likes || 0))
-            .slice(0, 3)
+            .slice(0, 6) // 6개로 증가
         );
       } catch (err) {
         console.error("데이터 로딩 실패:", err);
@@ -137,13 +137,14 @@ export default function Home() {
       <Header />
 
       <main className="pt-16">
-        <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Left Sidebar */}
+            {/* Left Sidebar - 프로필 + 태그 + 통계 */}
             <aside className="hidden lg:block lg:col-span-3">
               <div className="sticky top-20 space-y-4">
+                {/* 프로필 카드 */}
                 {user ? (
-                  <div className="bg-white rounded-xl p-4 shadow-sm border border-[var(--coral-pink)]/10">
+                  <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
                     <div className="flex items-center space-x-3 mb-4">
                       {userProfile?.profileImageUrl ? (
                         <Image
@@ -151,10 +152,10 @@ export default function Home() {
                           alt="프로필"
                           width={48}
                           height={48}
-                          className="w-12 h-12 rounded-full object-cover ring-2 ring-[var(--light-pink)]"
+                          className="w-12 h-12 rounded-full object-cover ring-2 ring-pink-100"
                         />
                       ) : (
-                        <div className="w-12 h-12 bg-gradient-to-br from-[var(--light-pink)] to-[var(--coral-pink)] rounded-full flex items-center justify-center">
+                        <div className="w-12 h-12 bg-gradient-to-br from-pink-400 to-pink-500 rounded-full flex items-center justify-center">
                           <span className="text-white font-bold text-lg">
                             {(userProfile?.nickname ||
                               user.displayName ||
@@ -162,29 +163,29 @@ export default function Home() {
                           </span>
                         </div>
                       )}
-                      <div>
-                        <p className="font-medium text-[var(--text-primary)]">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-gray-900 truncate">
                           {userProfile?.nickname ||
                             user.displayName ||
                             "사용자"}
                         </p>
-                        <p className="text-sm text-[var(--text-secondary)]">
+                        <p className="text-sm text-gray-500 truncate">
                           {user.email}
                         </p>
                       </div>
                     </div>
                     <Link href="/community/post">
-                      <button className="w-full py-2.5 bg-gradient-to-r from-[var(--light-pink)] to-[var(--coral-pink)] text-white rounded-lg font-medium hover:shadow-lg transition-all flex items-center justify-center space-x-2">
+                      <button className="w-full py-2.5 bg-[var(--coral-pink)] text-white rounded-lg font-medium hover:bg-[var(--coral-pink)]/90 transition-colors flex items-center justify-center space-x-2">
                         <Plus className="w-4 h-4" />
                         <span>새 글 작성</span>
                       </button>
                     </Link>
                   </div>
                 ) : (
-                  <div className="bg-gradient-to-br from-[var(--very-light-pink)] to-white rounded-xl p-4 shadow-sm border border-[var(--coral-pink)]/10">
+                  <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
                     <div className="text-center mb-3">
-                      <Heart className="w-8 h-8 text-[var(--coral-pink)] mx-auto mb-2" />
-                      <p className="text-[var(--text-secondary)] text-sm">
+                      <Heart className="w-8 h-8 text-pink-500 mx-auto mb-2" />
+                      <p className="text-gray-600 text-sm">
                         로그인하고 글을 작성해보세요
                       </p>
                     </div>
@@ -196,51 +197,81 @@ export default function Home() {
                   </div>
                 )}
 
-                <nav className="bg-white rounded-xl shadow-sm border border-[var(--coral-pink)]/10 overflow-hidden">
-                  <button
-                    onClick={() => setSortBy("latest")}
-                    className={`w-full flex items-center space-x-3 px-4 py-3 text-left transition-colors ${
-                      sortBy === "latest"
-                        ? "bg-[var(--very-light-pink)] text-[var(--coral-pink)] border-l-4 border-[var(--coral-pink)]"
-                        : "text-[var(--text-primary)] hover:bg-[var(--very-light-pink)]/50"
-                    }`}
-                  >
-                    <Clock className="w-5 h-5" />
-                    <span className="font-medium">최신글</span>
-                  </button>
-                  <button
-                    onClick={() => setSortBy("popular")}
-                    className={`w-full flex items-center space-x-3 px-4 py-3 text-left transition-colors ${
-                      sortBy === "popular"
-                        ? "bg-[var(--very-light-pink)] text-[var(--coral-pink)] border-l-4 border-[var(--coral-pink)]"
-                        : "text-[var(--text-primary)] hover:bg-[var(--very-light-pink)]/50"
-                    }`}
-                  >
-                    <Flame className="w-5 h-5" />
-                    <span className="font-medium">인기글</span>
-                  </button>
-                  {user && (
-                    <button className="w-full flex items-center space-x-3 px-4 py-3 text-left text-[var(--text-primary)] hover:bg-[var(--very-light-pink)]/50 transition-colors">
-                      <User className="w-5 h-5" />
-                      <span className="font-medium">내가 쓴 글</span>
-                    </button>
-                  )}
-                </nav>
+                {/* 인기 태그 */}
+                <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                  <div className="flex items-center space-x-2 mb-3">
+                    <TrendingUp className="w-5 h-5 text-pink-500" />
+                    <h3 className="font-semibold text-gray-900">인기 태그</h3>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {popularTags.map((tag) => (
+                      <button
+                        key={tag}
+                        className="flex items-center space-x-1 px-3 py-1.5 bg-gray-50 hover:bg-pink-50 text-gray-600 hover:text-pink-600 rounded-full text-sm transition-colors"
+                      >
+                        <Hash className="w-3 h-3" />
+                        <span>{tag}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
+                {/* 통계 */}
+                <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                  <div className="flex items-center space-x-2 mb-3">
+                    <BarChart3 className="w-5 h-5 text-pink-500" />
+                    <h3 className="font-semibold text-gray-900">통계</h3>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <FileText className="w-4 h-4 text-gray-400" />
+                        <span className="text-sm text-gray-600">
+                          전체 게시글
+                        </span>
+                      </div>
+                      <span className="font-semibold text-pink-600">
+                        {posts.length}개
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <Map className="w-4 h-4 text-gray-400" />
+                        <span className="text-sm text-gray-600">전체 코스</span>
+                      </div>
+                      <span className="font-semibold text-pink-600">
+                        {courses.length}개
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 광고 배너 */}
                 <AdBanner variant="sidebar" />
+
+                {/* 코스 목록 바로가기 */}
+                <Link href="/course-list" className="block">
+                  <div className="bg-gradient-to-r from-pink-500 to-pink-600 rounded-xl p-4 text-white hover:shadow-lg transition-all">
+                    <h3 className="font-semibold mb-1">데이트 코스 보기</h3>
+                    <p className="text-sm text-white/90">
+                      다른 커플들의 코스를 둘러보세요 →
+                    </p>
+                  </div>
+                </Link>
               </div>
             </aside>
 
-            {/* Main Feed */}
-            <div className="lg:col-span-6">
+            {/* Main Content - 더 넓게 */}
+            <div className="lg:col-span-9">
+              {/* 모바일 네비게이션 */}
               <div className="lg:hidden flex items-center justify-between mb-4">
                 <div className="flex space-x-2">
                   <button
                     onClick={() => setSortBy("latest")}
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                       sortBy === "latest"
-                        ? "bg-[var(--coral-pink)] text-white"
-                        : "bg-white text-[var(--text-secondary)] border border-[var(--coral-pink)]/20"
+                        ? "bg-pink-500 text-white"
+                        : "bg-white text-gray-600 border border-gray-200"
                     }`}
                   >
                     최신
@@ -249,8 +280,8 @@ export default function Home() {
                     onClick={() => setSortBy("popular")}
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                       sortBy === "popular"
-                        ? "bg-[var(--coral-pink)] text-white"
-                        : "bg-white text-[var(--text-secondary)] border border-[var(--coral-pink)]/20"
+                        ? "bg-pink-500 text-white"
+                        : "bg-white text-gray-600 border border-gray-200"
                     }`}
                   >
                     인기
@@ -258,7 +289,7 @@ export default function Home() {
                 </div>
                 {user && (
                   <Link href="/community/post">
-                    <button className="p-2 bg-[var(--coral-pink)] text-white rounded-full hover:shadow-lg transition-all">
+                    <button className="p-2 bg-pink-500 text-white rounded-full hover:shadow-lg transition-all">
                       <Plus className="w-5 h-5" />
                     </button>
                   </Link>
@@ -266,27 +297,29 @@ export default function Home() {
               </div>
 
               {loading ? (
-                <div className="bg-white rounded-xl p-8 text-center shadow-sm border border-[var(--coral-pink)]/10">
-                  <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[var(--coral-pink)] mx-auto mb-3"></div>
-                  <p className="text-[var(--text-secondary)]">로딩 중...</p>
+                <div className="bg-white rounded-xl p-8 text-center shadow-sm border border-gray-100">
+                  <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-pink-500 mx-auto mb-3"></div>
+                  <p className="text-gray-600">로딩 중...</p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-6">
+                  {/* 인기 데이트 코스 - 메인 섹션 */}
                   {courses.length > 0 && (
-                    <div className="bg-gradient-to-br from-[var(--very-light-pink)] to-white rounded-xl p-4 border border-[var(--coral-pink)]/10">
-                      <div className="flex items-center justify-between mb-3">
-                        <h2 className="font-bold text-[var(--text-primary)] flex items-center space-x-2">
-                          <Heart className="w-5 h-5 text-[var(--coral-pink)]" />
+                    <div className="bg-gradient-to-br from-pink-50 via-white to-pink-50 rounded-2xl p-8 border border-pink-100 shadow-md">
+                      <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-2xl font-bold text-gray-900 flex items-center space-x-3">
+                          <Heart className="w-7 h-7 text-pink-500" />
                           <span>인기 데이트 코스</span>
                         </h2>
                         <Link
                           href="/course-list"
-                          className="text-sm text-[var(--coral-pink)] hover:underline"
+                          className="text-sm text-pink-600 hover:text-pink-700 font-semibold flex items-center space-x-1"
                         >
-                          전체보기 →
+                          <span>전체보기</span>
+                          <span>→</span>
                         </Link>
                       </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                         {courses.map((course) => (
                           <CourseCard
                             key={course.id}
@@ -306,20 +339,48 @@ export default function Home() {
                               []
                             }
                             imageUrl={course.imageUrl || course.heroImage}
-                            compact
                           />
                         ))}
                       </div>
                     </div>
                   )}
 
+                  {/* 광고 배너 */}
                   <AdBanner variant="horizontal" />
 
-                  <div className="bg-white rounded-xl p-4 border border-[var(--coral-pink)]/10">
-                    <h2 className="font-bold text-[var(--text-primary)] mb-3 flex items-center space-x-2">
-                      <MessageCircle className="w-5 h-5 text-[var(--coral-pink)]" />
-                      <span>커뮤니티 게시글</span>
-                    </h2>
+                  {/* 커뮤니티 게시글 */}
+                  <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-lg font-bold text-gray-900 flex items-center space-x-2">
+                        <MessageCircle className="w-5 h-5 text-pink-500" />
+                        <span>커뮤니티 게시글</span>
+                      </h2>
+                      {/* 데스크톱 네비게이션 */}
+                      <div className="hidden lg:flex space-x-2">
+                        <button
+                          onClick={() => setSortBy("latest")}
+                          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                            sortBy === "latest"
+                              ? "bg-pink-50 text-pink-600"
+                              : "text-gray-600 hover:bg-gray-50"
+                          }`}
+                        >
+                          <Clock className="w-4 h-4 inline mr-1" />
+                          최신글
+                        </button>
+                        <button
+                          onClick={() => setSortBy("popular")}
+                          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                            sortBy === "popular"
+                              ? "bg-pink-50 text-pink-600"
+                              : "text-gray-600 hover:bg-gray-50"
+                          }`}
+                        >
+                          <Flame className="w-4 h-4 inline mr-1" />
+                          인기글
+                        </button>
+                      </div>
+                    </div>
 
                     <div className="space-y-3">
                       {sortedPosts.slice(0, 5).map((post) => (
@@ -331,7 +392,7 @@ export default function Home() {
                       <div className="mt-4 text-center">
                         <Link
                           href="/community"
-                          className="text-sm text-[var(--coral-pink)] hover:underline"
+                          className="text-sm text-pink-600 hover:text-pink-700 font-medium"
                         >
                           더 많은 게시글 보기 →
                         </Link>
@@ -341,66 +402,6 @@ export default function Home() {
                 </div>
               )}
             </div>
-
-            {/* Right Sidebar */}
-            <aside className="hidden lg:block lg:col-span-3">
-              <div className="sticky top-20 space-y-4">
-                <div className="bg-white rounded-xl p-4 shadow-sm border border-[var(--coral-pink)]/10">
-                  <div className="flex items-center space-x-2 mb-3">
-                    <TrendingUp className="w-5 h-5 text-[var(--coral-pink)]" />
-                    <h3 className="font-semibold text-[var(--text-primary)]">
-                      인기 태그
-                    </h3>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {popularTags.map((tag) => (
-                      <button
-                        key={tag}
-                        className="flex items-center space-x-1 px-3 py-1.5 bg-[var(--very-light-pink)] hover:bg-[var(--light-pink)] text-[var(--text-secondary)] hover:text-[var(--coral-pink)] rounded-full text-sm transition-colors"
-                      >
-                        <Hash className="w-3 h-3" />
-                        <span>{tag}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="bg-white rounded-xl p-4 shadow-sm border border-[var(--coral-pink)]/10">
-                  <h3 className="font-semibold text-[var(--text-primary)] mb-3">
-                    통계
-                  </h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-[var(--text-secondary)]">
-                        전체 게시글
-                      </span>
-                      <span className="font-medium text-[var(--coral-pink)]">
-                        {posts.length}개
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-[var(--text-secondary)]">
-                        전체 코스
-                      </span>
-                      <span className="font-medium text-[var(--coral-pink)]">
-                        {courses.length}개
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <AdBanner variant="sidebar" />
-
-                <Link href="/course-list" className="block">
-                  <div className="bg-gradient-to-r from-[var(--light-pink)] to-[var(--coral-pink)] rounded-xl p-4 text-white hover:shadow-lg transition-all">
-                    <h3 className="font-semibold mb-1">데이트 코스 보기</h3>
-                    <p className="text-sm text-white/80">
-                      다른 커플들의 코스를 둘러보세요 →
-                    </p>
-                  </div>
-                </Link>
-              </div>
-            </aside>
           </div>
         </div>
       </main>
