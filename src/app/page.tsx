@@ -152,10 +152,10 @@ export default function Home() {
                           alt="프로필"
                           width={48}
                           height={48}
-                          className="w-12 h-12 rounded-full object-cover ring-2 ring-pink-100"
+                          className="w-12 h-12 rounded-full object-cover ring-2 ring-[var(--light-pink)]"
                         />
                       ) : (
-                        <div className="w-12 h-12 bg-gradient-to-br from-pink-400 to-pink-500 rounded-full flex items-center justify-center">
+                        <div className="w-12 h-12 bg-gradient-to-br from-[var(--coral-pink)]/80 to-[var(--coral-pink)] rounded-full flex items-center justify-center">
                           <span className="text-white font-bold text-lg">
                             {(userProfile?.nickname ||
                               user.displayName ||
@@ -184,7 +184,7 @@ export default function Home() {
                 ) : (
                   <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
                     <div className="text-center mb-3">
-                      <Heart className="w-8 h-8 text-pink-500 mx-auto mb-2" />
+                      <Heart className="w-8 h-8 text-[var(--coral-pink)] mx-auto mb-2" />
                       <p className="text-gray-600 text-sm">
                         로그인하고 글을 작성해보세요
                       </p>
@@ -200,14 +200,14 @@ export default function Home() {
                 {/* 인기 태그 */}
                 <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
                   <div className="flex items-center space-x-2 mb-3">
-                    <TrendingUp className="w-5 h-5 text-pink-500" />
+                    <TrendingUp className="w-5 h-5 text-[var(--coral-pink)]" />
                     <h3 className="font-semibold text-gray-900">인기 태그</h3>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {popularTags.map((tag) => (
                       <button
                         key={tag}
-                        className="flex items-center space-x-1 px-3 py-1.5 bg-gray-50 hover:bg-pink-50 text-gray-600 hover:text-pink-600 rounded-full text-sm transition-colors"
+                        className="flex items-center space-x-1 px-3 py-1.5 bg-gray-50 hover:bg-[var(--very-light-pink)] text-gray-600 hover:text-[var(--coral-pink)] rounded-full text-sm transition-colors"
                       >
                         <Hash className="w-3 h-3" />
                         <span>{tag}</span>
@@ -219,7 +219,7 @@ export default function Home() {
                 {/* 통계 */}
                 <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
                   <div className="flex items-center space-x-2 mb-3">
-                    <BarChart3 className="w-5 h-5 text-pink-500" />
+                    <BarChart3 className="w-5 h-5 text-[var(--coral-pink)]" />
                     <h3 className="font-semibold text-gray-900">통계</h3>
                   </div>
                   <div className="space-y-3">
@@ -230,7 +230,7 @@ export default function Home() {
                           전체 게시글
                         </span>
                       </div>
-                      <span className="font-semibold text-pink-600">
+                      <span className="font-semibold text-[var(--coral-pink)]">
                         {posts.length}개
                       </span>
                     </div>
@@ -239,7 +239,7 @@ export default function Home() {
                         <Map className="w-4 h-4 text-gray-400" />
                         <span className="text-sm text-gray-600">전체 코스</span>
                       </div>
-                      <span className="font-semibold text-pink-600">
+                      <span className="font-semibold text-[var(--coral-pink)]">
                         {courses.length}개
                       </span>
                     </div>
@@ -251,7 +251,7 @@ export default function Home() {
 
                 {/* 코스 목록 바로가기 */}
                 <Link href="/course-list" className="block">
-                  <div className="bg-gradient-to-r from-pink-500 to-pink-600 rounded-xl p-4 text-white hover:shadow-lg transition-all">
+                  <div className="bg-gradient-to-r from-[var(--coral-pink)] to-[var(--coral-pink)]/90 rounded-xl p-4 text-white hover:shadow-lg transition-all">
                     <h3 className="font-semibold mb-1">데이트 코스 보기</h3>
                     <p className="text-sm text-white/90">
                       다른 커플들의 코스를 둘러보세요 →
@@ -305,15 +305,15 @@ export default function Home() {
                 <div className="space-y-6">
                   {/* 인기 데이트 코스 - 메인 섹션 */}
                   {courses.length > 0 && (
-                    <div className="bg-gradient-to-br from-pink-50 via-white to-pink-50 rounded-2xl p-8 border border-pink-100 shadow-md">
+                    <div className="bg-gradient-to-br from-[var(--very-light-pink)] via-white to-[var(--very-light-pink)] rounded-2xl p-8 border border-[var(--coral-pink)]/20 shadow-md">
                       <div className="flex items-center justify-between mb-6">
                         <h2 className="text-2xl font-bold text-gray-900 flex items-center space-x-3">
-                          <Heart className="w-7 h-7 text-pink-500" />
+                          <Heart className="w-7 h-7 text-[var(--coral-pink)]" />
                           <span>인기 데이트 코스</span>
                         </h2>
                         <Link
                           href="/course-list"
-                          className="text-sm text-pink-600 hover:text-pink-700 font-semibold flex items-center space-x-1"
+                          className="text-sm text-[var(--coral-pink)] hover:text-[var(--coral-pink)]/80 font-semibold flex items-center space-x-1"
                         >
                           <span>전체보기</span>
                           <span>→</span>
@@ -352,7 +352,7 @@ export default function Home() {
                   <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
                     <div className="flex items-center justify-between mb-4">
                       <h2 className="text-lg font-bold text-gray-900 flex items-center space-x-2">
-                        <MessageCircle className="w-5 h-5 text-pink-500" />
+                        <MessageCircle className="w-5 h-5 text-[var(--coral-pink)]" />
                         <span>커뮤니티 게시글</span>
                       </h2>
                       {/* 데스크톱 네비게이션 */}

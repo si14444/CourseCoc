@@ -90,8 +90,8 @@ export function CourseCard({
   return (
     <Link href={`/community/course/${id}`}>
       <Card className={`${COURSE_CARD_CLASSES} overflow-hidden`}>
-        {/* Image Header */}
-        <div className="h-40 sm:h-48 lg:h-52 bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] relative overflow-hidden">
+        {/* Image Header - 높이 줄임 */}
+        <div className="h-32 sm:h-36 lg:h-40 bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] relative overflow-hidden">
           {heroImage ||
           imageUrl ||
           (locationImages && locationImages.length > 0) ? (
@@ -121,10 +121,10 @@ export function CourseCard({
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
         </div>
 
-        <CardContent className="p-4 sm:p-6 lg:p-7">
+        <CardContent className="p-3 sm:p-4">
           {/* Title and Description */}
-          <div className="mb-4">
-            <h3 className="font-bold text-sm sm:text-base lg:text-lg text-[var(--text-primary)] mb-1 sm:mb-2 line-clamp-1">
+          <div className="mb-2 sm:mb-3">
+            <h3 className="font-bold text-sm sm:text-base text-[var(--text-primary)] mb-1 line-clamp-1">
               {title}
             </h3>
             <p className="text-[var(--text-secondary)] text-xs sm:text-sm line-clamp-2 leading-relaxed">
@@ -134,7 +134,7 @@ export function CourseCard({
 
           {/* Meta Information */}
           <div
-            className={`flex items-center space-x-2 sm:space-x-4 mb-3 sm:mb-4 ${META_TEXT_CLASSES}`}
+            className={`flex items-center space-x-2 sm:space-x-3 mb-2 sm:mb-3 ${META_TEXT_CLASSES}`}
           >
             <div className={ICON_TEXT_CLASSES}>
               <MapPin className="w-4 h-4 text-[var(--coral-pink)]" />
@@ -155,7 +155,7 @@ export function CourseCard({
           </div>
 
           {/* Course Steps Preview */}
-          <div className="mb-4">
+          <div className="mb-0">
             <div className="flex items-center space-x-2 mb-2">
               <span className="text-xs font-medium text-[var(--text-secondary)] hidden sm:inline">
                 코스 미리보기:
