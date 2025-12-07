@@ -44,7 +44,7 @@ export function CourseCard({
 }: CourseCardProps) {
   if (compact) {
     return (
-      <Link href={`/community/course/${id}`}>
+      <Link href={`/courses/${id}`}>
         <div className="bg-white rounded-lg border border-[var(--coral-pink)]/10 overflow-hidden hover:shadow-md transition-shadow group">
           <div className="h-24 bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] relative overflow-hidden">
             {heroImage ||
@@ -88,7 +88,7 @@ export function CourseCard({
   }
 
   return (
-    <Link href={`/community/course/${id}`}>
+    <Link href={`/courses/${id}`}>
       <Card className={`${COURSE_CARD_CLASSES} overflow-hidden`}>
         {/* Image Header - 높이 줄임 */}
         <div className="h-32 sm:h-36 lg:h-40 bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] relative overflow-hidden">

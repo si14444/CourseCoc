@@ -507,7 +507,7 @@ function WritePageContent() {
 
                           if (result.success) {
                             alert("코스가 성공적으로 발행되었습니다!");
-                            window.location.href = `/community/course/${result.data}`;
+                            window.location.href = `/courses/${result.data}`;
                           } else {
                             alert(`발행 실패: ${result.error}`);
                           }

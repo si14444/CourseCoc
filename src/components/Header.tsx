@@ -112,7 +112,7 @@ export function Header() {
                 </Button>
               </Link>
             )}
-            <Link href="/community/write">
+            <Link href="/courses/write">
               <Button className="bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-105">
                 <Plus className="w-4 h-4 mr-2" />
                 코스 만들기
@@ -192,7 +192,7 @@ export function Header() {
                   </div>
                 )}
                 <Link
-                  href="/community/write"
+                  href="/courses/write"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <Button

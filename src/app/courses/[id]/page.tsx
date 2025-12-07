@@ -6,19 +6,19 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CustomOverlayMap, Map, Polyline } from "react-kakao-maps-sdk";
-import { Header } from "../../../../components/Header";
+import { Header } from "../../../components/Header";
 import {
   Course,
   getCourseById,
   updateCourseBookmarks,
   updateCourseLikes,
-} from "../../../../lib/firebaseCourses";
-import { Location } from "../../../../types";
+} from "../../../lib/firebaseCourses";
+import { Location } from "../../../types";
 
 // Comments 컴포넌트를 동적으로 로드하여 하이드레이션 문제 해결
 const Comments = dynamic(
   () =>
-    import("../../../../components/Comments").then((mod) => ({
+    import("../../../components/Comments").then((mod) => ({
       default: mod.Comments,
     })),
   {
@@ -375,10 +375,10 @@ export default function CourseDetailPage() {
               </button>
 
               <button
-                onClick={() => router.push("/community")}
+                onClick={() => router.push("/courses")}
                 className="block w-full px-6 py-3 bg-[var(--coral-pink)] text-white rounded-lg hover:opacity-90 transition-opacity"
               >
-                커뮤니티로 돌아가기
+                코스 목록으로 돌아가기
               </button>
 
               <p className="text-xs text-gray-500 mt-4">

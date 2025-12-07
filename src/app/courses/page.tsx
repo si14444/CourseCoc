@@ -141,7 +141,7 @@ export default function MyCoursesPage() {
               </p>
             </div>
             <div className="mt-4 sm:mt-0">
-              <Link href="/community/write">
+              <Link href="/courses/write">
                 <Button className="btn-primary">
                   <Plus className="w-4 h-4 mr-2" />새 코스 만들기
                 </Button>
@@ -258,7 +258,7 @@ export default function MyCoursesPage() {
               <p className="text-[var(--text-secondary)] mb-6">
                 첫 번째 로맨틱한 데이트 코스를 만들어보세요!
               </p>
-              <Link href="/community/write">
+              <Link href="/courses/write">
                 <Button className="btn-primary">
                   <Plus className="w-4 h-4 mr-2" />새 코스 만들기
                 </Button>
@@ -303,7 +303,7 @@ export default function MyCoursesPage() {
 
                       {/* 관리 버튼들 */}
                       <div className="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Link href={`/community/write?edit=${course.id}`}>
+                        <Link href={`/courses/write?edit=${course.id}`}>
                           <button className="p-2 bg-white/90 backdrop-blur-sm rounded-lg hover:bg-white transition-colors">
                             <Edit3 className="w-4 h-4 text-gray-600" />
                           </button>
@@ -350,7 +350,7 @@ export default function MyCoursesPage() {
                           <Clock className="w-3 h-3" />
                           <span>업데이트: {formatDate(course.updatedAt)}</span>
                         </div>
-                        <Link href={`/community/course/${course.id}`}>
+                        <Link href={`/courses/${course.id}`}>
                           <Button
                             variant="outline"
                             size="sm"

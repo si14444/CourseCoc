@@ -13,7 +13,7 @@ export function HeroSection() {
   const [stats, setStats] = useState<HomeStats>({
     totalCourses: 0,
     publishedCourses: 0,
-    beta: true
+    beta: true,
   });
   const [loading, setLoading] = useState(true);
 
@@ -25,7 +25,7 @@ export function HeroSection() {
         const homeStats = await getHomeStats();
         setStats(homeStats);
       } catch (error) {
-        console.error('통계 로딩 실패:', error);
+        console.error("통계 로딩 실패:", error);
       } finally {
         setLoading(false);
       }
@@ -91,14 +91,14 @@ export function HeroSection() {
 
         {/* Subtitle */}
         <p className="text-lg md:text-xl text-[var(--text-secondary)] max-w-4xl mx-auto mb-8 leading-relaxed">
-          아름다운 이야기를 담은 로맨틱한 경험을 디자인해보세요. 모든 순간,
-          모든 발걸음이 사랑으로 만들어집니다. 평범한 데이트를
-          특별한 추억으로 바꿔보세요.
+          아름다운 이야기를 담은 로맨틱한 경험을 디자인해보세요. 모든 순간, 모든
+          발걸음이 사랑으로 만들어집니다. 평범한 데이트를 특별한 추억으로
+          바꿔보세요.
         </p>
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-          <Link href="/community/write">
+          <Link href="/courses/write">
             <Button
               size="lg"
               className="bg-gradient-to-r from-[var(--very-light-pink)] via-[var(--light-pink)] to-[var(--coral-pink)] text-white hover:shadow-xl hover:shadow-[var(--pink-shadow)] transition-all duration-300 transform hover:-translate-y-1 hover:scale-105 px-8 py-4"
@@ -152,7 +152,8 @@ export function HeroSection() {
                 🎉 곧 출시됩니다!
               </div>
               <p className="text-[var(--text-secondary)] mb-4">
-                우리와 함께 첫 번째 로맨틱한 데이트 코스를 만들어보세요.<br />
+                우리와 함께 첫 번째 로맨틱한 데이트 코스를 만들어보세요.
+                <br />
                 당신의 특별한 이야기가 이곳에서 시작됩니다.
               </p>
               <div className="text-sm text-[var(--text-tertiary)]">

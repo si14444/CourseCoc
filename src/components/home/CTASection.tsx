@@ -42,14 +42,14 @@ export function CTASection() {
             <span className="block">데이트 코스를 만들 준비가 되셨나요?</span>
           </h2>
           <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
-            이미 완벽하게 계획된 로맨틱한 경험의 마법을 발견한 수천 명의 커플에 동참하세요.
-            오늘 당신의 사랑 이야기를 시작해보세요.
+            이미 완벽하게 계획된 로맨틱한 경험의 마법을 발견한 수천 명의 커플에
+            동참하세요. 오늘 당신의 사랑 이야기를 시작해보세요.
           </p>
         </div>
 
         {/* CTA Button */}
         <div className="mb-12">
-          <Link href="/community/write">
+          <Link href="/courses/write">
             <Button
               size="lg"
               className="bg-white text-[var(--coral-pink)] hover:bg-white/90 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-105 px-12 py-6 text-lg font-semibold"

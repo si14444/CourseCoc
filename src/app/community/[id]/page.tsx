@@ -580,7 +580,7 @@ export default function PostDetailPage({ params }: PostDetailPageProps) {
 
             {/* Content */}
             <div
-              className="prose max-w-none text-gray-700 whitespace-pre-wrap mb-6"
+              className="prose max-w-none text-gray-700 mb-6"
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
 

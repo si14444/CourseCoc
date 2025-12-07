@@ -29,7 +29,7 @@ export function PopularCoursesSection() {
           .slice(0, 3);
         setCourses(sortedCourses);
       } catch (error) {
-        console.error('코스 로딩 실패:', error);
+        console.error("코스 로딩 실패:", error);
       } finally {
         setLoading(false);
       }
@@ -49,8 +49,7 @@ export function PopularCoursesSection() {
           <p className="text-lg text-[var(--text-secondary)] max-w-4xl mx-auto mb-8">
             {courses.length > 0
               ? "우리 커뮤니티에서 만들어진 가장 사랑받는 데이트 코스들을 발견해보세요. 영감을 얻고 나만의 로맨틱한 여정을 만들어보세요."
-              : "첫 번째 코스 제작자가 되어보세요! 당신만의 특별한 데이트 이야기를 공유하고 다른 커플들에게 영감을 선사해보세요."
-            }
+              : "첫 번째 코스 제작자가 되어보세요! 당신만의 특별한 데이트 이야기를 공유하고 다른 커플들에게 영감을 선사해보세요."}
           </p>
         </div>
 
@@ -70,10 +69,16 @@ export function PopularCoursesSection() {
                   id={course.id}
                   title={course.title}
                   description={course.description}
-                  placeCount={course.placeCount || course.locations?.length || 0}
+                  placeCount={
+                    course.placeCount || course.locations?.length || 0
+                  }
                   likes={course.likes}
                   views={course.views}
-                  steps={course.steps || course.locations?.map(loc => loc.name).filter(Boolean) || []}
+                  steps={
+                    course.steps ||
+                    course.locations?.map((loc) => loc.name).filter(Boolean) ||
+                    []
+                  }
                   imageUrl={course.imageUrl || course.heroImage}
                 />
               ))}
@@ -100,16 +105,17 @@ export function PopularCoursesSection() {
                 첫 번째 코스를 기다리고 있어요!
               </h3>
               <p className="text-[var(--text-secondary)] mb-6">
-                CourseCoc과 함께 새로운 시작을 해보세요.<br />
-                당신의 로맨틱한 아이디어가 많은 커플들에게 영감이 될 수 있습니다.
+                CourseCoc과 함께 새로운 시작을 해보세요.
+                <br />
+                당신의 로맨틱한 아이디어가 많은 커플들에게 영감이 될 수
+                있습니다.
               </p>
-              <Link href="/community/write">
+              <Link href="/courses/write">
                 <Button
                   size="lg"
                   className="bg-gradient-to-r from-[var(--very-light-pink)] via-[var(--light-pink)] to-[var(--coral-pink)] text-white hover:shadow-xl hover:shadow-[var(--pink-shadow)] transition-all duration-300 transform hover:-translate-y-1 px-8 py-4"
                 >
-                  <Plus className="w-5 h-5 mr-2" />
-                  첫 번째 코스 만들기
+                  <Plus className="w-5 h-5 mr-2" />첫 번째 코스 만들기
                 </Button>
               </Link>
             </div>
