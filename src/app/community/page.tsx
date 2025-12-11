@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Plus, MessageCircle, FileText } from "lucide-react";
+import { Plus, FileText } from "lucide-react";
 import { Header } from "../../components/Header";
 import { PostCard } from "../../components/PostCard";
 import { getPosts, Post } from "../../lib/firebasePosts";
