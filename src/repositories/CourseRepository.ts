@@ -158,12 +158,26 @@ export class FirebaseCourseRepository implements ICourseRepository {
 
     const q = query(
       collection(db, this.collectionName),
-      where("authorId", "==", userId),
-      orderBy("createdAt", "desc")
+      where("authorId", "==", userId)
     );
 
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map((doc) => this.convertDocToCourse(doc));
+    const courses = querySnapshot.docs.map((doc) =>
+      this.convertDocToCourse(doc)
+    );
+
+    // 클라이언트에서 정렬 (createdAt 기준 내림차순)
+    return courses.sort((a, b) => {
+      const aTime =
+        a.createdAt instanceof Date
+          ? a.createdAt.getTime()
+          : (a.createdAt as any)?.toDate?.().getTime() || 0;
+      const bTime =
+        b.createdAt instanceof Date
+          ? b.createdAt.getTime()
+          : (b.createdAt as any)?.toDate?.().getTime() || 0;
+      return bTime - aTime;
+    });
   }
 
   async findByTag(tag: string): Promise<Course[]> {

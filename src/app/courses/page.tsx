@@ -131,22 +131,12 @@ export default function MyCoursesPage() {
       <main className="pt-20 pb-8">
         <div className={CONTAINER_CLASSES}>
           {/* 페이지 헤더 */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
-            <div>
-              <h1 className="text-4xl font-bold text-[var(--text-primary)] mb-2">
-                내 코스 관리
-              </h1>
-              <p className="text-lg text-[var(--text-secondary)]">
-                나만의 특별한 데이트 코스를 관리하고 공유해보세요
-              </p>
-            </div>
-            <div className="mt-4 sm:mt-0">
-              <Link href="/courses/write">
-                <Button className="btn-primary">
-                  <Plus className="w-4 h-4 mr-2" />새 코스 만들기
-                </Button>
-              </Link>
-            </div>
+          <div className="flex justify-end items-center mb-8">
+            <Link href="/courses/write">
+              <Button className="btn-primary">
+                <Plus className="w-4 h-4 mr-2" />새 코스 만들기
+              </Button>
+            </Link>
           </div>
 
           {/* 통계 카드 */}

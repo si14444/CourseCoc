@@ -98,7 +98,11 @@ export const useUserCourses = (userId: string) => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchUserCourses = useCallback(async () => {
-    if (!userId) return;
+    if (!userId) {
+      setCourses([]);
+      setLoading(false);
+      return;
+    }
 
     setLoading(true);
     setError(null);
