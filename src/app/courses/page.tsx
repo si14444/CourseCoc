@@ -1,6 +1,7 @@
 "use client";
 
 import { CONTAINER_CLASSES } from "@/utils/layouts";
+import { AdSpot } from "@/components/AdSpot";
 import {
   BarChart3,
   BookOpen,
@@ -129,19 +130,13 @@ export default function MyCoursesPage() {
       <Header />
 
       <main className="pt-20 pb-8">
-        <div className={CONTAINER_CLASSES}>
-          {/* 페이지 헤더 */}
-          <div className="flex justify-end items-center mb-8">
-            <Link href="/courses/write">
-              <Button className="btn-primary">
-                <Plus className="w-4 h-4 mr-2" />새 코스 만들기
-              </Button>
-            </Link>
-          </div>
+        <div className="max-w-[1600px] mx-auto px-6">
+          {/* Search and Filter - Above ads */}
+          <SearchAndFilter />
 
-          {/* 통계 카드 */}
+          {/* 통계 카드 - Above ads */}
           {showStats && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 my-6">
               <Card className="shadow-romantic">
                 <CardContent className="p-6">
                   <div className="flex items-center">
@@ -216,146 +211,167 @@ export default function MyCoursesPage() {
             </div>
           )}
 
-          {/* 에러 상태 */}
-          {error && (
-            <div className="text-center py-12 mb-8">
-              <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-2xl mx-auto">
-                <h3 className="text-lg font-semibold text-red-800 mb-2">
-                  오류가 발생했습니다
-                </h3>
-                <p className="text-red-600 mb-4">{error}</p>
-                <Button
-                  onClick={() => refetch()}
-                  className="text-red-800 border-red-300 hover:bg-red-50"
-                  variant="outline"
-                >
-                  다시 시도
-                </Button>
+          <div className="flex gap-8 justify-center mt-6">
+            {/* Left Ad Spot */}
+            <AdSpot position="left" />
+
+            {/* Main Content */}
+            <div className="flex-1 max-w-6xl">
+              {/* 페이지 헤더 */}
+              <div className="flex justify-end items-center mb-8">
+                <Link href="/courses/write">
+                  <Button className="btn-primary">
+                    <Plus className="w-4 h-4 mr-2" />새 코스 만들기
+                  </Button>
+                </Link>
               </div>
-            </div>
-          )}
 
-          {/* 검색 및 필터 */}
-          <SearchAndFilter />
-
-          {/* 코스 목록 */}
-          {!error && filteredCourses.length === 0 ? (
-            <div className="text-center py-16">
-              <BookOpen className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-              <h3 className="text-lg font-medium text-[var(--text-primary)] mb-2">
-                아직 만든 코스가 없습니다
-              </h3>
-              <p className="text-[var(--text-secondary)] mb-6">
-                첫 번째 로맨틱한 데이트 코스를 만들어보세요!
-              </p>
-              <Link href="/courses/write">
-                <Button className="btn-primary">
-                  <Plus className="w-4 h-4 mr-2" />새 코스 만들기
-                </Button>
-              </Link>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredCourses.map((course) => (
-                <div key={course.id} className="relative group">
-                  <Card className="shadow-romantic hover:shadow-[0_8px_30px_var(--pink-shadow-hover)] transition-all duration-300 overflow-hidden">
-                    {/* 이미지 */}
-                    <div className="relative h-48 overflow-hidden bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)]">
-                      {course.heroImage ||
-                      course.imageUrl ||
-                      course.locations?.some((loc) => loc.image) ? (
-                        <Image
-                          src={getCourseImageUrl(
-                            course.heroImage || course.imageUrl,
-                            course.locations
-                              ?.map((loc) => loc.image)
-                              .filter((img): img is string => Boolean(img)),
-                            course.tags
-                          )}
-                          alt={course.title}
-                          width={400}
-                          height={192}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          onError={(e) => handleImageError(e)}
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <div className="text-center">
-                            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-[var(--coral-pink)]/20 flex items-center justify-center mx-auto mb-2 sm:mb-3">
-                              <span className="text-lg sm:text-2xl">💕</span>
-                            </div>
-                            <p className="text-xs sm:text-sm text-[var(--coral-pink)] font-medium">
-                              로맨틱 데이트 코스
-                            </p>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* 관리 버튼들 */}
-                      <div className="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Link href={`/courses/write?edit=${course.id}`}>
-                          <button className="p-2 bg-white/90 backdrop-blur-sm rounded-lg hover:bg-white transition-colors">
-                            <Edit3 className="w-4 h-4 text-gray-600" />
-                          </button>
-                        </Link>
-                        <button
-                          onClick={() => handleDeleteCourse(course.id)}
-                          className="p-2 bg-white/90 backdrop-blur-sm rounded-lg hover:bg-white transition-colors"
-                        >
-                          <Trash2 className="w-4 h-4 text-red-500" />
-                        </button>
-                      </div>
-                    </div>
-
-                    <CardContent className="p-6">
-                      {/* 제목과 설명 */}
-                      <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2 line-clamp-1">
-                        {course.title}
-                      </h3>
-                      <p className="text-[var(--text-secondary)] text-sm mb-4 line-clamp-2">
-                        {course.description}
-                      </p>
-
-                      {/* 메타 정보 */}
-                      <div className="flex items-center justify-between mb-4 text-sm text-[var(--text-secondary)]">
-                        <div className="flex items-center space-x-4">
-                          <div className="flex items-center space-x-1">
-                            <MapPin className="w-4 h-4" />
-                            <span>{course.placeCount}개 장소</span>
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            <Heart className="w-4 h-4" />
-                            <span>{course.likes}</span>
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            <Eye className="w-4 h-4" />
-                            <span>{course.views}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* 업데이트 날짜 */}
-                      <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
-                        <div className="flex items-center space-x-1">
-                          <Clock className="w-3 h-3" />
-                          <span>업데이트: {formatDate(course.updatedAt)}</span>
-                        </div>
-                        <Link href={`/courses/${course.id}`}>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="text-xs"
-                          >
-                            상세보기
-                          </Button>
-                        </Link>
-                      </div>
-                    </CardContent>
-                  </Card>
+              {/* 에러 상태 */}
+              {error && (
+                <div className="text-center py-12 mb-8">
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-2xl mx-auto">
+                    <h3 className="text-lg font-semibold text-red-800 mb-2">
+                      오류가 발생했습니다
+                    </h3>
+                    <p className="text-red-600 mb-4">{error}</p>
+                    <Button
+                      onClick={() => refetch()}
+                      className="text-red-800 border-red-300 hover:bg-red-50"
+                      variant="outline"
+                    >
+                      다시 시도
+                    </Button>
+                  </div>
                 </div>
-              ))}
+              )}
+
+              {/* 코스 목록 */}
+              {!error && filteredCourses.length === 0 ? (
+                <div className="text-center py-16">
+                  <BookOpen className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+                  <h3 className="text-lg font-medium text-[var(--text-primary)] mb-2">
+                    아직 만든 코스가 없습니다
+                  </h3>
+                  <p className="text-[var(--text-secondary)] mb-6">
+                    첫 번째 로맨틱한 데이트 코스를 만들어보세요!
+                  </p>
+                  <Link href="/courses/write">
+                    <Button className="btn-primary">
+                      <Plus className="w-4 h-4 mr-2" />새 코스 만들기
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredCourses.map((course) => (
+                    <div key={course.id} className="relative group">
+                      <Card className="shadow-romantic hover:shadow-[0_8px_30px_var(--pink-shadow-hover)] transition-all duration-300 overflow-hidden">
+                        {/* 이미지 */}
+                        <div className="relative h-48 overflow-hidden bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)]">
+                          {course.heroImage ||
+                          course.imageUrl ||
+                          course.locations?.some((loc) => loc.image) ? (
+                            <Image
+                              src={getCourseImageUrl(
+                                course.heroImage || course.imageUrl,
+                                course.locations
+                                  ?.map((loc) => loc.image)
+                                  .filter((img): img is string => Boolean(img)),
+                                course.tags
+                              )}
+                              alt={course.title}
+                              width={400}
+                              height={192}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              onError={(e) => handleImageError(e)}
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <div className="text-center">
+                                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-[var(--coral-pink)]/20 flex items-center justify-center mx-auto mb-2 sm:mb-3">
+                                  <span className="text-lg sm:text-2xl">
+                                    💕
+                                  </span>
+                                </div>
+                                <p className="text-xs sm:text-sm text-[var(--coral-pink)] font-medium">
+                                  로맨틱 데이트 코스
+                                </p>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* 관리 버튼들 */}
+                          <div className="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Link href={`/courses/write?edit=${course.id}`}>
+                              <button className="p-2 bg-white/90 backdrop-blur-sm rounded-lg hover:bg-white transition-colors">
+                                <Edit3 className="w-4 h-4 text-gray-600" />
+                              </button>
+                            </Link>
+                            <button
+                              onClick={() => handleDeleteCourse(course.id)}
+                              className="p-2 bg-white/90 backdrop-blur-sm rounded-lg hover:bg-white transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4 text-red-500" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <CardContent className="p-6">
+                          {/* 제목과 설명 */}
+                          <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2 line-clamp-1">
+                            {course.title}
+                          </h3>
+                          <p className="text-[var(--text-secondary)] text-sm mb-4 line-clamp-2">
+                            {course.description}
+                          </p>
+
+                          {/* 메타 정보 */}
+                          <div className="flex items-center justify-between mb-4 text-sm text-[var(--text-secondary)]">
+                            <div className="flex items-center space-x-4">
+                              <div className="flex items-center space-x-1">
+                                <MapPin className="w-4 h-4" />
+                                <span>{course.placeCount}개 장소</span>
+                              </div>
+                              <div className="flex items-center space-x-1">
+                                <Heart className="w-4 h-4" />
+                                <span>{course.likes}</span>
+                              </div>
+                              <div className="flex items-center space-x-1">
+                                <Eye className="w-4 h-4" />
+                                <span>{course.views}</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* 업데이트 날짜 */}
+                          <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
+                            <div className="flex items-center space-x-1">
+                              <Clock className="w-3 h-3" />
+                              <span>
+                                업데이트: {formatDate(course.updatedAt)}
+                              </span>
+                            </div>
+                            <Link href={`/courses/${course.id}`}>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-xs"
+                              >
+                                상세보기
+                              </Button>
+                            </Link>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
+
+            {/* Right Ad Spot */}
+            <AdSpot position="right" />
+          </div>
         </div>
       </main>
     </div>

@@ -7,7 +7,8 @@ import { Header } from "../../components/Header";
 import { SearchAndFilter } from "../../components/SearchAndFilter";
 import { getPublishedCourses, Course } from "../../lib/firebaseCourses";
 import { getCourseCommentCount } from "../../lib/firebaseComments";
-import { CONTAINER_CLASSES, COURSE_GRID_CLASSES } from "@/utils/layouts";
+import { COURSE_GRID_CLASSES } from "@/utils/layouts";
+import { AdSpot } from "@/components/AdSpot";
 
 export default function CourseList() {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -107,115 +108,123 @@ export default function CourseList() {
 
       {/* Main Content */}
       <main className="pt-20 pb-8">
-        <div className={CONTAINER_CLASSES}>
-          {/* Page Header - Minimal */}
-          <div className="mb-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">코스 목록</h1>
-          </div>
-
+        <div className="max-w-[1600px] mx-auto px-6">
+          {/* Search and Filter - Above ads */}
           <SearchAndFilter
             onSearch={handleSearch}
             onTagFilter={handleTagFilter}
           />
 
-          {/* 로딩 상태 */}
-          {loading && (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--coral-pink)] mx-auto mb-4"></div>
-              <p className="text-gray-600">
-                멋진 데이트 코스들을 불러오는 중...
-              </p>
-            </div>
-          )}
+          <div className="flex gap-8 justify-center mt-6">
+            {/* Left Ad Spot */}
+            <AdSpot position="left" />
 
-          {/* 에러 상태 */}
-          {error && (
-            <div className="text-center py-12">
-              <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-2xl mx-auto">
-                <h3 className="text-lg font-semibold text-red-800 mb-2">
-                  오류가 발생했습니다
-                </h3>
-                <p className="text-red-600 mb-4">{error}</p>
-              </div>
-            </div>
-          )}
-
-          {/* Content Area */}
-          {!loading && !error && (
-            <>
-              {filteredCourses.length === 0 ? (
-                courses.length === 0 ? (
-                  <EmptyState />
-                ) : (
-                  // 검색/필터 결과가 없는 경우
-                  <div className="text-center py-12">
-                    <div className="text-gray-400 mb-4">
-                      <svg
-                        className="w-16 h-16 mx-auto mb-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={1}
-                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                        />
-                      </svg>
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                      검색 결과가 없습니다
-                    </h3>
-                    <p className="text-gray-600 mb-4">
-                      다른 키워드나 태그로 검색해보세요
-                    </p>
-                    <button
-                      onClick={() => {
-                        setSearchTerm("");
-                        setSelectedTags([]);
-                      }}
-                      className="text-[var(--coral-pink)] hover:underline"
-                    >
-                      모든 코스 보기
-                    </button>
-                  </div>
-                )
-              ) : (
-                <div className={COURSE_GRID_CLASSES}>
-                  {filteredCourses.map((course) => (
-                    <CourseCard
-                      key={course.id}
-                      id={course.id}
-                      title={course.title}
-                      description={course.description}
-                      placeCount={
-                        course.placeCount || course.locations?.length || 0
-                      }
-                      likes={course.likes}
-                      views={course.views}
-                      commentCount={commentCounts[course.id] || 0}
-                      steps={
-                        course.steps ||
-                        course.locations
-                          ?.map((loc) => loc.name)
-                          .filter(Boolean) ||
-                        []
-                      }
-                      imageUrl={course.imageUrl || course.heroImage}
-                      tags={course.tags}
-                      heroImage={course.heroImage}
-                      locationImages={
-                        course.locations
-                          ?.map((loc) => loc.image)
-                          .filter((img): img is string => Boolean(img)) || []
-                      }
-                    />
-                  ))}
+            {/* Main Content */}
+            <div className="flex-1 max-w-6xl">
+              {/* 로딩 상태 */}
+              {loading && (
+                <div className="text-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--coral-pink)] mx-auto mb-4"></div>
+                  <p className="text-gray-600">
+                    멋진 데이트 코스들을 불러오는 중...
+                  </p>
                 </div>
               )}
-            </>
-          )}
+
+              {/* 에러 상태 */}
+              {error && (
+                <div className="text-center py-12">
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-2xl mx-auto">
+                    <h3 className="text-lg font-semibold text-red-800 mb-2">
+                      오류가 발생했습니다
+                    </h3>
+                    <p className="text-red-600 mb-4">{error}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Content Area */}
+              {!loading && !error && (
+                <>
+                  {filteredCourses.length === 0 ? (
+                    courses.length === 0 ? (
+                      <EmptyState />
+                    ) : (
+                      // 검색/필터 결과가 없는 경우
+                      <div className="text-center py-12">
+                        <div className="text-gray-400 mb-4">
+                          <svg
+                            className="w-16 h-16 mx-auto mb-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={1}
+                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                            />
+                          </svg>
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                          검색 결과가 없습니다
+                        </h3>
+                        <p className="text-gray-600 mb-4">
+                          다른 키워드나 태그로 검색해보세요
+                        </p>
+                        <button
+                          onClick={() => {
+                            setSearchTerm("");
+                            setSelectedTags([]);
+                          }}
+                          className="text-[var(--coral-pink)] hover:underline"
+                        >
+                          모든 코스 보기
+                        </button>
+                      </div>
+                    )
+                  ) : (
+                    <div className={COURSE_GRID_CLASSES}>
+                      {filteredCourses.map((course) => (
+                        <CourseCard
+                          key={course.id}
+                          id={course.id}
+                          title={course.title}
+                          description={course.description}
+                          placeCount={
+                            course.placeCount || course.locations?.length || 0
+                          }
+                          likes={course.likes}
+                          views={course.views}
+                          commentCount={commentCounts[course.id] || 0}
+                          steps={
+                            course.steps ||
+                            course.locations
+                              ?.map((loc) => loc.name)
+                              .filter(Boolean) ||
+                            []
+                          }
+                          imageUrl={course.imageUrl || course.heroImage}
+                          tags={course.tags}
+                          heroImage={course.heroImage}
+                          locationImages={
+                            course.locations
+                              ?.map((loc) => loc.image)
+                              .filter((img): img is string => Boolean(img)) ||
+                            []
+                          }
+                        />
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+
+            {/* Right Ad Spot */}
+            <AdSpot position="right" />
+          </div>
         </div>
       </main>
     </div>
