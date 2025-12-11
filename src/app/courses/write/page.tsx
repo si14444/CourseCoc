@@ -154,12 +154,8 @@ function WritePageContent() {
 
       <div className="pt-16">
         {/* Hero Section - Compact */}
-        <div className="bg-gradient-to-br from-[var(--very-light-pink)] to-white py-8 border-b border-gray-100">
+        <div className="bg-gradient-to-br from-[var(--very-light-pink)] to-white py-6 border-b border-gray-100">
           <div className="max-w-5xl mx-auto px-6 text-center">
-            <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-4">
-              {editId ? "코스 수정" : "새 코스 작성"}
-            </h1>
-
             <StepIndicator currentStep={step} />
           </div>
         </div>
