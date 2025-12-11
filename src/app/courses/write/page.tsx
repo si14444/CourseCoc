@@ -478,7 +478,7 @@ function WritePageContent() {
                     </div>
 
                     <div
-                      className="prose max-w-none mb-6"
+                      className="prose prose-editor max-w-none mb-6"
                       dangerouslySetInnerHTML={{ __html: courseData.content }}
                     />
 

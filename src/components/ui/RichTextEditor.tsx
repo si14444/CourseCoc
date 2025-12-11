@@ -47,21 +47,6 @@ export function RichTextEditor({
     imageInputRef.current?.click();
   }, []);
 
-  const handleImageUpload = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (file && editor) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const src = event.target?.result as string;
-          editor.chain().focus().setImage({ src }).run();
-        };
-        reader.readAsDataURL(file);
-      }
-    },
-    []
-  );
-
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -108,6 +93,21 @@ export function RichTextEditor({
       },
     },
   });
+
+  const handleImageUpload = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file && editor) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const src = event.target?.result as string;
+          editor.chain().focus().setImage({ src }).run();
+        };
+        reader.readAsDataURL(file);
+      }
+    },
+    [editor]
+  );
 
   const setLink = useCallback(() => {
     if (linkUrl) {
@@ -162,12 +162,14 @@ export function RichTextEditor({
 
       {/* Placeholder Text Style Handling */}
       <style jsx global>{`
-        .ProseMirror .is-empty::before {
-          color: #adb5bd;
+        .ProseMirror > .is-empty::before,
+        .ProseMirror > p.is-empty::before {
+          color: #9ca3af;
           content: attr(data-placeholder);
           float: left;
           height: 0;
           pointer-events: none;
+          font-style: italic;
         }
       `}</style>
 

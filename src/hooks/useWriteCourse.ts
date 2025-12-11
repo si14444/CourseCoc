@@ -24,7 +24,18 @@ const initialCourseData: CourseData = {
   duration: "",
   budget: "",
   season: "",
-  locations: [],
+  locations: [
+    {
+      id: "default-1",
+      name: "",
+      address: "",
+      time: "",
+      description: "",
+      detail: "",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+  ],
   content: "",
 };
 
