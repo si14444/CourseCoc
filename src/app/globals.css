@@ -196,10 +196,16 @@ button {
   border-radius: 0.5rem;
 }
 
-.prose-editor .ProseMirror ul,
+.prose-editor .ProseMirror ul {
+  margin: 0.75rem 0;
+  padding-left: 1.5rem;
+  list-style-type: disc;
+}
+
 .prose-editor .ProseMirror ol {
   margin: 0.75rem 0;
   padding-left: 1.5rem;
+  list-style-type: decimal;
 }
 
 .prose-editor .ProseMirror ul li,
@@ -214,7 +220,7 @@ button {
   padding: 0.125rem 0.25rem;
   border-radius: 0.25rem;
   font-size: 0.875em;
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-family: "JetBrains Mono", "Fira Code", monospace;
 }
 
 .prose-editor .ProseMirror pre {
@@ -257,7 +263,9 @@ button {
 }
 
 /* Placeholder styles */
-.prose-editor .ProseMirror.ProseMirror-focused .is-editor-empty:first-child::before {
+.prose-editor
+  .ProseMirror.ProseMirror-focused
+  .is-editor-empty:first-child::before {
   content: attr(data-placeholder);
   float: left;
   color: var(--text-secondary);

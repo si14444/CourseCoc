@@ -8,7 +8,6 @@ import {
   List,
   ListOrdered,
   Quote,
-  Code,
   Minus,
   Image as ImageIcon,
 } from "lucide-react";
@@ -79,14 +78,7 @@ export const getSuggestionProps = (addImage: () => void) => ({
           editor.chain().focus().deleteRange(range).toggleBlockquote().run();
         },
       },
-      {
-        title: "코드 블록",
-        description: "코드 스니펫 작성",
-        icon: Code,
-        command: ({ editor, range }: any) => {
-          editor.chain().focus().deleteRange(range).toggleCodeBlock().run();
-        },
-      },
+
       {
         title: "구분선",
         description: "내용 시각적 분리",

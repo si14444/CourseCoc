@@ -77,7 +77,10 @@ export const CommandList = forwardRef((props: any, ref) => {
                 ? "bg-[var(--very-light-pink)] text-[var(--coral-pink)]"
                 : "text-gray-700 hover:bg-gray-50"
             }`}
-            onClick={() => selectItem(index)}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              selectItem(index);
+            }}
           >
             <div
               className={`p-1 mr-2 rounded border ${

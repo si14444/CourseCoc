@@ -7,6 +7,7 @@ import { Image } from "@tiptap/extension-image";
 import { Link } from "@tiptap/extension-link";
 import { TextAlign } from "@tiptap/extension-text-align";
 import { Underline } from "@tiptap/extension-underline";
+import { Placeholder } from "@tiptap/extension-placeholder";
 import { SlashCommand } from "./editor/SlashCommand";
 import { getSuggestionProps } from "./editor/suggestion";
 
@@ -85,6 +86,15 @@ export function RichTextEditor({
       SlashCommand.configure({
         suggestion: getSuggestionProps(addImage),
       }),
+      Placeholder.configure({
+        placeholder: ({ node }) => {
+          if (node.type.name === "heading") {
+            return `제목 ${node.attrs.level}`;
+          }
+          return placeholder;
+        },
+        includeChildren: true,
+      }),
     ],
     content,
     immediatelyRender: false,
@@ -145,14 +155,14 @@ export function RichTextEditor({
 
   return (
     <div
-      className={`relative rounded-xl border border-gray-100 bg-white shadow-sm overflow-hidden group ${className}`}
+      className={`prose-editor relative rounded-xl border border-gray-100 bg-white shadow-sm overflow-hidden group ${className}`}
     >
       {/* Editor Content */}
       <EditorContent editor={editor} className="min-h-[500px] cursor-text" />
 
       {/* Placeholder Text Style Handling */}
       <style jsx global>{`
-        .ProseMirror p.is-editor-empty:first-child::before {
+        .ProseMirror .is-empty::before {
           color: #adb5bd;
           content: attr(data-placeholder);
           float: left;
