@@ -155,7 +155,7 @@ export function RichTextEditor({
 
   return (
     <div
-      className={`prose-editor relative rounded-xl border border-gray-100 bg-white shadow-sm overflow-hidden group ${className}`}
+      className={`prose-editor relative bg-white overflow-hidden ${className}`}
     >
       {/* Editor Content */}
       <EditorContent editor={editor} className="min-h-[500px] cursor-text" />

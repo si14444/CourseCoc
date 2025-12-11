@@ -279,11 +279,6 @@ button {
   background-color: rgba(255, 107, 107, 0.2);
 }
 
-/* Focus styles */
-.prose-editor:focus-within {
-  box-shadow: 0 0 0 2px var(--coral-pink);
-}
-
 /* Toolbar button hover effects */
 .prose-editor + div button:hover {
   background-color: var(--very-light-pink);

@@ -153,404 +153,381 @@ function WritePageContent() {
       <Header />
 
       <div className="pt-16">
-        {/* Hero Section */}
-        <div className="bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] py-16">
+        {/* Hero Section - Compact */}
+        <div className="bg-gradient-to-br from-[var(--very-light-pink)] to-white py-8 border-b border-gray-100">
           <div className="max-w-5xl mx-auto px-6 text-center">
-            <h1 className="text-4xl font-bold text-[var(--text-primary)] mb-4">
-              {editId ? "데이트 코스 수정하기" : "새로운 데이트 코스 작성하기"}
+            <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-4">
+              {editId ? "코스 수정" : "새 코스 작성"}
             </h1>
-            <p className="text-lg text-[var(--text-secondary)] max-w-4xl mx-auto">
-              특별한 추억이 될 로맨틱한 코스를 공유해보세요
-            </p>
 
             <StepIndicator currentStep={step} />
           </div>
         </div>
 
-        <div className="max-w-[1600px] mx-auto px-6 py-12">
-          <div className="grid lg:grid-cols-3 gap-8">
-            {/* 메인 콘텐츠 */}
-            <div className="lg:col-span-2 space-y-8">
-              {/* Step 1: 기본 정보 */}
-              {step === 1 && (
-                <div className="space-y-6">
-                  <h2 className="text-2xl font-bold text-[var(--text-primary)]">
-                    기본 정보
-                  </h2>
+        <div className="max-w-4xl mx-auto px-6 py-8">
+          <div className="space-y-8">
+            {/* Step 1: 기본 정보 */}
+            {step === 1 && (
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold text-[var(--text-primary)]">
+                  기본 정보
+                </h2>
 
-                  {/* 대표 이미지 */}
-                  <div>
-                    <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
-                      대표 이미지
-                    </label>
-                    <div
-                      onClick={handleHeroImageClick}
-                      className="relative h-64 bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] rounded-lg cursor-pointer hover:opacity-90 transition-opacity overflow-hidden"
-                    >
-                      {courseData.heroImage ? (
-                        <Image
-                          src={courseData.heroImage}
-                          alt="대표 이미지"
-                          fill
-                          className="object-cover"
-                        />
-                      ) : (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <Camera className="w-16 h-16 text-[var(--coral-pink)] mb-2" />
-                          <p className="text-sm text-[var(--text-secondary)]">
-                            클릭하여 이미지 추가
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      ref={heroImageInputRef}
-                      onChange={handleHeroImageChange}
-                    />
-                  </div>
-
-                  {/* 제목 */}
-                  <div>
-                    <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
-                      코스 제목 *
-                    </label>
-                    <Input
-                      value={courseData.title}
-                      onChange={(e) =>
-                        setCourseData((prev) => ({
-                          ...prev,
-                          title: e.target.value,
-                        }))
-                      }
-                      placeholder="예: 로맨틱한 서울 데이트 코스"
-                      className="w-full"
-                    />
-                  </div>
-
-                  {/* 설명 */}
-                  <div>
-                    <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
-                      간단한 설명 *
-                    </label>
-                    <textarea
-                      value={courseData.description}
-                      onChange={(e) =>
-                        setCourseData((prev) => ({
-                          ...prev,
-                          description: e.target.value,
-                        }))
-                      }
-                      placeholder="이 코스에 대한 간단한 설명을 작성해주세요"
-                      className="w-full min-h-[100px] px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--coral-pink)] resize-none"
-                    />
-                  </div>
-
-                  {/* 태그 */}
-                  <div>
-                    <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
-                      태그 선택 *
-                    </label>
-                    <div className="flex flex-wrap gap-2">
-                      {AVAILABLE_TAGS.map((tag) => (
-                        <button
-                          key={tag}
-                          onClick={() => toggleTag(tag)}
-                          className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                            courseData.tags.includes(tag)
-                              ? "bg-[var(--coral-pink)] text-white"
-                              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                          }`}
-                        >
-                          {tag}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* 소요 시간, 예산, 계절 */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
-                        소요 시간
-                      </label>
-                      <select
-                        value={courseData.duration}
-                        onChange={(e) =>
-                          setCourseData((prev) => ({
-                            ...prev,
-                            duration: e.target.value,
-                          }))
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--coral-pink)]"
-                      >
-                        <option value="">선택하세요</option>
-                        {DURATION_OPTIONS.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
-                        예상 예산
-                      </label>
-                      <select
-                        value={courseData.budget}
-                        onChange={(e) =>
-                          setCourseData((prev) => ({
-                            ...prev,
-                            budget: e.target.value,
-                          }))
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--coral-pink)]"
-                      >
-                        <option value="">선택하세요</option>
-                        {BUDGET_OPTIONS.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
-                        추천 계절
-                      </label>
-                      <select
-                        value={courseData.season}
-                        onChange={(e) =>
-                          setCourseData((prev) => ({
-                            ...prev,
-                            season: e.target.value,
-                          }))
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--coral-pink)]"
-                      >
-                        <option value="">선택하세요</option>
-                        {SEASON_OPTIONS.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-end">
-                    <Button
-                      onClick={() => setStep(2)}
-                      className="bg-[var(--coral-pink)] text-white hover:bg-[var(--coral-pink)]/90"
-                    >
-                      다음 단계
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {/* Step 2: 장소 추가 */}
-              {step === 2 && (
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-bold text-[var(--text-primary)]">
-                      장소 추가
-                    </h2>
-                    <Button
-                      onClick={addLocation}
-                      className="bg-[var(--coral-pink)] text-white hover:bg-[var(--coral-pink)]/90"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      장소 추가
-                    </Button>
-                  </div>
-
-                  <div className="space-y-4">
-                    {courseData.locations.map((location, index) => (
-                      <LocationForm
-                        key={location.id}
-                        location={location}
-                        index={index}
-                        onUpdate={updateLocation}
-                        onRemove={removeLocation}
-                        onAddressSelect={handleAddressSelect}
-                        onImageClick={handleLocationImageClick}
-                        imageInputRef={(el, locationId) => {
-                          locationImageInputRefs.current[locationId] = el;
-                        }}
-                        onImageChange={handleLocationImageChange}
+                {/* 대표 이미지 */}
+                <div>
+                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                    대표 이미지
+                  </label>
+                  <div
+                    onClick={handleHeroImageClick}
+                    className="relative h-64 bg-gradient-to-br from-[var(--very-light-pink)] to-[var(--light-pink)] rounded-lg cursor-pointer hover:opacity-90 transition-opacity overflow-hidden"
+                  >
+                    {courseData.heroImage ? (
+                      <Image
+                        src={courseData.heroImage}
+                        alt="대표 이미지"
+                        fill
+                        className="object-cover"
                       />
-                    ))}
-                  </div>
-
-                  <div className="flex justify-between">
-                    <Button onClick={() => setStep(1)} variant="outline">
-                      이전 단계
-                    </Button>
-                    <Button
-                      onClick={() => setStep(3)}
-                      className="bg-[var(--coral-pink)] text-white hover:bg-[var(--coral-pink)]/90"
-                    >
-                      다음 단계
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {/* Step 3: 상세 내용 */}
-              {step === 3 && (
-                <div className="space-y-6">
-                  <h2 className="text-2xl font-bold text-[var(--text-primary)]">
-                    상세 내용 작성
-                  </h2>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
-                      코스 상세 설명 *
-                    </label>
-                    <RichTextEditor
-                      content={courseData.content}
-                      onChange={(content) =>
-                        setCourseData((prev) => ({ ...prev, content }))
-                      }
-                    />
-                  </div>
-
-                  <div className="flex justify-between">
-                    <Button onClick={() => setStep(2)} variant="outline">
-                      이전 단계
-                    </Button>
-                    <Button
-                      onClick={() => setStep(4)}
-                      className="bg-[var(--coral-pink)] text-white hover:bg-[var(--coral-pink)]/90"
-                    >
-                      미리보기
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {/* Step 4: 미리보기 */}
-              {step === 4 && (
-                <div className="space-y-6">
-                  <h2 className="text-2xl font-bold text-[var(--text-primary)]">
-                    미리보기
-                  </h2>
-
-                  <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                    {courseData.heroImage && (
-                      <div className="relative h-64">
-                        <Image
-                          src={courseData.heroImage}
-                          alt={courseData.title}
-                          fill
-                          className="object-cover"
-                        />
+                    ) : (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <Camera className="w-16 h-16 text-[var(--coral-pink)] mb-2" />
+                        <p className="text-sm text-[var(--text-secondary)]">
+                          클릭하여 이미지 추가
+                        </p>
                       </div>
                     )}
-
-                    <div className="p-6">
-                      <h1 className="text-3xl font-bold text-[var(--text-primary)] mb-4">
-                        {courseData.title || "제목 없음"}
-                      </h1>
-
-                      <p className="text-[var(--text-secondary)] mb-4">
-                        {courseData.description || "설명 없음"}
-                      </p>
-
-                      <div className="flex flex-wrap gap-2 mb-6">
-                        {courseData.tags.map((tag) => (
-                          <span
-                            key={tag}
-                            className="px-3 py-1 bg-[var(--very-light-pink)] text-[var(--coral-pink)] rounded-full text-sm"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-
-                      <div
-                        className="prose max-w-none mb-6"
-                        dangerouslySetInnerHTML={{ __html: courseData.content }}
-                      />
-
-                      <h3 className="text-xl font-bold text-[var(--text-primary)] mb-4">
-                        코스 경로
-                      </h3>
-                      <PreviewMap locations={courseData.locations} />
-                    </div>
                   </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    ref={heroImageInputRef}
+                    onChange={handleHeroImageChange}
+                  />
+                </div>
 
-                  <div className="flex justify-between">
-                    <Button onClick={() => setStep(3)} variant="outline">
-                      이전 단계
-                    </Button>
-                    <Button
-                      onClick={async () => {
-                        if (!user) {
-                          alert("로그인이 필요합니다.");
-                          return;
-                        }
+                {/* 제목 */}
+                <div>
+                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                    코스 제목 *
+                  </label>
+                  <Input
+                    value={courseData.title}
+                    onChange={(e) =>
+                      setCourseData((prev) => ({
+                        ...prev,
+                        title: e.target.value,
+                      }))
+                    }
+                    placeholder="예: 로맨틱한 서울 데이트 코스"
+                    className="w-full"
+                  />
+                </div>
 
-                        try {
-                          const { publishCourse } = await import(
-                            "@/hooks/useWriteCourse"
-                          );
-                          const result = await publishCourse(
-                            courseData,
-                            user.uid
-                          );
+                {/* 설명 */}
+                <div>
+                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                    간단한 설명 *
+                  </label>
+                  <textarea
+                    value={courseData.description}
+                    onChange={(e) =>
+                      setCourseData((prev) => ({
+                        ...prev,
+                        description: e.target.value,
+                      }))
+                    }
+                    placeholder="이 코스에 대한 간단한 설명을 작성해주세요"
+                    className="w-full min-h-[100px] px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--coral-pink)] resize-none"
+                  />
+                </div>
 
-                          if (result.success) {
-                            alert("코스가 성공적으로 발행되었습니다!");
-                            window.location.href = `/courses/${result.data}`;
-                          } else {
-                            alert(`발행 실패: ${result.error}`);
-                          }
-                        } catch (error) {
-                          console.error("발행 중 오류:", error);
-                          alert("발행 중 오류가 발생했습니다.");
-                        }
-                      }}
-                      disabled={isPublishing}
-                      className="bg-[var(--coral-pink)] text-white hover:bg-[var(--coral-pink)]/90"
+                {/* 태그 */}
+                <div>
+                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                    태그 선택 *
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {AVAILABLE_TAGS.map((tag) => (
+                      <button
+                        key={tag}
+                        onClick={() => toggleTag(tag)}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                          courseData.tags.includes(tag)
+                            ? "bg-[var(--coral-pink)] text-white"
+                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        }`}
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 소요 시간, 예산, 계절 */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                      소요 시간
+                    </label>
+                    <select
+                      value={courseData.duration}
+                      onChange={(e) =>
+                        setCourseData((prev) => ({
+                          ...prev,
+                          duration: e.target.value,
+                        }))
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--coral-pink)]"
                     >
-                      {isPublishing ? "발행 중..." : "발행하기"}
-                    </Button>
+                      <option value="">선택하세요</option>
+                      {DURATION_OPTIONS.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                      예상 예산
+                    </label>
+                    <select
+                      value={courseData.budget}
+                      onChange={(e) =>
+                        setCourseData((prev) => ({
+                          ...prev,
+                          budget: e.target.value,
+                        }))
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--coral-pink)]"
+                    >
+                      <option value="">선택하세요</option>
+                      {BUDGET_OPTIONS.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                      추천 계절
+                    </label>
+                    <select
+                      value={courseData.season}
+                      onChange={(e) =>
+                        setCourseData((prev) => ({
+                          ...prev,
+                          season: e.target.value,
+                        }))
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--coral-pink)]"
+                    >
+                      <option value="">선택하세요</option>
+                      {SEASON_OPTIONS.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
-              )}
-            </div>
 
-            {/* 사이드바 */}
-            <div className="lg:col-span-1">
-              <div className="sticky top-24 space-y-6">
-                <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                  <h3 className="font-semibold text-[var(--text-primary)] mb-4">
-                    작성 가이드
-                  </h3>
-                  <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
-                    <li>• 최소 1개 이상의 장소를 추가해주세요</li>
-                    <li>• 각 장소의 주소를 정확히 입력해주세요</li>
-                    <li>• 태그를 선택하면 검색이 쉬워집니다</li>
-                    <li>• 상세한 설명이 다른 사용자에게 도움이 됩니다</li>
-                  </ul>
+                <div className="flex justify-end">
+                  <Button
+                    onClick={() => setStep(2)}
+                    className="bg-[var(--coral-pink)] text-white hover:bg-[var(--coral-pink)]/90"
+                  >
+                    다음 단계
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 2: 장소 추가 */}
+            {step === 2 && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-2xl font-bold text-[var(--text-primary)]">
+                    장소 추가
+                  </h2>
+                  <Button
+                    onClick={addLocation}
+                    className="bg-[var(--coral-pink)] text-white hover:bg-[var(--coral-pink)]/90"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    장소 추가
+                  </Button>
                 </div>
 
-                {courseData.locations.length > 0 && (
-                  <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                    <h3 className="font-semibold text-[var(--text-primary)] mb-4">
-                      지도 미리보기
+                <div className="space-y-4">
+                  {courseData.locations.map((location, index) => (
+                    <LocationForm
+                      key={location.id}
+                      location={location}
+                      index={index}
+                      onUpdate={updateLocation}
+                      onRemove={removeLocation}
+                      onAddressSelect={handleAddressSelect}
+                      onImageClick={handleLocationImageClick}
+                      imageInputRef={(el, locationId) => {
+                        locationImageInputRefs.current[locationId] = el;
+                      }}
+                      onImageChange={handleLocationImageChange}
+                    />
+                  ))}
+                </div>
+
+                <div className="flex justify-between">
+                  <Button onClick={() => setStep(1)} variant="outline">
+                    이전 단계
+                  </Button>
+                  <Button
+                    onClick={() => setStep(3)}
+                    className="bg-[var(--coral-pink)] text-white hover:bg-[var(--coral-pink)]/90"
+                  >
+                    다음 단계
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 3: 상세 내용 */}
+            {step === 3 && (
+              <div className="space-y-4">
+                <h2 className="text-2xl font-bold text-[var(--text-primary)]">
+                  상세 내용 작성
+                </h2>
+
+                {/* Editor with macOS-style header */}
+                <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50/80">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-[#FF5F57]"></div>
+                      <div className="w-3 h-3 rounded-full bg-[#FEBC2E]"></div>
+                      <div className="w-3 h-3 rounded-full bg-[#28C840]"></div>
+                    </div>
+                    <span className="text-xs text-gray-400">
+                      '/'로 서식 사용
+                    </span>
+                  </div>
+                  <RichTextEditor
+                    content={courseData.content}
+                    onChange={(content) =>
+                      setCourseData((prev) => ({ ...prev, content }))
+                    }
+                    placeholder="데이트 코스에 대한 자세한 이야기를 작성해주세요..."
+                  />
+                </div>
+
+                <div className="flex justify-between pt-2">
+                  <Button onClick={() => setStep(2)} variant="outline">
+                    이전 단계
+                  </Button>
+                  <Button
+                    onClick={() => setStep(4)}
+                    className="bg-[var(--coral-pink)] text-white hover:bg-[var(--coral-pink)]/90"
+                  >
+                    미리보기
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 4: 미리보기 */}
+            {step === 4 && (
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold text-[var(--text-primary)]">
+                  미리보기
+                </h2>
+
+                <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+                  {courseData.heroImage && (
+                    <div className="relative h-64">
+                      <Image
+                        src={courseData.heroImage}
+                        alt={courseData.title}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  )}
+
+                  <div className="p-6">
+                    <h1 className="text-3xl font-bold text-[var(--text-primary)] mb-4">
+                      {courseData.title || "제목 없음"}
+                    </h1>
+
+                    <p className="text-[var(--text-secondary)] mb-4">
+                      {courseData.description || "설명 없음"}
+                    </p>
+
+                    <div className="flex flex-wrap gap-2 mb-6">
+                      {courseData.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="px-3 py-1 bg-[var(--very-light-pink)] text-[var(--coral-pink)] rounded-full text-sm"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div
+                      className="prose max-w-none mb-6"
+                      dangerouslySetInnerHTML={{ __html: courseData.content }}
+                    />
+
+                    <h3 className="text-xl font-bold text-[var(--text-primary)] mb-4">
+                      코스 경로
                     </h3>
                     <PreviewMap locations={courseData.locations} />
                   </div>
-                )}
+                </div>
+
+                <div className="flex justify-between">
+                  <Button onClick={() => setStep(3)} variant="outline">
+                    이전 단계
+                  </Button>
+                  <Button
+                    onClick={async () => {
+                      if (!user) {
+                        alert("로그인이 필요합니다.");
+                        return;
+                      }
+
+                      try {
+                        const { publishCourse } = await import(
+                          "@/hooks/useWriteCourse"
+                        );
+                        const result = await publishCourse(
+                          courseData,
+                          user.uid
+                        );
+
+                        if (result.success) {
+                          alert("코스가 성공적으로 발행되었습니다!");
+                          window.location.href = `/courses/${result.data}`;
+                        } else {
+                          alert(`발행 실패: ${result.error}`);
+                        }
+                      } catch (error) {
+                        console.error("발행 중 오류:", error);
+                        alert("발행 중 오류가 발생했습니다.");
+                      }
+                    }}
+                    disabled={isPublishing}
+                    className="bg-[var(--coral-pink)] text-white hover:bg-[var(--coral-pink)]/90"
+                  >
+                    {isPublishing ? "발행 중..." : "발행하기"}
+                  </Button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
