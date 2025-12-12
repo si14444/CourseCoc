@@ -131,92 +131,96 @@ export default function MyCoursesPage() {
 
       <main className="pt-20 pb-8">
         <div className="max-w-[1600px] mx-auto px-6">
-          {/* Search and Filter - Above ads */}
-          <SearchAndFilter />
-
-          {/* 통계 카드 - Above ads */}
-          {showStats && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 my-6">
-              <Card className="shadow-romantic">
-                <CardContent className="p-6">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0">
-                      <BookOpen className="h-8 w-8 text-[var(--coral-pink)]" />
-                    </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-[var(--text-secondary)]">
-                        총 코스
-                      </p>
-                      <p className="text-2xl font-bold text-[var(--text-primary)]">
-                        {stats.totalCourses}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="shadow-romantic">
-                <CardContent className="p-6">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0">
-                      <Eye className="h-8 w-8 text-[var(--coral-pink)]" />
-                    </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-[var(--text-secondary)]">
-                        총 조회수
-                      </p>
-                      <p className="text-2xl font-bold text-[var(--text-primary)]">
-                        {stats.totalViews.toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="shadow-romantic">
-                <CardContent className="p-6">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0">
-                      <Heart className="h-8 w-8 text-[var(--coral-pink)]" />
-                    </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-[var(--text-secondary)]">
-                        총 좋아요
-                      </p>
-                      <p className="text-2xl font-bold text-[var(--text-primary)]">
-                        {stats.totalLikes}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="shadow-romantic">
-                <CardContent className="p-6">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0">
-                      <BarChart3 className="h-8 w-8 text-[var(--coral-pink)]" />
-                    </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-[var(--text-secondary)]">
-                        평균 평점
-                      </p>
-                      <p className="text-2xl font-bold text-[var(--text-primary)]">
-                        {stats.avgRating}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
-
           <div className="flex gap-8 justify-center mt-6">
             {/* Left Ad Spot */}
-            <AdSpot position="left" />
+            <div className="mt-20">
+              <AdSpot position="left" />
+            </div>
 
             {/* Main Content */}
             <div className="flex-1 max-w-6xl">
+              {/* Search and Filter - Moved inside */}
+              <div className="mb-6">
+                <SearchAndFilter />
+              </div>
+
+              {/* 통계 카드 - Moved inside */}
+              {showStats && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                  <Card className="shadow-romantic">
+                    <CardContent className="p-6">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0">
+                          <BookOpen className="h-8 w-8 text-[var(--coral-pink)]" />
+                        </div>
+                        <div className="ml-4">
+                          <p className="text-sm font-medium text-[var(--text-secondary)]">
+                            총 코스
+                          </p>
+                          <p className="text-2xl font-bold text-[var(--text-primary)]">
+                            {stats.totalCourses}
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="shadow-romantic">
+                    <CardContent className="p-6">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0">
+                          <Eye className="h-8 w-8 text-[var(--coral-pink)]" />
+                        </div>
+                        <div className="ml-4">
+                          <p className="text-sm font-medium text-[var(--text-secondary)]">
+                            총 조회수
+                          </p>
+                          <p className="text-2xl font-bold text-[var(--text-primary)]">
+                            {stats.totalViews.toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="shadow-romantic">
+                    <CardContent className="p-6">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0">
+                          <Heart className="h-8 w-8 text-[var(--coral-pink)]" />
+                        </div>
+                        <div className="ml-4">
+                          <p className="text-sm font-medium text-[var(--text-secondary)]">
+                            총 좋아요
+                          </p>
+                          <p className="text-2xl font-bold text-[var(--text-primary)]">
+                            {stats.totalLikes}
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="shadow-romantic">
+                    <CardContent className="p-6">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0">
+                          <BarChart3 className="h-8 w-8 text-[var(--coral-pink)]" />
+                        </div>
+                        <div className="ml-4">
+                          <p className="text-sm font-medium text-[var(--text-secondary)]">
+                            평균 평점
+                          </p>
+                          <p className="text-2xl font-bold text-[var(--text-primary)]">
+                            {stats.avgRating}
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+
               {/* 페이지 헤더 */}
               <div className="flex justify-end items-center mb-8">
                 <Link href="/courses/write">
@@ -370,7 +374,9 @@ export default function MyCoursesPage() {
             </div>
 
             {/* Right Ad Spot */}
-            <AdSpot position="right" />
+            <div className="mt-20">
+              <AdSpot position="right" />
+            </div>
           </div>
         </div>
       </main>

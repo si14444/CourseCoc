@@ -9,6 +9,9 @@ import { getPosts, Post } from "../../lib/firebasePosts";
 import { useAuth } from "../../contexts/AuthContext";
 import { AdSpot } from "../../components/AdSpot";
 import { CommunitySearch } from "../../components/CommunitySearch";
+import { DocumentSnapshot } from "firebase/firestore";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 // 더미 데이터 (테스트용)
 const DUMMY_POSTS: Post[] = [
@@ -56,26 +59,116 @@ export default function Community() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const { posts: fetchedPosts } = await getPosts();
-        // 실제 데이터가 없으면 더미 데이터 사용
-        setPosts(fetchedPosts.length > 0 ? fetchedPosts : DUMMY_POSTS);
-      } catch (err: unknown) {
-        console.error("게시글 로딩 실패:", err);
-        // 에러 시에도 더미 데이터 표시
-        setPosts(DUMMY_POSTS);
-        setError(null);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Pagination State
+  const [lastDoc, setLastDoc] = useState<DocumentSnapshot | undefined>(
+    undefined
+  );
+  const [pageHistory, setPageHistory] = useState<DocumentSnapshot[]>([]); // To track start points for "Previous"
+  const [isLastPage, setIsLastPage] = useState(false);
+  const POSTS_PER_PAGE = 10; // 페이지당 게시글 수
 
-    fetchPosts();
+  const fetchPosts = async (
+    direction: "next" | "prev" | "initial" = "initial"
+  ) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      let cursor: DocumentSnapshot | undefined;
+
+      if (direction === "next" && lastDoc) {
+        cursor = lastDoc;
+      } else if (direction === "prev" && pageHistory.length > 0) {
+        // "Previous" logic:
+        // Current history: [docA, docB, docC]
+        // If we are on page 3 (docC was start), we need docB to be valid?
+        // Actually, basic firestore paging usually uses 'startAfter'.
+        // To go back, we essentially re-fetch from the previous start point.
+        // Let's simplify: manage a stack of "startAfter" docs.
+        // Stack: [undefined (page1), docA (page2), docB (page3)]
+        // If on page 3 and want prev (page 2), pop docB, use docA.
+        const newHistory = [...pageHistory];
+        newHistory.pop(); // Remove current page start
+        cursor = newHistory[newHistory.length - 1]; // items for PREV page start
+        setPageHistory(newHistory);
+      }
+
+      if (direction === "next" && lastDoc) {
+        setPageHistory((prev) => [...prev, lastDoc]);
+      } else if (direction === "initial") {
+        setPageHistory([]);
+      }
+
+      const { posts: fetchedPosts, lastDoc: newLastDoc } = await getPosts(
+        POSTS_PER_PAGE,
+        cursor
+      );
+
+      // 실제 데이터가 없으면 더미 데이터 사용 (초기 로드 시에만)
+      if (direction === "initial" && fetchedPosts.length === 0) {
+        setPosts(DUMMY_POSTS);
+        setIsLastPage(true);
+      } else {
+        setPosts(fetchedPosts);
+        setLastDoc(newLastDoc);
+        // If we got fewer posts than requested, it's the last page
+        setIsLastPage(fetchedPosts.length < POSTS_PER_PAGE);
+      }
+    } catch (err: unknown) {
+      console.error("게시글 로딩 실패:", err);
+      if (direction === "initial") {
+        setPosts(DUMMY_POSTS);
+      }
+      setError(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPosts("initial");
   }, []);
+
+  const handleNextPage = () => fetchPosts("next");
+  const handlePrevPage = () => fetchPosts("prev"); // Logic needs refactoring slightly for 'prev' to update history inside fetchPosts strictly or pass cursor directly.
+
+  // Re-implementing 'prev' strictly:
+  // We need to pass the *target* cursor for the previous page.
+  // Ideally, fetchPosts shouldn't mutate history *before* fetching, but let's stick to a simpler flow:
+  // We'll manage history outside for clarity.
+
+  const loadPage = async (targetCursor: DocumentSnapshot | undefined) => {
+    try {
+      setLoading(true);
+      const { posts: fetchedPosts, lastDoc: newLastDoc } = await getPosts(
+        POSTS_PER_PAGE,
+        targetCursor
+      );
+      setPosts(fetchedPosts);
+      setLastDoc(newLastDoc);
+      setIsLastPage(fetchedPosts.length < POSTS_PER_PAGE);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onNext = () => {
+    if (!lastDoc) return;
+    setPageHistory([...pageHistory, lastDoc]); // Save current end as next start
+    loadPage(lastDoc);
+  };
+
+  const onPrev = () => {
+    if (pageHistory.length === 0) return;
+    const newHistory = [...pageHistory];
+    newHistory.pop(); // Remove current page's start cursor
+    const prevCursor =
+      newHistory.length > 0 ? newHistory[newHistory.length - 1] : undefined;
+    setPageHistory(newHistory);
+    loadPage(prevCursor);
+  };
 
   return (
     <div
@@ -86,15 +179,19 @@ export default function Community() {
 
       <main className="pt-20 pb-8">
         <div className="max-w-[1600px] mx-auto px-6">
-          {/* Search - Above ads */}
-          <CommunitySearch />
-
           <div className="flex gap-8 justify-center mt-6">
-            {/* Left Ad Spot */}
-            <AdSpot position="left" />
+            {/* Left Ad Spot - Added margin-top */}
+            <div className="mt-20">
+              <AdSpot position="left" />
+            </div>
 
             {/* Main Content */}
             <div className="flex-1 max-w-4xl">
+              {/* Search - Moved inside for alignment */}
+              <div className="mb-6">
+                <CommunitySearch />
+              </div>
+
               {/* Simple Header */}
               <div className="flex items-center justify-end mb-6">
                 {user ? (
@@ -168,10 +265,39 @@ export default function Community() {
                   )}
                 </>
               )}
+
+              {/* Pagination Controls */}
+              {!loading && !error && posts.length > 0 && (
+                <div className="flex justify-center items-center space-x-4 mt-8">
+                  <Button
+                    variant="outline"
+                    onClick={onPrev}
+                    disabled={pageHistory.length === 0}
+                    className="flex items-center"
+                  >
+                    <ChevronLeft className="w-4 h-4 mr-1" />
+                    이전
+                  </Button>
+                  <span className="text-sm text-gray-500">
+                    페이지 {pageHistory.length + 1}
+                  </span>
+                  <Button
+                    variant="outline"
+                    onClick={onNext}
+                    disabled={isLastPage}
+                    className="flex items-center"
+                  >
+                    다음
+                    <ChevronRight className="w-4 h-4 ml-1" />
+                  </Button>
+                </div>
+              )}
             </div>
 
-            {/* Right Ad Spot */}
-            <AdSpot position="right" />
+            {/* Right Ad Spot - Added margin-top */}
+            <div className="mt-20">
+              <AdSpot position="right" />
+            </div>
           </div>
         </div>
       </main>

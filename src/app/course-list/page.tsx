@@ -109,18 +109,21 @@ export default function CourseList() {
       {/* Main Content */}
       <main className="pt-20 pb-8">
         <div className="max-w-[1600px] mx-auto px-6">
-          {/* Search and Filter - Above ads */}
-          <SearchAndFilter
-            onSearch={handleSearch}
-            onTagFilter={handleTagFilter}
-          />
-
           <div className="flex gap-8 justify-center mt-6">
             {/* Left Ad Spot */}
-            <AdSpot position="left" />
+            <div className="mt-20">
+              <AdSpot position="left" />
+            </div>
 
             {/* Main Content */}
             <div className="flex-1 max-w-6xl">
+              {/* Search and Filter - Moved inside */}
+              <div className="mb-6">
+                <SearchAndFilter
+                  onSearch={handleSearch}
+                  onTagFilter={handleTagFilter}
+                />
+              </div>
               {/* 로딩 상태 */}
               {loading && (
                 <div className="text-center py-12">
@@ -223,7 +226,9 @@ export default function CourseList() {
             </div>
 
             {/* Right Ad Spot */}
-            <AdSpot position="right" />
+            <div className="mt-20">
+              <AdSpot position="right" />
+            </div>
           </div>
         </div>
       </main>
