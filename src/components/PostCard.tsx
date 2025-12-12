@@ -57,11 +57,6 @@ export function PostCard({ post }: PostCardProps) {
               {post.title}
             </h2>
 
-            <p className="text-gray-600 text-sm line-clamp-2 mb-3">
-              {contentPreview}
-              {contentPreview.length >= 150 && "..."}
-            </p>
-
             {/* Stats */}
             <div className="flex items-center space-x-4 text-sm text-gray-500">
               <span className="flex items-center space-x-1 hover:text-pink-500 transition-colors">

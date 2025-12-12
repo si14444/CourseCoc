@@ -351,9 +351,7 @@ export default function MyCoursesPage() {
                           <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
                             <div className="flex items-center space-x-1">
                               <Clock className="w-3 h-3" />
-                              <span>
-                                업데이트: {formatDate(course.updatedAt)}
-                              </span>
+                              <span>{formatDate(course.updatedAt)}</span>
                             </div>
                             <Link href={`/courses/${course.id}`}>
                               <Button

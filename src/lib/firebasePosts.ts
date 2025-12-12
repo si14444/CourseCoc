@@ -276,3 +276,57 @@ export async function updatePostCommentCount(
     console.error("Error updating comment count:", error);
   }
 }
+
+// 좋아요 토글
+export async function toggleLikePost(
+  postId: string,
+  userId: string,
+  currentLikes: number
+): Promise<{ success: boolean; likes: number }> {
+  try {
+    if (!db) return { success: false, likes: currentLikes };
+
+    // 실제 좋아요 컬렉션을 따로 관리하는 것이 정석이지만,
+    // 여기서는 간단하게 로컬 스토리지 + 문서 업데이트로 흉내만 내거나,
+    // 또는 그냥 무조건 증가시키는 식으로 구현할 수도 있음.
+    // 하지만 User 요구사항은 "좋아요 버튼 만들기"이므로,
+    // 실제로는 userId 별 좋아요 여부를 저장하는 서브 컬렉션이 필요함.
+    // 간단함을 위해 여기서는 서브컬렉션 'post_likes'를 사용.
+
+    const likeRef = doc(db, "posts", postId, "likes", userId);
+    const likeDoc = await getDoc(likeRef);
+    const postRef = doc(db, "posts", postId);
+
+    if (likeDoc.exists()) {
+      // 이미 좋아요를 눌렀으면 취소
+      await deleteDoc(likeRef);
+      await updateDoc(postRef, { likes: increment(-1) });
+      return { success: true, likes: currentLikes - 1 };
+    } else {
+      // 좋아요 추가
+      await import("firebase/firestore").then(({ setDoc }) =>
+        setDoc(likeRef, { createdAt: Timestamp.now() })
+      );
+      await updateDoc(postRef, { likes: increment(1) });
+      return { success: true, likes: currentLikes + 1 };
+    }
+  } catch (error) {
+    console.error("Error toggling like:", error);
+    return { success: false, likes: currentLikes };
+  }
+}
+
+// 사용자가 좋아요를 눌렀는지 확인
+export async function checkUserLikedPost(
+  postId: string,
+  userId: string
+): Promise<boolean> {
+  try {
+    if (!db) return false;
+    const likeRef = doc(db, "posts", postId, "likes", userId);
+    const likeDoc = await getDoc(likeRef);
+    return likeDoc.exists();
+  } catch {
+    return false;
+  }
+}

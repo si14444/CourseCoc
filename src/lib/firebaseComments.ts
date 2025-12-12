@@ -9,9 +9,9 @@ import {
   where,
   Timestamp,
   increment,
-  getDoc
-} from 'firebase/firestore';
-import { db } from './firebase';
+  getDoc,
+} from "firebase/firestore";
+import { db } from "./firebase";
 
 export interface Comment {
   id: string;
@@ -44,7 +44,7 @@ export async function addComment(
 ): Promise<{ success: boolean; error?: string; data?: { id: string } }> {
   try {
     if (!db) {
-      return { success: false, error: 'Firestore가 초기화되지 않았습니다.' };
+      return { success: false, error: "Firestore가 초기화되지 않았습니다." };
     }
 
     const newComment = {
@@ -62,25 +62,25 @@ export async function addComment(
       ...(parentId && { parentId }),
     };
 
-    const docRef = await addDoc(collection(db, 'comments'), newComment);
+    const docRef = await addDoc(collection(db, "comments"), newComment);
 
     // If this is a reply, increment parent comment's reply count
     if (parentId) {
-      const parentRef = doc(db, 'comments', parentId);
+      const parentRef = doc(db, "comments", parentId);
       await updateDoc(parentRef, {
-        replyCount: increment(1)
+        replyCount: increment(1),
       });
     }
 
     return {
       success: true,
-      data: { id: docRef.id }
+      data: { id: docRef.id },
     };
   } catch (error) {
-    console.error('Error adding comment:', error);
+    console.error("Error adding comment:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to add comment'
+      error: error instanceof Error ? error.message : "Failed to add comment",
     };
   }
 }
@@ -88,14 +88,14 @@ export async function addComment(
 export async function getCourseComments(courseId: string): Promise<Comment[]> {
   try {
     if (!db) {
-      console.error('Firestore가 초기화되지 않았습니다.');
+      console.error("Firestore가 초기화되지 않았습니다.");
       return [];
     }
 
     // 임시: 인덱스 이슈 해결을 위해 orderBy 제거 후 클라이언트에서 정렬
     const q = query(
-      collection(db, 'comments'),
-      where('courseId', '==', courseId)
+      collection(db, "comments"),
+      where("courseId", "==", courseId)
     );
 
     const querySnapshot = await getDocs(q);
@@ -118,20 +118,22 @@ export async function getCourseComments(courseId: string): Promise<Comment[]> {
     });
 
     // Build hierarchical comment structure
-    const topLevelComments = comments.filter(comment => !comment.parentId);
-    const replyComments = comments.filter(comment => comment.parentId);
+    const topLevelComments = comments.filter((comment) => !comment.parentId);
+    const replyComments = comments.filter((comment) => comment.parentId);
 
     // Attach replies to their parent comments
-    topLevelComments.forEach(comment => {
+    topLevelComments.forEach((comment) => {
       comment.replies = replyComments
-        .filter(reply => reply.parentId === comment.id)
+        .filter((reply) => reply.parentId === comment.id)
         .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime()); // replies in ascending order
     });
 
     // Return top-level comments sorted by creation date (newest first)
-    return topLevelComments.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    return topLevelComments.sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+    );
   } catch (error) {
-    console.error('Error getting comments:', error);
+    console.error("Error getting comments:", error);
     return [];
   }
 }
@@ -143,19 +145,22 @@ export async function updateComment(
 ): Promise<{ success: boolean; error?: string }> {
   try {
     if (!db) {
-      return { success: false, error: 'Firestore가 초기화되지 않았습니다.' };
+      return { success: false, error: "Firestore가 초기화되지 않았습니다." };
     }
 
-    const commentRef = doc(db, 'comments', commentId);
+    const commentRef = doc(db, "comments", commentId);
     const commentDoc = await getDoc(commentRef);
 
     if (!commentDoc.exists()) {
-      return { success: false, error: 'Comment not found' };
+      return { success: false, error: "Comment not found" };
     }
 
     const commentData = commentDoc.data();
     if (commentData.authorId !== authorId) {
-      return { success: false, error: 'Unauthorized: You can only edit your own comments' };
+      return {
+        success: false,
+        error: "Unauthorized: You can only edit your own comments",
+      };
     }
 
     await updateDoc(commentRef, {
@@ -165,10 +170,11 @@ export async function updateComment(
 
     return { success: true };
   } catch (error) {
-    console.error('Error updating comment:', error);
+    console.error("Error updating comment:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to update comment'
+      error:
+        error instanceof Error ? error.message : "Failed to update comment",
     };
   }
 }
@@ -179,28 +185,40 @@ export async function deleteComment(
 ): Promise<{ success: boolean; error?: string }> {
   try {
     if (!db) {
-      return { success: false, error: 'Firestore가 초기화되지 않았습니다.' };
+      return { success: false, error: "Firestore가 초기화되지 않았습니다." };
     }
 
-    const commentRef = doc(db, 'comments', commentId);
+    const commentRef = doc(db, "comments", commentId);
     const commentDoc = await getDoc(commentRef);
 
     if (!commentDoc.exists()) {
-      return { success: false, error: 'Comment not found' };
+      return { success: false, error: "Comment not found" };
     }
 
     const commentData = commentDoc.data();
     if (commentData.authorId !== authorId) {
-      return { success: false, error: 'Unauthorized: You can only delete your own comments' };
+      return {
+        success: false,
+        error: "Unauthorized: You can only delete your own comments",
+      };
+    }
+
+    // If this is a reply, decrement parent comment's reply count
+    if (commentData.parentId) {
+      const parentRef = doc(db, "comments", commentData.parentId);
+      await updateDoc(parentRef, {
+        replyCount: increment(-1),
+      });
     }
 
     await deleteDoc(commentRef);
     return { success: true };
   } catch (error) {
-    console.error('Error deleting comment:', error);
+    console.error("Error deleting comment:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to delete comment'
+      error:
+        error instanceof Error ? error.message : "Failed to delete comment",
     };
   }
 }
@@ -211,21 +229,24 @@ export async function toggleLikeComment(
 ): Promise<{ success: boolean; error?: string }> {
   try {
     if (!db) {
-      return { success: false, error: 'Firestore가 초기화되지 않았습니다.' };
+      return { success: false, error: "Firestore가 초기화되지 않았습니다." };
     }
 
-    const commentRef = doc(db, 'comments', commentId);
+    const commentRef = doc(db, "comments", commentId);
 
     await updateDoc(commentRef, {
-      likes: increment(isLiked ? -1 : 1)
+      likes: increment(isLiked ? -1 : 1),
     });
 
     return { success: true };
   } catch (error) {
-    console.error('Error toggling comment like:', error);
+    console.error("Error toggling comment like:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to toggle comment like'
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to toggle comment like",
     };
   }
 }
@@ -234,19 +255,19 @@ export async function toggleLikeComment(
 export async function getCourseCommentCount(courseId: string): Promise<number> {
   try {
     if (!db) {
-      console.error('Firestore가 초기화되지 않았습니다.');
+      console.error("Firestore가 초기화되지 않았습니다.");
       return 0;
     }
 
     const q = query(
-      collection(db, 'comments'),
-      where('courseId', '==', courseId)
+      collection(db, "comments"),
+      where("courseId", "==", courseId)
     );
 
     const querySnapshot = await getDocs(q);
     return querySnapshot.size;
   } catch (error) {
-    console.error('Error getting comment count:', error);
+    console.error("Error getting comment count:", error);
     return 0;
   }
 }

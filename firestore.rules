@@ -33,12 +33,23 @@ service cloud.firestore {
         && request.resource.data.title.size() > 0
         && request.resource.data.title.size() <= 200;
       
-      // 작성자만 수정/삭제 가능
+      // 작성자만 수정 가능, 단 좋아요 수 업데이트는 누구나 가능
       allow update: if isAuthenticated()
-        && resource.data.authorId == request.auth.uid;
+        && (resource.data.authorId == request.auth.uid
+            || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes'])));
       
       allow delete: if isAuthenticated()
         && resource.data.authorId == request.auth.uid;
+      
+      // Likes subcollection - 좋아요 기능
+      match /likes/{userId} {
+        // 누구나 좋아요 목록 읽기 가능
+        allow read: if true;
+        
+        // 본인의 좋아요만 생성/삭제 가능
+        allow create: if isAuthenticated() && request.auth.uid == userId;
+        allow delete: if isAuthenticated() && request.auth.uid == userId;
+      }
     }
     
     // Comments collection
@@ -73,12 +84,23 @@ service cloud.firestore {
         && request.resource.data.title.size() > 0
         && request.resource.data.title.size() <= 200;
       
-      // 작성자만 수정/삭제 가능
+      // 작성자만 수정 가능, 단 좋아요 수 업데이트는 누구나 가능
       allow update: if isAuthenticated()
-        && resource.data.authorId == request.auth.uid;
+        && (resource.data.authorId == request.auth.uid
+            || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes'])));
       
       allow delete: if isAuthenticated()
         && resource.data.authorId == request.auth.uid;
+      
+      // Likes subcollection - 좋아요 기능
+      match /likes/{userId} {
+        // 누구나 좋아요 목록 읽기 가능
+        allow read: if true;
+        
+        // 본인의 좋아요만 생성/삭제 가능
+        allow create: if isAuthenticated() && request.auth.uid == userId;
+        allow delete: if isAuthenticated() && request.auth.uid == userId;
+      }
     }
   }
 }

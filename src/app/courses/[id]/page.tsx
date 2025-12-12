@@ -1,6 +1,15 @@
 "use client";
 
-import { Bookmark, Clock, Heart, MapPin, Share2, Users } from "lucide-react";
+import {
+  Bookmark,
+  Clock,
+  Heart,
+  MapPin,
+  Share2,
+  Users,
+  Eye,
+  MessageCircle,
+} from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
@@ -11,8 +20,12 @@ import {
   Course,
   getCourseById,
   updateCourseBookmarks,
-  updateCourseLikes,
 } from "../../../lib/firebaseCourses";
+import {
+  toggleLikeCourse,
+  checkUserLikedCourse,
+} from "../../../lib/firebaseCourseLikes";
+import { useAuth } from "../../../contexts/AuthContext";
 import { Location } from "../../../types";
 
 // Comments 컴포넌트를 동적으로 로드하여 하이드레이션 문제 해결
@@ -154,11 +167,13 @@ export default function CourseDetailPage() {
   const params = useParams();
   const router = useRouter();
   const courseId = params.id as string;
+  const { user } = useAuth();
   const [course, setCourse] = useState<Course | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [liked, setLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
   const [bookmarked, setBookmarked] = useState(false);
 
   useEffect(() => {
@@ -196,6 +211,7 @@ export default function CourseDetailPage() {
 
         if (courseData) {
           setCourse(courseData);
+          setLikeCount(courseData.likes);
         } else {
           setError("해당 코스를 찾을 수 없습니다.");
         }
@@ -232,34 +248,34 @@ export default function CourseDetailPage() {
     }
   }, [courseId]);
 
-  // 좋아요 처리 (임시로 로컬 상태만 변경)
+  // Check if user liked this course
+  useEffect(() => {
+    const checkLike = async () => {
+      if (user && courseId) {
+        const liked = await checkUserLikedCourse(courseId, user.uid);
+        setIsLiked(liked);
+      }
+    };
+    checkLike();
+  }, [user, courseId]);
+
+  // 좋아요 처리
   const handleLike = async () => {
+    if (!user) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
     if (!course) return;
 
-    try {
-      const increment = liked ? -1 : 1;
+    const prevLiked = isLiked;
+    const prevCount = likeCount;
+    setIsLiked(!prevLiked);
+    setLikeCount(prevLiked ? prevCount - 1 : prevCount + 1);
 
-      // Firebase 업데이트 시도, 실패 시 로컬 상태만 변경
-      try {
-        await updateCourseLikes(course.id, increment);
-        setCourse((prev) =>
-          prev ? { ...prev, likes: prev.likes + increment } : null
-        );
-      } catch (firebaseError) {
-        console.warn(
-          "Firebase 좋아요 업데이트 실패, 로컬 상태만 변경:",
-          firebaseError
-        );
-        // 로컬 상태만 변경 (새로고침 시 원래대로 돌아감)
-        setCourse((prev) =>
-          prev ? { ...prev, likes: prev.likes + increment } : null
-        );
-        alert("좋아요는 임시로만 반영됩니다. Firebase 권한 설정이 필요합니다.");
-      }
-
-      setLiked(!liked);
-    } catch (error) {
-      console.error("좋아요 처리 실패:", error);
+    const result = await toggleLikeCourse(course.id, user.uid, prevCount);
+    if (!result.success) {
+      setIsLiked(prevLiked);
+      setLikeCount(prevCount);
       alert("좋아요 처리 중 오류가 발생했습니다.");
     }
   };
@@ -475,71 +491,6 @@ export default function CourseDetailPage() {
       </div>
 
       <div className="max-w-[1600px] mx-auto px-6 py-12">
-        {/* Course Info */}
-        <div className="flex flex-wrap gap-6 mb-8 text-sm text-gray-600">
-          {course.duration && (
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4" />
-              <span>{course.duration}</span>
-            </div>
-          )}
-          <div className="flex items-center gap-2">
-            <MapPin className="w-4 h-4" />
-            <span>{course.locations.length}개 장소</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Users className="w-4 h-4" />
-            <span>{course.views}회 조회</span>
-          </div>
-          {course.budget && (
-            <div className="flex items-center gap-2">
-              <span>💰</span>
-              <span>{course.budget}</span>
-            </div>
-          )}
-          {course.season && (
-            <div className="flex items-center gap-2">
-              <span>🗓️</span>
-              <span>{course.season}</span>
-            </div>
-          )}
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex gap-4 mb-12">
-          <button
-            onClick={handleLike}
-            className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all ${
-              liked
-                ? "bg-[var(--coral-pink)] text-white"
-                : "bg-white border border-[var(--coral-pink)] text-[var(--coral-pink)] hover:bg-[var(--very-light-pink)]"
-            }`}
-          >
-            <Heart className={`w-5 h-5 ${liked ? "fill-current" : ""}`} />
-            좋아요 {course.likes}
-          </button>
-          <button
-            onClick={handleBookmark}
-            className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all ${
-              bookmarked
-                ? "bg-blue-500 text-white"
-                : "border border-gray-300 hover:bg-gray-50"
-            }`}
-          >
-            <Bookmark
-              className={`w-5 h-5 ${bookmarked ? "fill-current" : ""}`}
-            />
-            저장 {course.bookmarks > 0 ? course.bookmarks : ""}
-          </button>
-          <button
-            onClick={handleShare}
-            className="flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            <Share2 className="w-5 h-5" />
-            공유
-          </button>
-        </div>
-
         {/* Kakao Map Course Overview */}
         <div className="mb-16">
           <h2 className="text-2xl font-bold mb-6">코스 지도 미리보기</h2>
@@ -681,9 +632,9 @@ export default function CourseDetailPage() {
 
         {/* Course Info Summary */}
         {(course.duration || course.budget || course.season) && (
-          <div className="bg-[var(--very-light-pink)] rounded-2xl p-8">
+          <div className="bg-[var(--very-light-pink)] rounded-2xl p-8 mb-8">
             <h3 className="text-xl font-bold mb-6">코스 정보</h3>
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-3 gap-6 mb-6">
               {course.duration && (
                 <div>
                   <div className="text-sm text-gray-600 mb-1">소요 시간</div>
@@ -702,6 +653,34 @@ export default function CourseDetailPage() {
                   <div className="font-semibold">{course.season}</div>
                 </div>
               )}
+            </div>
+
+            {/* Stats and Like Button */}
+            <div className="flex items-center justify-between pt-6 border-t border-gray-200">
+              <div className="flex items-center space-x-6 text-sm text-gray-600">
+                <span className="flex items-center space-x-1.5">
+                  <Eye className="w-4 h-4" />
+                  <span>{course.views}</span>
+                </span>
+                <span className="flex items-center space-x-1.5">
+                  <MapPin className="w-4 h-4" />
+                  <span>{course.locations.length}개 장소</span>
+                </span>
+              </div>
+
+              {/* Like Button */}
+              <button
+                onClick={handleLike}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
+                  isLiked
+                    ? "text-white shadow-md"
+                    : "bg-white text-gray-600 hover:bg-gray-50"
+                }`}
+                style={isLiked ? { backgroundColor: "#ff6b6b" } : {}}
+              >
+                <Heart className={`w-5 h-5 ${isLiked ? "fill-current" : ""}`} />
+                <span className="font-medium">{likeCount}</span>
+              </button>
             </div>
           </div>
         )}

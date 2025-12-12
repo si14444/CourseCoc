@@ -2,7 +2,14 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { MessageCircle, MoreVertical, Edit3, Trash2, Send, Reply } from "lucide-react";
+import {
+  MessageCircle,
+  MoreVertical,
+  Edit3,
+  Trash2,
+  Send,
+  Reply,
+} from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { useHydration } from "../hooks/useHydration";
 import {
@@ -10,7 +17,7 @@ import {
   getCourseComments,
   addComment,
   updateComment,
-  deleteComment
+  deleteComment,
 } from "../lib/firebaseComments";
 
 interface CommentsProps {
@@ -63,7 +70,11 @@ export function Comments({ courseId }: CommentsProps) {
     setSubmitting(true);
 
     // 사용자 닉네임을 userProfile에서 가져오기
-    const displayName = userProfile?.nickname || user.displayName || user.email?.split('@')[0] || "사용자";
+    const displayName =
+      userProfile?.nickname ||
+      user.displayName ||
+      user.email?.split("@")[0] ||
+      "사용자";
 
     try {
       const result = await addComment(
@@ -104,7 +115,11 @@ export function Comments({ courseId }: CommentsProps) {
     setSubmitting(true);
 
     // 사용자 닉네임을 userProfile에서 가져오기
-    const displayName = userProfile?.nickname || user.displayName || user.email?.split('@')[0] || "사용자";
+    const displayName =
+      userProfile?.nickname ||
+      user.displayName ||
+      user.email?.split("@")[0] ||
+      "사용자";
 
     try {
       const result = await addComment(
@@ -169,7 +184,6 @@ export function Comments({ courseId }: CommentsProps) {
     }
   };
 
-
   const startEditing = (comment: Comment) => {
     setEditingId(comment.id);
     setEditContent(comment.content);
@@ -217,7 +231,7 @@ export function Comments({ courseId }: CommentsProps) {
         <div className="animate-pulse">
           <div className="h-6 bg-[var(--accent-color)] rounded w-24 mb-4"></div>
           <div className="space-y-4">
-            {[1, 2, 3].map(i => (
+            {[1, 2, 3].map((i) => (
               <div key={i} className="flex space-x-3">
                 <div className="w-10 h-10 bg-[var(--accent-color)] rounded-full"></div>
                 <div className="flex-1">
@@ -257,7 +271,9 @@ export function Comments({ courseId }: CommentsProps) {
               ) : (
                 <div className="w-10 h-10 bg-[var(--secondary-color)] rounded-full flex items-center justify-center">
                   <span className="text-[var(--primary-color)] font-medium">
-                    {(userProfile?.nickname || user.displayName || "U")[0].toUpperCase()}
+                    {(userProfile?.nickname ||
+                      user.displayName ||
+                      "U")[0].toUpperCase()}
                   </span>
                 </div>
               )}
@@ -292,7 +308,9 @@ export function Comments({ courseId }: CommentsProps) {
           <div className="mb-3">
             <MessageCircle className="w-8 h-8 text-pink-500 mx-auto" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">댓글 작성하기</h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-2">
+            댓글 작성하기
+          </h3>
           <p className="text-gray-600 mb-4">
             다른 사용자들과 소통하려면 로그인이 필요합니다.
           </p>
@@ -309,13 +327,20 @@ export function Comments({ courseId }: CommentsProps) {
       {comments.length === 0 ? (
         <div className="text-center py-12">
           <MessageCircle className="w-12 h-12 text-[var(--text-secondary)] mx-auto mb-3 opacity-50" />
-          <p className="text-[var(--text-secondary)] mb-2">아직 댓글이 없습니다</p>
-          <p className="text-sm text-[var(--text-muted)]">첫 번째 댓글을 작성해보세요!</p>
+          <p className="text-[var(--text-secondary)] mb-2">
+            아직 댓글이 없습니다
+          </p>
+          <p className="text-sm text-[var(--text-muted)]">
+            첫 번째 댓글을 작성해보세요!
+          </p>
         </div>
       ) : (
         <div className="space-y-4">
           {comments.map((comment) => (
-            <div key={comment.id} className="border-b border-[var(--border)] pb-4 last:border-b-0">
+            <div
+              key={comment.id}
+              className="border-b border-[var(--border)] pb-4 last:border-b-0"
+            >
               <div className="flex space-x-3">
                 <div className="flex-shrink-0">
                   {comment.author.profileImageUrl ? (
@@ -354,7 +379,11 @@ export function Comments({ courseId }: CommentsProps) {
                     {user && user.uid === comment.authorId && (
                       <div className="relative">
                         <button
-                          onClick={() => setShowDropdown(showDropdown === comment.id ? null : comment.id)}
+                          onClick={() =>
+                            setShowDropdown(
+                              showDropdown === comment.id ? null : comment.id
+                            )
+                          }
                           className="p-1 hover:bg-[var(--accent-color)] rounded transition-colors"
                         >
                           <MoreVertical className="w-4 h-4 text-[var(--text-secondary)]" />
@@ -417,12 +446,25 @@ export function Comments({ courseId }: CommentsProps) {
                     {user ? (
                       <button
                         onClick={() => startReplying(comment.id)}
-                        className="flex items-center space-x-1 text-sm text-gray-700 hover:text-blue-500 bg-white hover:bg-blue-50 px-3 py-2 rounded-md border transition-colors font-medium"
+                        className="flex items-center space-x-1 text-sm text-gray-700 bg-white hover:bg-red-50 px-3 py-2 rounded-md border transition-colors font-medium"
+                        style={{ color: "inherit" }}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.color = "#ff6b6b")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.color = "inherit")
+                        }
                       >
                         <Reply className="w-4 h-4" />
                         <span>답글</span>
                         {comment.replyCount && comment.replyCount > 0 && (
-                          <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">
+                          <span
+                            className="px-2 py-1 rounded-full text-xs font-medium"
+                            style={{
+                              backgroundColor: "#ffe5e5",
+                              color: "#ff6b6b",
+                            }}
+                          >
                             {comment.replyCount}
                           </span>
                         )}
@@ -442,7 +484,16 @@ export function Comments({ courseId }: CommentsProps) {
 
                   {/* Reply Form */}
                   {replyingTo === comment.id && user && (
-                    <form onSubmit={(e) => handleSubmitReply(e, comment.id)} className="mt-4 ml-8 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
+                    <form
+                      onSubmit={(e) => handleSubmitReply(e, comment.id)}
+                      className="mt-4 ml-8 p-4 rounded-lg"
+                      style={{
+                        backgroundColor: "#fff5f5",
+                        borderWidth: "2px",
+                        borderStyle: "solid",
+                        borderColor: "#ffcccc",
+                      }}
+                    >
                       <div className="flex space-x-3">
                         <div className="flex-shrink-0">
                           {userProfile?.profileImageUrl ? (
@@ -456,7 +507,10 @@ export function Comments({ courseId }: CommentsProps) {
                           ) : (
                             <div className="w-8 h-8 bg-[var(--secondary-color)] rounded-full flex items-center justify-center">
                               <span className="text-[var(--primary-color)] font-medium text-sm">
-                                {(userProfile?.nickname || user.displayName || user.email?.split('@')[0] || "U")[0].toUpperCase()}
+                                {(userProfile?.nickname ||
+                                  user.displayName ||
+                                  user.email?.split("@")[0] ||
+                                  "U")[0].toUpperCase()}
                               </span>
                             </div>
                           )}
@@ -466,7 +520,16 @@ export function Comments({ courseId }: CommentsProps) {
                             value={replyContent}
                             onChange={(e) => setReplyContent(e.target.value)}
                             placeholder="답글을 작성해보세요..."
-                            className="w-full p-3 border-2 border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 text-sm"
+                            className="w-full p-3 border-2 border-gray-200 rounded-lg resize-none focus:outline-none text-sm bg-white"
+                            onFocus={(e) => {
+                              e.target.style.borderColor = "#ff6b6b";
+                              e.target.style.boxShadow =
+                                "0 0 0 3px rgba(255, 107, 107, 0.1)";
+                            }}
+                            onBlur={(e) => {
+                              e.target.style.borderColor = "#e5e7eb";
+                              e.target.style.boxShadow = "none";
+                            }}
                             rows={3}
                             maxLength={500}
                           />
@@ -485,7 +548,12 @@ export function Comments({ courseId }: CommentsProps) {
                               <button
                                 type="submit"
                                 disabled={submitting || !replyContent.trim()}
-                                className="px-4 py-2 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-md border-2 border-blue-500 hover:border-blue-600"
+                                className="px-4 py-2 text-sm text-white rounded-md transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-md hover:brightness-110"
+                                style={{
+                                  backgroundColor: "#ff6b6b",
+                                  borderWidth: "2px",
+                                  borderColor: "#ff6b6b",
+                                }}
                               >
                                 {submitting ? "작성 중..." : "답글 작성"}
                               </button>
@@ -500,7 +568,10 @@ export function Comments({ courseId }: CommentsProps) {
                   {comment.replies && comment.replies.length > 0 && (
                     <div className="mt-4 ml-8 space-y-3">
                       {comment.replies.map((reply) => (
-                        <div key={reply.id} className="flex space-x-3 p-3 bg-[var(--surface)] rounded-lg">
+                        <div
+                          key={reply.id}
+                          className="flex space-x-3 p-3 bg-[var(--surface)] rounded-lg"
+                        >
                           <div className="flex-shrink-0">
                             {reply.author.profileImageUrl ? (
                               <Image
@@ -537,7 +608,13 @@ export function Comments({ courseId }: CommentsProps) {
                               {user && user.uid === reply.authorId && (
                                 <div className="relative">
                                   <button
-                                    onClick={() => setShowDropdown(showDropdown === reply.id ? null : reply.id)}
+                                    onClick={() =>
+                                      setShowDropdown(
+                                        showDropdown === reply.id
+                                          ? null
+                                          : reply.id
+                                      )
+                                    }
                                     className="p-1 hover:bg-[var(--accent-color)] rounded transition-colors"
                                   >
                                     <MoreVertical className="w-3 h-3 text-[var(--text-secondary)]" />
@@ -553,7 +630,9 @@ export function Comments({ courseId }: CommentsProps) {
                                         <span>수정</span>
                                       </button>
                                       <button
-                                        onClick={() => handleDeleteComment(reply.id)}
+                                        onClick={() =>
+                                          handleDeleteComment(reply.id)
+                                        }
                                         className="w-full px-3 py-2 text-left text-sm hover:bg-[var(--accent-color)] flex items-center space-x-2 text-[var(--error)]"
                                       >
                                         <Trash2 className="w-3 h-3" />
@@ -569,7 +648,9 @@ export function Comments({ courseId }: CommentsProps) {
                               <div className="mt-2">
                                 <textarea
                                   value={editContent}
-                                  onChange={(e) => setEditContent(e.target.value)}
+                                  onChange={(e) =>
+                                    setEditContent(e.target.value)
+                                  }
                                   className="w-full p-2 border border-[var(--border)] rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-sm"
                                   rows={2}
                                   maxLength={500}
@@ -599,7 +680,6 @@ export function Comments({ courseId }: CommentsProps) {
                       ))}
                     </div>
                   )}
-
                 </div>
               </div>
             </div>

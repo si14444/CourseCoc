@@ -24,6 +24,8 @@ import {
   deletePost,
   incrementPostViews,
   Post,
+  toggleLikePost,
+  checkUserLikedPost,
 } from "../../../lib/firebasePosts";
 import {
   Comment,
@@ -64,6 +66,8 @@ export default function PostDetailPage({ params }: PostDetailPageProps) {
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState("");
   const [commentDropdown, setCommentDropdown] = useState<string | null>(null);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
 
   // 게시글용 댓글 조회
   const loadPostComments = useCallback(async () => {
@@ -132,8 +136,36 @@ export default function PostDetailPage({ params }: PostDetailPageProps) {
 
     if (isHydrated) {
       fetchPost();
+      checkLikeStatus();
     }
-  }, [postId, isHydrated, loadPostComments]);
+  }, [postId, isHydrated, loadPostComments, user]);
+
+  useEffect(() => {
+    if (post) setLikeCount(post.likes);
+  }, [post]);
+
+  const checkLikeStatus = async () => {
+    if (user && postId) {
+      const liked = await checkUserLikedPost(postId, user.uid);
+      setIsLiked(liked);
+    }
+  };
+
+  const handleToggleLike = async () => {
+    if (!user) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+    const prevLiked = isLiked;
+    const prevCount = likeCount;
+    setIsLiked(!prevLiked);
+    setLikeCount(prevLiked ? prevCount - 1 : prevCount + 1);
+    const result = await toggleLikePost(postId, user.uid, prevCount);
+    if (!result.success) {
+      setIsLiked(prevLiked);
+      setLikeCount(prevCount);
+    }
+  };
 
   const handleDeletePost = async () => {
     if (!user || !post) return;
@@ -354,20 +386,16 @@ export default function PostDetailPage({ params }: PostDetailPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
+    <div
+      className="min-h-screen bg-gradient-to-b from-orange-50 via-coral-50 to-white"
+      style={{
+        background: "linear-gradient(to bottom, #fff5f0, #ffe8e0, #ffffff)",
+      }}
+    >
       <Header />
 
       <main className="pt-20 pb-8">
         <div className={CONTAINER_CLASSES}>
-          {/* Back Button */}
-          <Link
-            href="/community"
-            className="inline-flex items-center space-x-2 text-gray-600 hover:text-pink-500 mb-6 transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span>커뮤니티로 돌아가기</span>
-          </Link>
-
           {/* Post Content */}
           <article className="bg-white rounded-2xl shadow-lg border border-pink-100 p-8 mb-8">
             {/* Author Info */}
@@ -442,20 +470,32 @@ export default function PostDetailPage({ params }: PostDetailPageProps) {
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
 
-            {/* Stats */}
-            <div className="flex items-center space-x-6 pt-6 border-t border-gray-100 text-sm text-gray-500">
-              <span className="flex items-center space-x-2">
-                <Heart className="w-5 h-5" />
-                <span>{post.likes}</span>
-              </span>
-              <span className="flex items-center space-x-2">
-                <MessageCircle className="w-5 h-5" />
-                <span>{comments.length}</span>
-              </span>
-              <span className="flex items-center space-x-2">
-                <Eye className="w-5 h-5" />
-                <span>{post.views}</span>
-              </span>
+            {/* Stats Row with Like Button */}
+            <div className="flex items-center justify-between py-4 border-t border-gray-100">
+              <div className="flex items-center space-x-6 text-sm text-gray-500">
+                <span className="flex items-center space-x-1.5">
+                  <Eye className="w-4 h-4" />
+                  <span>{post.views}</span>
+                </span>
+                <span className="flex items-center space-x-1.5">
+                  <MessageCircle className="w-4 h-4" />
+                  <span>댓글 {comments.length}</span>
+                </span>
+              </div>
+
+              {/* Like Button */}
+              <button
+                onClick={handleToggleLike}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
+                  isLiked
+                    ? "text-white shadow-md"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+                style={isLiked ? { backgroundColor: "#ff6b6b" } : {}}
+              >
+                <Heart className={`w-5 h-5 ${isLiked ? "fill-current" : ""}`} />
+                <span className="font-medium">{likeCount}</span>
+              </button>
             </div>
           </article>
 
@@ -482,7 +522,13 @@ export default function PostDetailPage({ params }: PostDetailPageProps) {
                         className="w-10 h-10 rounded-full object-cover"
                       />
                     ) : (
-                      <div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center">
+                      <div
+                        className="w-10 h-10 bg-gradient-to-br from-orange-400 to-coral-500 rounded-full flex items-center justify-center"
+                        style={{
+                          background:
+                            "linear-gradient(135deg, #fb923c 0%, #ff6b6b 100%)",
+                        }}
+                      >
                         <span className="text-white font-medium">
                           {(userProfile?.nickname ||
                             user.displayName ||
@@ -496,7 +542,7 @@ export default function PostDetailPage({ params }: PostDetailPageProps) {
                       value={newComment}
                       onChange={(e) => setNewComment(e.target.value)}
                       placeholder="댓글을 작성해주세요..."
-                      className="w-full p-3 border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent"
+                      className="w-full p-3 border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent bg-white"
                       rows={3}
                       maxLength={500}
                     />
@@ -507,7 +553,8 @@ export default function PostDetailPage({ params }: PostDetailPageProps) {
                       <button
                         type="submit"
                         disabled={submitting || !newComment.trim()}
-                        className="inline-flex items-center space-x-2 px-4 py-2 bg-pink-500 text-white rounded-lg font-medium hover:bg-pink-600 transition-colors disabled:opacity-50"
+                        className="inline-flex items-center space-x-2 px-4 py-2 text-white rounded-lg font-medium transition-all disabled:opacity-50 hover:brightness-110"
+                        style={{ backgroundColor: "#ff6b6b" }}
                       >
                         <Send className="w-4 h-4" />
                         <span>{submitting ? "작성 중..." : "댓글 작성"}</span>
@@ -517,8 +564,11 @@ export default function PostDetailPage({ params }: PostDetailPageProps) {
                 </div>
               </form>
             ) : (
-              <div className="mb-6 p-6 bg-gradient-to-r from-pink-50 to-red-50 border border-pink-200 rounded-xl text-center">
-                <MessageCircle className="w-8 h-8 text-pink-500 mx-auto mb-3" />
+              <div className="mb-6 p-6 bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-xl text-center">
+                <MessageCircle
+                  className="w-8 h-8 mx-auto mb-3"
+                  style={{ color: "#ff6b6b" }}
+                />
                 <h3 className="text-lg font-semibold text-gray-800 mb-2">
                   댓글 작성하기
                 </h3>
@@ -527,7 +577,8 @@ export default function PostDetailPage({ params }: PostDetailPageProps) {
                 </p>
                 <Link
                   href="/auth/login"
-                  className="inline-flex items-center px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors font-medium"
+                  className="inline-flex items-center px-4 py-2 text-white rounded-lg transition-all font-medium hover:brightness-110"
+                  style={{ backgroundColor: "#ff6b6b" }}
                 >
                   로그인하기
                 </Link>
