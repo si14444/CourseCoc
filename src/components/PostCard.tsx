@@ -40,25 +40,6 @@ export function PostCard({ post }: PostCardProps) {
     <Link href={`/community/${post.id}`}>
       <article className="bg-white border border-gray-100 rounded-xl p-4 hover:shadow-md hover:border-gray-200 transition-all duration-200 cursor-pointer group">
         <div className="flex items-start space-x-4">
-          {/* Author Avatar */}
-          <div className="flex-shrink-0">
-            {post.author.profileImageUrl ? (
-              <Image
-                src={post.author.profileImageUrl}
-                alt={post.author.nickname}
-                width={48}
-                height={48}
-                className="w-12 h-12 rounded-full object-cover ring-2 ring-pink-100"
-              />
-            ) : (
-              <div className="w-12 h-12 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center ring-2 ring-pink-100">
-                <span className="text-white font-bold text-lg">
-                  {post.author.nickname[0].toUpperCase()}
-                </span>
-              </div>
-            )}
-          </div>
-
           {/* Content */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center space-x-2 mb-1">
