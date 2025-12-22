@@ -65,6 +65,51 @@ function WritePageContent() {
   const { addLocation, updateLocation, removeLocation, handleAddressSelect } =
     useLocationManager(courseData, setCourseData);
 
+  // Validation functions
+  const validateStep1 = (): boolean => {
+    if (!courseData.title.trim()) {
+      alert("코스 제목을 입력해주세요.");
+      return false;
+    }
+    if (!courseData.description.trim()) {
+      alert("간단한 설명을 입력해주세요.");
+      return false;
+    }
+    if (courseData.tags.length === 0) {
+      alert("최소 1개 이상의 태그를 선택해주세요.");
+      return false;
+    }
+    return true;
+  };
+
+  const validateStep2 = (): boolean => {
+    if (courseData.locations.length === 0) {
+      alert("최소 1개 이상의 장소를 추가해주세요.");
+      return false;
+    }
+
+    for (let i = 0; i < courseData.locations.length; i++) {
+      const location = courseData.locations[i];
+      if (!location.name.trim()) {
+        alert(`장소 ${i + 1}의 장소명을 입력해주세요.`);
+        return false;
+      }
+      if (!location.address.trim()) {
+        alert(`장소 ${i + 1}의 주소를 입력해주세요.`);
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const validateStep3 = (): boolean => {
+    if (!courseData.content.trim()) {
+      alert("코스 상세 설명을 작성해주세요.");
+      return false;
+    }
+    return true;
+  };
+
   const heroImageInputRef = useRef<HTMLInputElement>(null);
   const locationImageInputRefs = useRef<{
     [key: string]: HTMLInputElement | null;
@@ -335,7 +380,11 @@ function WritePageContent() {
 
                 <div className="flex justify-end">
                   <Button
-                    onClick={() => setStep(2)}
+                    onClick={() => {
+                      if (validateStep1()) {
+                        setStep(2);
+                      }
+                    }}
                     className="bg-[var(--coral-pink)] text-white hover:bg-[var(--coral-pink)]/90"
                   >
                     다음 단계
@@ -383,7 +432,11 @@ function WritePageContent() {
                     이전 단계
                   </Button>
                   <Button
-                    onClick={() => setStep(3)}
+                    onClick={() => {
+                      if (validateStep2()) {
+                        setStep(3);
+                      }
+                    }}
                     className="bg-[var(--coral-pink)] text-white hover:bg-[var(--coral-pink)]/90"
                   >
                     다음 단계
@@ -425,7 +478,11 @@ function WritePageContent() {
                     이전 단계
                   </Button>
                   <Button
-                    onClick={() => setStep(4)}
+                    onClick={() => {
+                      if (validateStep3()) {
+                        setStep(4);
+                      }
+                    }}
                     className="bg-[var(--coral-pink)] text-white hover:bg-[var(--coral-pink)]/90"
                   >
                     미리보기
