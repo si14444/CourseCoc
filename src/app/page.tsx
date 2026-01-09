@@ -62,7 +62,7 @@ function AdBanner({
             className="adsbygoogle"
             style={{ display: "block", width: "100%", height: "250px" }}
             data-ad-client="ca-pub-4535163023491412"
-            data-ad-slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_ID || ""}
+            data-ad-slot="6546754053"
             data-ad-format="rectangle"
           />
         </div>
@@ -82,7 +82,7 @@ function AdBanner({
           className="adsbygoogle"
           style={{ display: "block", width: "100%", height: "96px" }}
           data-ad-client="ca-pub-4535163023491412"
-          data-ad-slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_ID || ""}
+          data-ad-slot="6546754053"
           data-ad-format="horizontal"
           data-full-width-responsive="true"
         />

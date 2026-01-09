@@ -42,7 +42,7 @@ export function AdSpot({ position = "right", className = "" }: AdSpotProps) {
         className="adsbygoogle"
         style={{ display: "block", width: "160px", height: "600px" }}
         data-ad-client="ca-pub-4535163023491412"
-        data-ad-slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_ID || ""}
+        data-ad-slot="6546754053"
         data-ad-format="auto"
         data-full-width-responsive="true"
       />
