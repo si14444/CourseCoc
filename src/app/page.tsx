@@ -1,28 +1,27 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import Image from "next/image";
 import {
-  Plus,
-  MessageCircle,
-  Flame,
-  Clock,
-  User,
-  Hash,
-  TrendingUp,
-  Heart,
-  Megaphone,
   BarChart3,
+  Clock,
   FileText,
+  Flame,
+  Hash,
+  Heart,
   Map,
+  Megaphone,
+  MessageCircle,
+  Plus,
+  TrendingUp,
 } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import { CourseCard } from "../components/CoursesCard";
 import { Header } from "../components/Header";
 import { PostCard } from "../components/PostCard";
-import { CourseCard } from "../components/CoursesCard";
-import { getPosts, Post } from "../lib/firebasePosts";
-import { getPublishedCourses, Course } from "../lib/firebaseCourses";
 import { useAuth } from "../contexts/AuthContext";
+import { Course, getPublishedCourses } from "../lib/firebaseCourses";
+import { getPosts, Post } from "../lib/firebasePosts";
 
 type SortOption = "latest" | "popular";
 
@@ -32,6 +31,24 @@ function AdBanner({
 }: {
   variant?: "horizontal" | "sidebar";
 }) {
+  const adRef = useRef<HTMLModElement>(null);
+
+  useEffect(() => {
+    if (!adRef.current) return;
+
+    try {
+      // 해당 요소가 화면에 보이고 너비가 있는 경우에만 초기화
+      if (
+        adRef.current.offsetWidth > 0 &&
+        adRef.current.getAttribute("data-adsbygoogle-status") !== "done"
+      ) {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      }
+    } catch (err) {
+      console.error("AdSense error:", err);
+    }
+  }, []);
+
   if (variant === "sidebar") {
     return (
       <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200">
@@ -39,8 +56,15 @@ function AdBanner({
           <Megaphone className="w-4 h-4" />
           <span className="text-xs font-medium">광고</span>
         </div>
-        <div className="h-32 bg-white rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300">
-          <span className="text-sm text-gray-400">AD SPACE</span>
+        <div className="bg-white rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300 overflow-hidden min-w-[250px]">
+          <ins
+            ref={adRef}
+            className="adsbygoogle"
+            style={{ display: "block", width: "100%", height: "250px" }}
+            data-ad-client="ca-pub-4535163023491412"
+            data-ad-slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_ID || ""}
+            data-ad-format="rectangle"
+          />
         </div>
       </div>
     );
@@ -52,8 +76,16 @@ function AdBanner({
         <Megaphone className="w-4 h-4" />
         <span className="text-xs font-medium">광고</span>
       </div>
-      <div className="h-24 bg-white rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300">
-        <span className="text-sm text-gray-400">AD BANNER SPACE</span>
+      <div className="bg-white rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300 overflow-hidden">
+        <ins
+          ref={adRef}
+          className="adsbygoogle"
+          style={{ display: "block", width: "100%", height: "96px" }}
+          data-ad-client="ca-pub-4535163023491412"
+          data-ad-slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_ID || ""}
+          data-ad-format="horizontal"
+          data-full-width-responsive="true"
+        />
       </div>
     </div>
   );

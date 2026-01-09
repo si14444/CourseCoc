@@ -1,23 +1,51 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+
 interface AdSpotProps {
   position?: "left" | "right";
   className?: string;
 }
 
+declare global {
+  interface Window {
+    adsbygoogle: any[];
+  }
+}
+
 export function AdSpot({ position = "right", className = "" }: AdSpotProps) {
+  const adRef = useRef<HTMLModElement>(null);
+
+  useEffect(() => {
+    if (!adRef.current) return;
+
+    try {
+      // 해당 요소가 화면에 보이고 너비가 있는 경우에만 초기화
+      if (
+        adRef.current.offsetWidth > 0 &&
+        adRef.current.getAttribute("data-adsbygoogle-status") !== "done"
+      ) {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      }
+    } catch (err) {
+      console.error("AdSense error:", err);
+    }
+  }, []);
+
   return (
     <div
       className={`hidden lg:block sticky top-24 ${className}`}
       style={{ width: "160px", height: "600px" }}
     >
-      <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center h-full p-4 text-center">
-        <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-3">
-          <span className="text-2xl">📢</span>
-        </div>
-        <p className="text-xs font-semibold text-gray-600 mb-1">광고 영역</p>
-        <p className="text-[10px] text-gray-400">160 x 600</p>
-      </div>
+      <ins
+        ref={adRef}
+        className="adsbygoogle"
+        style={{ display: "block", width: "160px", height: "600px" }}
+        data-ad-client="ca-pub-4535163023491412"
+        data-ad-slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_ID || ""}
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+      />
     </div>
   );
 }
