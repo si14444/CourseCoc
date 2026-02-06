@@ -1,5 +1,6 @@
 import { Location } from "@/types";
 import { MapPin } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Map, MapMarker, Polyline } from "react-kakao-maps-sdk";
 
 interface PreviewMapProps {
@@ -7,7 +8,17 @@ interface PreviewMapProps {
 }
 
 export const PreviewMap = ({ locations }: PreviewMapProps) => {
-  if (locations.length === 0) return null;
+  const [isApiReady, setIsApiReady] = useState(false);
+
+  useEffect(() => {
+    if (window.kakao && window.kakao.maps) {
+      window.kakao.maps.load(() => {
+        setIsApiReady(true);
+      });
+    }
+  }, []);
+
+  if (locations.length === 0 || !isApiReady) return null;
 
   // 좌표가 있는 장소들만 필터링
   const validLocations = locations.filter((loc) => loc.position);

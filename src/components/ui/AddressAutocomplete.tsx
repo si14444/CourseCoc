@@ -35,24 +35,35 @@ export function AddressAutocomplete({
 
   // Kakao Maps API 로드 확인 및 대기
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-    let attempts = 0;
-    const maxAttempts = 50; // 최대 5초 대기 (100ms * 50)
-
     const checkApiReady = () => {
-      if (window.kakao && window.kakao.maps && window.kakao.maps.services) {
-        setIsApiReady(true);
+      if (window.kakao && window.kakao.maps) {
+        // autoload=false 대응을 위해 load() 메서드 사용
+        window.kakao.maps.load(() => {
+          if (window.kakao.maps.services) {
+            setIsApiReady(true);
+          } else {
+            console.error(
+              "Kakao Maps Services 라이브러리가 로드되지 않았습니다.",
+            );
+            setApiError(true);
+          }
+        });
         return;
       }
 
+      // 아직 카카오 스크립트 자체가 로드되지 않은 경우 재시도 (최대 5초)
       attempts++;
       if (attempts < maxAttempts) {
         timeoutId = setTimeout(checkApiReady, 100);
       } else {
-        console.warn('Kakao Maps API 로드 시간 초과');
+        console.warn("Kakao Maps API 스크립트 로드 시간 초과");
         setApiError(true);
       }
     };
+
+    let timeoutId: NodeJS.Timeout;
+    let attempts = 0;
+    const maxAttempts = 50;
 
     checkApiReady();
 
@@ -64,44 +75,54 @@ export function AddressAutocomplete({
   }, []);
 
   // 카카오맵 검색 함수
-  const searchAddress = useCallback(async (keyword: string) => {
-    if (!keyword.trim()) {
-      setResults([]);
-      return;
-    }
+  const searchAddress = useCallback(
+    async (keyword: string) => {
+      if (!keyword.trim()) {
+        setResults([]);
+        return;
+      }
 
-    // API 준비 상태 확인
-    if (!isApiReady || !window.kakao || !window.kakao.maps || !window.kakao.maps.services) {
-      console.warn('Kakao Maps API가 아직 로드되지 않았습니다. 잠시 후 다시 시도해주세요.');
-      setResults([]);
-      return;
-    }
+      // API 준비 상태 확인
+      if (
+        !isApiReady ||
+        !window.kakao ||
+        !window.kakao.maps ||
+        !window.kakao.maps.services
+      ) {
+        console.warn(
+          "Kakao Maps API가 아직 로드되지 않았습니다. 잠시 후 다시 시도해주세요.",
+        );
+        setResults([]);
+        return;
+      }
 
-    setIsLoading(true);
+      setIsLoading(true);
 
-    try {
-      const places = new window.kakao.maps.services.Places();
+      try {
+        const places = new window.kakao.maps.services.Places();
 
-      places.keywordSearch(
-        keyword,
-        (data: AddressSearchResult[], status: string) => {
-          setIsLoading(false);
+        places.keywordSearch(
+          keyword,
+          (data: AddressSearchResult[], status: string) => {
+            setIsLoading(false);
 
-          if (status === window.kakao.maps.services.Status.OK) {
-            // 결과를 최대 5개로 제한하고 관련도 높은 순으로 정렬
-            setResults(data.slice(0, 5));
-          } else {
-            console.warn('장소 검색 실패:', status);
-            setResults([]);
-          }
-        }
-      );
-    } catch (error) {
-      console.error('주소 검색 중 오류 발생:', error);
-      setIsLoading(false);
-      setResults([]);
-    }
-  }, [isApiReady]);
+            if (status === window.kakao.maps.services.Status.OK) {
+              // 결과를 최대 5개로 제한하고 관련도 높은 순으로 정렬
+              setResults(data.slice(0, 5));
+            } else {
+              console.warn("장소 검색 실패:", status);
+              setResults([]);
+            }
+          },
+        );
+      } catch (error) {
+        console.error("주소 검색 중 오류 발생:", error);
+        setIsLoading(false);
+        setResults([]);
+      }
+    },
+    [isApiReady],
+  );
 
   // 입력값 변경 시 자동완성 검색
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -144,7 +165,7 @@ export function AddressAutocomplete({
       case "ArrowDown":
         e.preventDefault();
         setSelectedIndex((prev) =>
-          prev < results.length - 1 ? prev + 1 : prev
+          prev < results.length - 1 ? prev + 1 : prev,
         );
         break;
       case "ArrowUp":
@@ -215,7 +236,7 @@ export function AddressAutocomplete({
                 : "지도 API 로딩 중..."
           }
           disabled={disabled || !isApiReady || apiError}
-          className={`w-full pr-10 ${className} ${!isApiReady || apiError ? 'opacity-50' : ''}`}
+          className={`w-full pr-10 ${className} ${!isApiReady || apiError ? "opacity-50" : ""}`}
         />
 
         {/* 검색/로딩 아이콘 */}
