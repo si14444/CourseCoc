@@ -568,6 +568,7 @@ function WritePageContent() {
                         const result = await publishCourse(
                           courseData,
                           user.uid,
+                          editId,
                         );
 
                         if (result.success) {

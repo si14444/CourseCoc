@@ -250,11 +250,27 @@ export const useWriteCourse = (editId?: string | null) => {
 /**
  * 코스를 발행하는 함수
  */
-export async function publishCourse(courseData: CourseData, userId: string) {
+export async function publishCourse(
+  courseData: CourseData,
+  userId: string,
+  courseId?: string | null,
+) {
   const { CourseService } = await import("@/services/CourseService");
   const { courseRepository } = await import("@/repositories/CourseRepository");
 
   const courseService = new CourseService(courseRepository);
+
+  if (courseId) {
+    const result = await courseService.updateCourse(
+      courseId,
+      courseData,
+      userId,
+    );
+    if (result.success) {
+      return { success: true, data: courseId };
+    }
+    return result;
+  }
 
   return await courseService.publishCourse({
     ...courseData,
