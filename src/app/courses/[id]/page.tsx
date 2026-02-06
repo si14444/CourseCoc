@@ -54,14 +54,14 @@ const Comments = dynamic(
         </div>
       </div>
     ),
-  }
+  },
 );
 
 // Kakao Map Component
 function CourseMap({ locations }: { locations: Location[] }) {
   // 좌표가 있는 위치만 필터링
   const validLocations = locations.filter(
-    (loc) => loc.position && loc.position.lat && loc.position.lng
+    (loc) => loc.position && loc.position.lat && loc.position.lng,
   );
 
   if (validLocations.length === 0) {
@@ -144,7 +144,7 @@ function CourseMap({ locations }: { locations: Location[] }) {
                 </div>
               </div>
             </CustomOverlayMap>
-          )
+          ),
       )}
 
       {/* 경로 표시 (2개 이상의 위치가 있을 때만) */}
@@ -177,23 +177,12 @@ export default function CourseDetailPage() {
   const [bookmarked, setBookmarked] = useState(false);
 
   useEffect(() => {
-    // 카카오맵 API 스크립트 로드
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAPS_API_KEY}&autoload=false`;
-    document.head.appendChild(script);
-
-    script.onload = () => {
+    // Kakao Maps API 헬퍼: SDK가 이미 layout.tsx에서 로드되었으므로 load 이벤트만 대기
+    if (window.kakao && window.kakao.maps) {
       window.kakao.maps.load(() => {
         setIsMapLoaded(true);
       });
-    };
-
-    return () => {
-      if (document.head.contains(script)) {
-        document.head.removeChild(script);
-      }
-    };
+    }
   }, []);
 
   // Firebase에서 코스 데이터 가져오기
@@ -224,7 +213,7 @@ export default function CourseDetailPage() {
         const errorCode = (err as { code?: string })?.code;
         if (errorCode === "permission-denied") {
           setError(
-            "게시글을 볼 수 있는 권한이 없습니다. Firebase 보안 규칙을 확인해주세요."
+            "게시글을 볼 수 있는 권한이 없습니다. Firebase 보안 규칙을 확인해주세요.",
           );
         } else if (errorCode === "not-found") {
           setError("요청하신 게시글이 존재하지 않습니다.");
@@ -232,7 +221,7 @@ export default function CourseDetailPage() {
           setError(
             `데이터 로딩 오류: ${
               err instanceof Error ? err.message : "알 수 없는 오류"
-            }`
+            }`,
           );
         }
       } finally {
@@ -291,16 +280,16 @@ export default function CourseDetailPage() {
       try {
         await updateCourseBookmarks(course.id, increment);
         setCourse((prev) =>
-          prev ? { ...prev, bookmarks: prev.bookmarks + increment } : null
+          prev ? { ...prev, bookmarks: prev.bookmarks + increment } : null,
         );
       } catch (firebaseError) {
         console.warn(
           "Firebase 북마크 업데이트 실패, 로컬 상태만 변경:",
-          firebaseError
+          firebaseError,
         );
         // 로컬 상태만 변경 (새로고침 시 원래대로 돌아감)
         setCourse((prev) =>
-          prev ? { ...prev, bookmarks: prev.bookmarks + increment } : null
+          prev ? { ...prev, bookmarks: prev.bookmarks + increment } : null,
         );
         alert("북마크는 임시로만 반영됩니다. Firebase 권한 설정이 필요합니다.");
       }

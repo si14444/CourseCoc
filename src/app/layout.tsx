@@ -51,7 +51,7 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
         <Script
-          src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_API_KEY}&libraries=services,clusterer`}
+          src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAPS_API_KEY}&libraries=services,clusterer`}
           strategy="beforeInteractive"
         />
       </body>
