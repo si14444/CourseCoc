@@ -57,8 +57,15 @@ function WritePageContent() {
   const searchParams = useSearchParams();
   const editId = searchParams.get("edit");
 
-  const { step, setStep, courseData, setCourseData, isPublishing, toggleTag } =
-    useWriteCourse(editId);
+  const {
+    step,
+    setStep,
+    courseData,
+    setCourseData,
+    isPublishing,
+    loading,
+    toggleTag,
+  } = useWriteCourse(editId);
 
   const { handleImageSelect, uploadImageToStorage } = useImageUpload();
 
@@ -136,7 +143,7 @@ function WritePageContent() {
 
   const handleLocationImageChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    index: number
+    index: number,
   ) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -144,7 +151,7 @@ function WritePageContent() {
         setCourseData((prev) => ({
           ...prev,
           locations: prev.locations.map((loc, i) =>
-            i === index ? { ...loc, image: dataUrl } : loc
+            i === index ? { ...loc, image: dataUrl } : loc,
           ),
         }));
       });
@@ -152,14 +159,16 @@ function WritePageContent() {
   };
 
   // 로딩 상태
-  if (authLoading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-white">
         <Header />
         <div className="pt-20 flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--coral-pink)] mx-auto mb-4"></div>
-            <p className="text-[var(--text-secondary)]">로딩 중...</p>
+            <p className="text-[var(--text-secondary)]">
+              {loading ? "기존 코스 데이터를 불러오는 중..." : "로딩 중..."}
+            </p>
           </div>
         </div>
       </div>
@@ -461,7 +470,7 @@ function WritePageContent() {
                       <div className="w-3 h-3 rounded-full bg-[#28C840]"></div>
                     </div>
                     <span className="text-xs text-gray-400">
-                      '/'로 서식 사용
+                      &apos;/&apos;로 서식 사용
                     </span>
                   </div>
                   <RichTextEditor
@@ -554,12 +563,11 @@ function WritePageContent() {
                       }
 
                       try {
-                        const { publishCourse } = await import(
-                          "@/hooks/useWriteCourse"
-                        );
+                        const { publishCourse } =
+                          await import("@/hooks/useWriteCourse");
                         const result = await publishCourse(
                           courseData,
-                          user.uid
+                          user.uid,
                         );
 
                         if (result.success) {

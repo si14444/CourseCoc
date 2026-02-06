@@ -3,7 +3,8 @@ import { compressImage } from "@/lib/imageCompression";
 import { Location } from "@/types";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
 import { useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { getCourseById } from "@/lib/firebaseCourses";
 
 export interface CourseData {
   title: string;
@@ -61,7 +62,7 @@ export const useImageUpload = () => {
         throw new Error("이미지 업로드에 실패했습니다.");
       }
     },
-    []
+    [],
   );
 
   const handleImageSelect = useCallback(
@@ -85,7 +86,7 @@ export const useImageUpload = () => {
         setUploading(false);
       }
     },
-    []
+    [],
   );
 
   return {
@@ -100,7 +101,7 @@ export const useImageUpload = () => {
  */
 export const useLocationManager = (
   courseData: CourseData,
-  setCourseData: React.Dispatch<React.SetStateAction<CourseData>>
+  setCourseData: React.Dispatch<React.SetStateAction<CourseData>>,
 ) => {
   const addLocation = useCallback(() => {
     const newLocation: Location = {
@@ -124,11 +125,11 @@ export const useLocationManager = (
       setCourseData((prev) => ({
         ...prev,
         locations: prev.locations.map((loc, i) =>
-          i === index ? { ...loc, [field]: value } : loc
+          i === index ? { ...loc, [field]: value } : loc,
         ),
       }));
     },
-    [setCourseData]
+    [setCourseData],
   );
 
   const removeLocation = useCallback(
@@ -138,7 +139,7 @@ export const useLocationManager = (
         locations: prev.locations.filter((_, i) => i !== index),
       }));
     },
-    [setCourseData]
+    [setCourseData],
   );
 
   const handleAddressSelect = useCallback(
@@ -149,7 +150,7 @@ export const useLocationManager = (
         y: string;
         road_address_name?: string;
         address_name: string;
-      }
+      },
     ) => {
       const coords = {
         lat: parseFloat(result.y),
@@ -165,11 +166,11 @@ export const useLocationManager = (
                 address: result.road_address_name || result.address_name,
                 position: coords,
               }
-            : loc
+            : loc,
         ),
       }));
     },
-    [setCourseData]
+    [setCourseData],
   );
 
   return {
@@ -188,6 +189,41 @@ export const useWriteCourse = (editId?: string | null) => {
   const [step, setStep] = useState(1);
   const [courseData, setCourseData] = useState<CourseData>(initialCourseData);
   const [isPublishing, setIsPublishing] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // 수정 모드일 때 기존 데이터 불러오기
+  useEffect(() => {
+    const fetchCourseData = async () => {
+      if (!editId) return;
+
+      try {
+        setLoading(true);
+        const data = await getCourseById(editId);
+        if (data) {
+          setCourseData({
+            title: data.title || "",
+            description: data.description || "",
+            tags: data.tags || [],
+            duration: data.duration || "",
+            budget: data.budget || "",
+            season: data.season || "",
+            heroImage: data.heroImage || data.imageUrl,
+            locations: data.locations || [],
+            content: data.content || "",
+          });
+        } else {
+          console.error("코스 데이터를 찾을 수 없습니다.");
+          alert("수정할 코스 데이터를 불러오는데 실패했습니다.");
+        }
+      } catch (error) {
+        console.error("코스 데이터 로딩 중 오류 발생:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourseData();
+  }, [editId]);
 
   const toggleTag = useCallback((tag: string) => {
     setCourseData((prev) => ({
@@ -205,6 +241,7 @@ export const useWriteCourse = (editId?: string | null) => {
     setCourseData,
     isPublishing,
     setIsPublishing,
+    loading,
     toggleTag,
     router,
   };
@@ -213,7 +250,7 @@ export const useWriteCourse = (editId?: string | null) => {
 /**
  * 코스를 발행하는 함수
  */
-export async function publishCourse(courseData: any, userId: string) {
+export async function publishCourse(courseData: CourseData, userId: string) {
   const { CourseService } = await import("@/services/CourseService");
   const { courseRepository } = await import("@/repositories/CourseRepository");
 
