@@ -16,6 +16,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CustomOverlayMap, Map, Polyline } from "react-kakao-maps-sdk";
 import { Header } from "../../../components/Header";
+import { AdSpot } from "@/components/AdSpot";
 import {
   Course,
   getCourseById,
@@ -415,12 +416,22 @@ export default function CourseDetailPage() {
     <div className="min-h-screen bg-white">
       <Header />
 
-      {/* Hero Section */}
-      <div
-        className={`relative overflow-hidden ${
-          course.heroImage || course.locations?.[0]?.image ? "h-screen" : "h-96"
-        }`}
-      >
+      <main className="pt-20">
+        <div className="max-w-[1600px] mx-auto px-6">
+          <div className="flex gap-8 justify-center">
+            {/* Left Ad Spot */}
+            <div className="mt-20">
+              <AdSpot position="left" />
+            </div>
+
+            {/* Main Content */}
+            <div className="flex-1 max-w-[1000px]">
+              {/* Hero Section */}
+              <div
+                className={`relative overflow-hidden rounded-2xl mb-12 ${
+                  course.heroImage || course.locations?.[0]?.image ? "h-[60vh]" : "h-96"
+                }`}
+              >
         {course.heroImage || course.locations?.[0]?.image ? (
           <Image
             src={course.heroImage || course.locations?.[0]?.image || ""}
@@ -677,6 +688,14 @@ export default function CourseDetailPage() {
         {/* Comments Section */}
         <Comments courseId={course.id} />
       </div>
+
+            {/* Right Ad Spot */}
+            <div className="mt-20">
+              <AdSpot position="right" />
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
